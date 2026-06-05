@@ -40,3 +40,13 @@ This file tracks the completed features and development tasks for the **AI Cockt
   - Standardized all codebase comments, docstrings, tool descriptions, and parameters inside `src/tools/cocktail_tools.py` and other modules to English.
   - Translated all UI labels, options, headers, and descriptions inside `src/ui/app.py` to English for a global user experience.
   - Pushed all translation updates to GitHub.
+
+### 5. Multi-Agent & Tool Calling Backend Implementation
+- **Date**: June 5, 2026
+- **Status**: Completed
+- **Details**:
+  - Configured `src/agents/cocktail_agents.py` with `gemini-3.1-flash-lite` to resolve free-tier quota limits.
+  - Implemented a robust manual function calling execution loop supporting multi-turn conversations and tool calling.
+  - Wrapped search tool outputs in `src/tools/cocktail_tools.py` to match protobuf object mappings and prevent type mismatch errors during function calls.
+  - Created `test_agents.py` and programmatically verified agent personas (Guest Concierge & Master Bartender) and automatic tool execution on real data.
+  - Committed and pushed all backend updates to the GitHub remote repository.
