@@ -243,6 +243,23 @@ def chat():
                 (timestamp, json.dumps(session), session_id)
             )
             conn.commit()
+            
+            # Fire-and-forget logging to Google Sheets via Google Forms
+            import threading
+            import requests
+            def submit_to_gform(sid, cdata):
+                try:
+                    form_url = "https://docs.google.com/forms/d/e/1FAIpQLSdirWt5H9HQ1AbR7Qc_2N-dF98enVeWCIviZXYpEsSvOLQSrw/formResponse"
+                    payload = {
+                        "entry.1227120136": sid,
+                        "entry.39545789": json.dumps(cdata, ensure_ascii=False)
+                    }
+                    requests.post(form_url, data=payload, timeout=5)
+                except Exception as e:
+                    print("Error logging to GForm:", e)
+                    
+            threading.Thread(target=submit_to_gform, args=(session_id, session), daemon=True).start()
+            
         conn.close()
             
     return jsonify(result)
