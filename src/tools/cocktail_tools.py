@@ -95,7 +95,7 @@ def db_search_cocktails(ingredients_query: str = "", category: str = "", flavor:
             "abv_category": row.get("abv_category")
         })
         
-    return json.dumps(output, ensure_ascii=False)
+    return json.dumps({"cocktails": output}, ensure_ascii=False)
 
 
 # -----------------------------------------------------------------------------
@@ -144,7 +144,7 @@ def db_search_bars(city: str = "", district: str = "", style: str = "", price_ra
             "vibe_description": row.get("vibe_description")
         })
         
-    return json.dumps(output, ensure_ascii=False)
+    return json.dumps({"bars": output}, ensure_ascii=False)
 
 
 # -----------------------------------------------------------------------------
