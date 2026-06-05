@@ -16,8 +16,7 @@ def get_gemini_client():
         return None
     try:
         genai.configure(api_key=api_key)
-        # Use gemini-1.5-flash for fast and cost-effective text generation
-        model = genai.GenerativeModel("gemini-1.5-flash")
+        model = genai.GenerativeModel("gemini-3.1-flash-lite")
         return model
     except Exception as e:
         print(f"Error configuring Gemini API: {e}. Falling back to rule-based enrichment.")
