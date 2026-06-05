@@ -11,8 +11,12 @@ def get_transformer_model():
     """Lazily load the sentence-transformers model to save startup time."""
     global _model
     if _model is None:
+        import os
         from sentence_transformers import SentenceTransformer
-        # Falls back to local cache or downloads to C:\\Users\\<user>\\.cache\\huggingface\\hub\\
+        
+        # Configure model cache to point to our local 'model/' directory
+        os.environ["SENTENCE_TRANSFORMERS_HOME"] = os.path.join(Config.BASE_DIR, "model")
+        
         model_name = Config.EMBEDDING_MODEL or "all-MiniLM-L6-v2"
         print(f"Loading local SentenceTransformer model: {model_name} ...")
         _model = SentenceTransformer(model_name)

@@ -72,6 +72,9 @@ document.addEventListener('DOMContentLoaded', () => {
     setupRecipeFinder();
     setupAbvCalculator();
     setupMenuBuilder();
+    setupMobileMenu();
+    setupExportLogs();
+    setupLanguageToggle();
     
     // Initial fetch to load sessions and cocktail list
     fetchSessions('guest');
@@ -86,8 +89,8 @@ function setupRoleSwitcher() {
         activeRole = 'guest';
         
         // Update Buttons Classes
-        btnGuestMode.className = "px-5 py-2 rounded-full font-semibold text-sm transition-all duration-300 flex items-center gap-2 bg-gold text-lounge-darkest shadow-md";
-        btnBartenderMode.className = "px-5 py-2 rounded-full font-semibold text-sm transition-all duration-300 flex items-center gap-2 text-lounge-muted hover:text-lounge-text";
+        btnGuestMode.className = "px-4 py-2 rounded-full font-semibold text-xs md:text-sm transition-all duration-300 flex items-center gap-2 bg-gold text-lounge-darkest shadow-md";
+        btnBartenderMode.className = "px-4 py-2 rounded-full font-semibold text-xs md:text-sm transition-all duration-300 flex items-center gap-2 text-lounge-muted hover:text-lounge-text";
         
         // Switch Views
         guestView.classList.remove('hidden');
@@ -102,8 +105,8 @@ function setupRoleSwitcher() {
         activeRole = 'bartender';
         
         // Update Buttons Classes
-        btnBartenderMode.className = "px-5 py-2 rounded-full font-semibold text-sm transition-all duration-300 flex items-center gap-2 bg-gold text-lounge-darkest shadow-md";
-        btnGuestMode.className = "px-5 py-2 rounded-full font-semibold text-sm transition-all duration-300 flex items-center gap-2 text-lounge-muted hover:text-lounge-text";
+        btnBartenderMode.className = "px-4 py-2 rounded-full font-semibold text-xs md:text-sm transition-all duration-300 flex items-center gap-2 bg-gold text-lounge-darkest shadow-md";
+        btnGuestMode.className = "px-4 py-2 rounded-full font-semibold text-xs md:text-sm transition-all duration-300 flex items-center gap-2 text-lounge-muted hover:text-lounge-text";
         
         // Switch Views
         bartenderView.classList.remove('hidden');
@@ -877,4 +880,122 @@ function downloadMenu() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+}
+
+// --- NEW FEATURES: Mobile Menu, Export Logs, Localization ---
+
+function setupMobileMenu() {
+    const btnToggleGuestSidebar = document.getElementById('btn-toggle-guest-sidebar');
+    const guestSidebar = document.getElementById('guest-sidebar');
+    if (btnToggleGuestSidebar && guestSidebar) {
+        btnToggleGuestSidebar.addEventListener('click', () => {
+            guestSidebar.classList.toggle('hidden');
+        });
+    }
+
+    const btnToggleBartenderSidebar = document.getElementById('btn-toggle-bartender-sidebar');
+    const bartenderSidebar = document.getElementById('bartender-sidebar');
+    if (btnToggleBartenderSidebar && bartenderSidebar) {
+        btnToggleBartenderSidebar.addEventListener('click', () => {
+            bartenderSidebar.classList.toggle('hidden');
+        });
+    }
+}
+
+function setupExportLogs() {
+    const exportBtns = document.querySelectorAll('.btn-export-logs');
+    exportBtns.forEach(btn => {
+        btn.addEventListener('click', async () => {
+            try {
+                const response = await fetch('/api/export_sessions');
+                if (response.ok) {
+                    const data = await response.json();
+                    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = 'chat_sessions_backup.json';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                } else {
+                    alert("Failed to export logs.");
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Error exporting logs.");
+            }
+        });
+    });
+}
+
+// Language Dictionary
+const i18n = {
+    "en": {
+        "guestMode": "Guest Concierge",
+        "bartenderMode": "Master Bartender",
+        "newChat": "New Chat",
+        "guestSubtitle": "Always active | Guest Specialist",
+        "bartenderSubtitle": "Always active | Technical Expert",
+        "exportLogs": "Export Logs",
+        "deleteChat": "Delete",
+        "suggestions": "Suggestions:",
+        "sugGuest1": "Suggest a sour cocktail",
+        "sugGuest2": "Best speakeasies in Hanoi",
+        "sugGuest3": "Fruity drinks in District 1 HCMC",
+        "sendBtn": "Send",
+        "mixologyTools": "Mixology Tools:",
+        "sugBartender1": "Bourbon substitute in Mint Julep",
+        "sugBartender2": "How to shake vs stir cocktails",
+        "sugBartender3": "Calculate ABV for Negroni"
+    },
+    "vi": {
+        "guestMode": "Phục vụ Khách",
+        "bartenderMode": "Pha chế Trưởng",
+        "newChat": "Chat Mới",
+        "guestSubtitle": "Luôn trực tuyến | Chăm sóc Khách hàng",
+        "bartenderSubtitle": "Luôn trực tuyến | Chuyên gia Kỹ thuật",
+        "exportLogs": "Tải Logs",
+        "deleteChat": "Xóa Chat",
+        "suggestions": "Gợi ý:",
+        "sugGuest1": "Gợi ý một ly cocktail chua",
+        "sugGuest2": "Quán speakeasy ngon nhất Hà Nội",
+        "sugGuest3": "Đồ uống trái cây ở Quận 1, TP.HCM",
+        "sendBtn": "Gửi",
+        "mixologyTools": "Công cụ Pha chế:",
+        "sugBartender1": "Dùng gì thay Bourbon trong Mint Julep",
+        "sugBartender2": "Phân biệt lắc (shake) và khuấy (stir)",
+        "sugBartender3": "Tính độ cồn ABV cho Negroni"
+    }
+};
+
+let currentLang = 'en';
+
+function setupLanguageToggle() {
+    const btnToggleLang = document.getElementById('btn-toggle-lang');
+    if (!btnToggleLang) return;
+    
+    btnToggleLang.addEventListener('click', () => {
+        currentLang = currentLang === 'en' ? 'vi' : 'en';
+        updateUIForLanguage();
+    });
+}
+
+function updateUIForLanguage() {
+    const elements = document.querySelectorAll('[data-i18n]');
+    elements.forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (i18n[currentLang] && i18n[currentLang][key]) {
+            el.innerText = i18n[currentLang][key];
+        }
+    });
+    
+    // Also update placeholders
+    const guestInput = document.getElementById('guest-user-input');
+    if (guestInput) {
+        guestInput.placeholder = currentLang === 'en' ? "Type your request here..." : "Nhập yêu cầu của bạn tại đây...";
+    }
+    const bartenderInput = document.getElementById('bartender-user-input');
+    if (bartenderInput) {
+        bartenderInput.placeholder = currentLang === 'en' ? "Consult the master bartender..." : "Tham vấn chuyên gia pha chế...";
+    }
 }

@@ -51,14 +51,19 @@
             </div>
         </div>
         
-        <!-- Persona Switcher -->
-        <div class="flex items-center bg-lounge-dark p-1 rounded-full border border-lounge-border">
-            <button id="btn-guest-mode" class="px-5 py-2 rounded-full font-semibold text-sm transition-all duration-300 flex items-center gap-2 bg-gold text-lounge-darkest shadow-md">
-                <i class="fa-solid fa-users"></i> Guest Concierge
+        <!-- Persona Switcher & Controls -->
+        <div class="flex items-center gap-3 flex-wrap justify-end">
+            <button id="btn-toggle-lang" class="px-3 py-1.5 rounded-full text-xs font-bold border border-lounge-border bg-lounge-dark text-gold hover:bg-lounge-card transition-colors shadow-md">
+                🌐 EN | VI
             </button>
-            <button id="btn-bartender-mode" class="px-5 py-2 rounded-full font-semibold text-sm transition-all duration-300 flex items-center gap-2 text-lounge-muted hover:text-lounge-text">
-                <i class="fa-solid fa-user-tie"></i> Master Bartender
-            </button>
+            <div class="flex items-center bg-lounge-dark p-1 rounded-full border border-lounge-border">
+                <button id="btn-guest-mode" class="px-4 py-2 rounded-full font-semibold text-xs md:text-sm transition-all duration-300 flex items-center gap-2 bg-gold text-lounge-darkest shadow-md">
+                    <i class="fa-solid fa-users"></i> <span data-i18n="guestMode">Guest Concierge</span>
+                </button>
+                <button id="btn-bartender-mode" class="px-4 py-2 rounded-full font-semibold text-xs md:text-sm transition-all duration-300 flex items-center gap-2 text-lounge-muted hover:text-lounge-text">
+                    <i class="fa-solid fa-user-tie"></i> <span data-i18n="bartenderMode">Master Bartender</span>
+                </button>
+            </div>
         </div>
     </header>
 
@@ -72,10 +77,10 @@
             <section class="col-span-12 lg:col-span-7 flex bg-lounge-card border border-lounge-border rounded-2xl overflow-hidden shadow-2xl h-[calc(100vh-180px)] min-h-[500px]">
                 
                 <!-- Chat Sessions Sidebar -->
-                <div class="w-44 bg-lounge-dark border-r border-lounge-border flex flex-col flex-shrink-0">
-                    <div class="p-3 border-b border-lounge-border">
-                        <button class="btn-new-chat w-full bg-gold hover:bg-gold-light text-lounge-darkest font-bold py-2 px-3 rounded-lg text-xs flex items-center justify-center gap-2 transition-all duration-200" data-role="guest">
-                            <i class="fa-solid fa-plus text-[10px]"></i> New Chat
+                <div id="guest-sidebar" class="w-full md:w-44 bg-lounge-dark border-b md:border-b-0 md:border-r border-lounge-border flex flex-col flex-shrink-0 h-32 md:h-auto hidden md:flex">
+                    <div class="p-3 border-b border-lounge-border flex gap-2">
+                        <button class="btn-new-chat flex-grow bg-gold hover:bg-gold-light text-lounge-darkest font-bold py-2 px-3 rounded-lg text-xs flex items-center justify-center gap-2 transition-all duration-200" data-role="guest">
+                            <i class="fa-solid fa-plus text-[10px]"></i> <span data-i18n="newChat">New Chat</span>
                         </button>
                     </div>
                     <div id="guest-sessions-list" class="sessions-list flex-grow overflow-y-auto p-2 space-y-1">
@@ -85,19 +90,27 @@
 
                 <!-- Chat Area -->
                 <div class="flex-grow flex flex-col min-w-0">
-                    <div class="p-4 border-b border-lounge-border bg-lounge-dark flex justify-between items-center">
+                    <div class="p-3 md:p-4 border-b border-lounge-border bg-lounge-dark flex justify-between items-center flex-wrap gap-2">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full bg-gold bg-opacity-10 border border-gold flex items-center justify-center text-gold">
+                            <button id="btn-toggle-guest-sidebar" class="md:hidden text-gold p-2 bg-lounge-card rounded-lg border border-lounge-border">
+                                <i class="fa-solid fa-bars"></i>
+                            </button>
+                            <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gold bg-opacity-10 border border-gold flex items-center justify-center text-gold">
                                 <i class="fa-solid fa-comments"></i>
                             </div>
                             <div>
-                                <h2 class="guest-chat-title-display font-cinzel text-gold font-bold truncate max-w-[150px] md:max-w-[200px]">Lounge Host</h2>
-                                <p class="text-xs text-lounge-muted">Always active | Guest Specialist Agent</p>
+                                <h2 class="guest-chat-title-display font-cinzel text-gold font-bold text-sm md:text-base truncate max-w-[120px] md:max-w-[200px]">Lounge Host</h2>
+                                <p class="text-[10px] md:text-xs text-lounge-muted" data-i18n="guestSubtitle">Always active | Guest Specialist</p>
                             </div>
                         </div>
-                        <button class="btn-delete-current-chat text-[10px] text-lounge-muted hover:text-red-400 transition-colors flex items-center gap-1" data-role="guest">
-                            <i class="fa-solid fa-trash-can text-[9px]"></i> Delete Chat
-                        </button>
+                        <div class="flex items-center gap-3">
+                            <button class="btn-export-logs text-[10px] text-green-400 hover:text-green-300 transition-colors flex items-center gap-1">
+                                <i class="fa-solid fa-download text-[9px]"></i> <span data-i18n="exportLogs">Export Logs</span>
+                            </button>
+                            <button class="btn-delete-current-chat text-[10px] text-lounge-muted hover:text-red-400 transition-colors flex items-center gap-1" data-role="guest">
+                                <i class="fa-solid fa-trash-can text-[9px]"></i> <span data-i18n="deleteChat">Delete</span>
+                            </button>
+                        </div>
                     </div>
 
                 <!-- Chat Messages Screen -->
@@ -114,24 +127,24 @@
                 </div>
 
                 <!-- Suggested Query Chips -->
-                <div class="px-4 py-2 bg-lounge-dark bg-opacity-40 border-t border-lounge-border flex flex-wrap gap-2 items-center">
-                    <span class="text-[10px] text-lounge-muted font-semibold uppercase">Suggestions:</span>
-                    <button class="chip-query text-xs bg-lounge-card hover:bg-lounge-border text-lounge-text border border-lounge-border py-1 px-3 rounded-full transition-all duration-200">
+                <div class="px-2 md:px-4 py-2 bg-lounge-dark bg-opacity-40 border-t border-lounge-border flex flex-wrap gap-2 items-center">
+                    <span class="text-[10px] text-lounge-muted font-semibold uppercase" data-i18n="suggestions">Suggestions:</span>
+                    <button class="chip-query text-[10px] md:text-xs bg-lounge-card hover:bg-lounge-border text-lounge-text border border-lounge-border py-1 px-3 rounded-full transition-all duration-200" data-i18n="sugGuest1">
                         Suggest a sour cocktail
                     </button>
-                    <button class="chip-query text-xs bg-lounge-card hover:bg-lounge-border text-lounge-text border border-lounge-border py-1 px-3 rounded-full transition-all duration-200">
+                    <button class="chip-query text-[10px] md:text-xs bg-lounge-card hover:bg-lounge-border text-lounge-text border border-lounge-border py-1 px-3 rounded-full transition-all duration-200" data-i18n="sugGuest2">
                         Best speakeasies in Hanoi
                     </button>
-                    <button class="chip-query text-xs bg-lounge-card hover:bg-lounge-border text-lounge-text border border-lounge-border py-1 px-3 rounded-full transition-all duration-200">
+                    <button class="chip-query text-[10px] md:text-xs bg-lounge-card hover:bg-lounge-border text-lounge-text border border-lounge-border py-1 px-3 rounded-full transition-all duration-200" data-i18n="sugGuest3">
                         Fruity drinks in District 1 HCMC
                     </button>
                 </div>
 
                 <!-- Chat Input area -->
-                <div class="p-4 bg-lounge-dark border-t border-lounge-border flex gap-3">
-                    <input type="text" id="guest-user-input" placeholder="Type your request here..." class="flex-grow bg-lounge-card text-lounge-text border border-lounge-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-gold transition-colors">
-                    <button id="btn-send-guest" class="bg-gold hover:bg-gold-light text-lounge-darkest px-6 rounded-xl font-bold transition-all duration-200 flex items-center gap-2">
-                        Send <i class="fa-solid fa-paper-plane text-xs"></i>
+                <div class="p-2 md:p-4 bg-lounge-dark border-t border-lounge-border flex gap-2 md:gap-3">
+                    <input type="text" id="guest-user-input" placeholder="Type your request here..." class="flex-grow bg-lounge-card text-lounge-text border border-lounge-border rounded-xl px-3 md:px-4 py-2 md:py-3 text-sm focus:outline-none focus:border-gold transition-colors">
+                    <button id="btn-send-guest" class="bg-gold hover:bg-gold-light text-lounge-darkest px-4 md:px-6 rounded-xl font-bold transition-all duration-200 flex items-center gap-2">
+                        <span class="hidden md:inline" data-i18n="sendBtn">Send</span> <i class="fa-solid fa-paper-plane text-xs"></i>
                     </button>
                 </div>
                 </div> <!-- END Chat Area Wrapper -->
@@ -202,10 +215,10 @@
             <section class="col-span-12 lg:col-span-6 flex bg-lounge-card border border-lounge-border rounded-2xl overflow-hidden shadow-2xl h-[calc(100vh-180px)] min-h-[500px]">
                 
                 <!-- Chat Sessions Sidebar -->
-                <div class="w-44 bg-lounge-dark border-r border-lounge-border flex flex-col flex-shrink-0">
+                <div id="bartender-sidebar" class="w-full md:w-44 bg-lounge-dark border-b md:border-b-0 md:border-r border-lounge-border flex flex-col flex-shrink-0 h-32 md:h-auto hidden md:flex">
                     <div class="p-3 border-b border-lounge-border">
                         <button class="btn-new-chat w-full bg-gold hover:bg-gold-light text-lounge-darkest font-bold py-2 px-3 rounded-lg text-xs flex items-center justify-center gap-2 transition-all duration-200" data-role="bartender">
-                            <i class="fa-solid fa-plus text-[10px]"></i> New Chat
+                            <i class="fa-solid fa-plus text-[10px]"></i> <span data-i18n="newChat">New Chat</span>
                         </button>
                     </div>
                     <div id="bartender-sessions-list" class="sessions-list flex-grow overflow-y-auto p-2 space-y-1">
@@ -215,19 +228,27 @@
 
                 <!-- Chat Area -->
                 <div class="flex-grow flex flex-col min-w-0">
-                    <div class="p-4 border-b border-lounge-border bg-lounge-dark flex justify-between items-center">
+                    <div class="p-3 md:p-4 border-b border-lounge-border bg-lounge-dark flex justify-between items-center flex-wrap gap-2">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full bg-gold bg-opacity-10 border border-gold flex items-center justify-center text-gold">
+                            <button id="btn-toggle-bartender-sidebar" class="md:hidden text-gold p-2 bg-lounge-card rounded-lg border border-lounge-border">
+                                <i class="fa-solid fa-bars"></i>
+                            </button>
+                            <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gold bg-opacity-10 border border-gold flex items-center justify-center text-gold">
                                 <i class="fa-solid fa-flask"></i>
                             </div>
                             <div>
-                                <h2 class="bartender-chat-title-display font-cinzel text-gold font-bold truncate max-w-[120px] md:max-w-[180px]">Master Mixologist</h2>
-                                <p class="text-xs text-lounge-muted">Always active | Technical Expert Agent</p>
+                                <h2 class="bartender-chat-title-display font-cinzel text-gold font-bold text-sm md:text-base truncate max-w-[120px] md:max-w-[180px]">Master Mixologist</h2>
+                                <p class="text-[10px] md:text-xs text-lounge-muted" data-i18n="bartenderSubtitle">Always active | Technical Expert</p>
                             </div>
                         </div>
-                        <button class="btn-delete-current-chat text-[10px] text-lounge-muted hover:text-red-400 transition-colors flex items-center gap-1" data-role="bartender">
-                            <i class="fa-solid fa-trash-can text-[9px]"></i> Delete Chat
-                        </button>
+                        <div class="flex items-center gap-3">
+                            <button class="btn-export-logs text-[10px] text-green-400 hover:text-green-300 transition-colors flex items-center gap-1">
+                                <i class="fa-solid fa-download text-[9px]"></i> <span data-i18n="exportLogs">Export Logs</span>
+                            </button>
+                            <button class="btn-delete-current-chat text-[10px] text-lounge-muted hover:text-red-400 transition-colors flex items-center gap-1" data-role="bartender">
+                                <i class="fa-solid fa-trash-can text-[9px]"></i> <span data-i18n="deleteChat">Delete</span>
+                            </button>
+                        </div>
                     </div>
 
                 <!-- Chat Message Area -->
@@ -243,24 +264,24 @@
                 </div>
 
                 <!-- Suggested Query Chips -->
-                <div class="px-4 py-2 bg-lounge-dark bg-opacity-40 border-t border-lounge-border flex flex-wrap gap-2 items-center">
-                    <span class="text-[10px] text-lounge-muted font-semibold uppercase">Mixology Tools:</span>
-                    <button class="chip-query text-xs bg-lounge-card hover:bg-lounge-border text-lounge-text border border-lounge-border py-1 px-3 rounded-full transition-all duration-200">
+                <div class="px-2 md:px-4 py-2 bg-lounge-dark bg-opacity-40 border-t border-lounge-border flex flex-wrap gap-2 items-center">
+                    <span class="text-[10px] text-lounge-muted font-semibold uppercase" data-i18n="mixologyTools">Mixology Tools:</span>
+                    <button class="chip-query text-[10px] md:text-xs bg-lounge-card hover:bg-lounge-border text-lounge-text border border-lounge-border py-1 px-3 rounded-full transition-all duration-200" data-i18n="sugBartender1">
                         Bourbon substitute in Mint Julep
                     </button>
-                    <button class="chip-query text-xs bg-lounge-card hover:bg-lounge-border text-lounge-text border border-lounge-border py-1 px-3 rounded-full transition-all duration-200">
+                    <button class="chip-query text-[10px] md:text-xs bg-lounge-card hover:bg-lounge-border text-lounge-text border border-lounge-border py-1 px-3 rounded-full transition-all duration-200" data-i18n="sugBartender2">
                         How to shake vs stir cocktails
                     </button>
-                    <button class="chip-query text-xs bg-lounge-card hover:bg-lounge-border text-lounge-text border border-lounge-border py-1 px-3 rounded-full transition-all duration-200">
+                    <button class="chip-query text-[10px] md:text-xs bg-lounge-card hover:bg-lounge-border text-lounge-text border border-lounge-border py-1 px-3 rounded-full transition-all duration-200" data-i18n="sugBartender3">
                         Calculate ABV for Negroni
                     </button>
                 </div>
 
                 <!-- Chat Input area -->
-                <div class="p-4 bg-lounge-dark border-t border-lounge-border flex gap-3">
-                    <input type="text" id="bartender-user-input" placeholder="Consult the master bartender..." class="flex-grow bg-lounge-card text-lounge-text border border-lounge-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-gold transition-colors">
-                    <button id="btn-send-bartender" class="bg-gold hover:bg-gold-light text-lounge-darkest px-6 rounded-xl font-bold transition-all duration-200 flex items-center gap-2">
-                        Send <i class="fa-solid fa-paper-plane text-xs"></i>
+                <div class="p-2 md:p-4 bg-lounge-dark border-t border-lounge-border flex gap-2 md:gap-3">
+                    <input type="text" id="bartender-user-input" placeholder="Consult the master bartender..." class="flex-grow bg-lounge-card text-lounge-text border border-lounge-border rounded-xl px-3 md:px-4 py-2 md:py-3 text-sm focus:outline-none focus:border-gold transition-colors">
+                    <button id="btn-send-bartender" class="bg-gold hover:bg-gold-light text-lounge-darkest px-4 md:px-6 rounded-xl font-bold transition-all duration-200 flex items-center gap-2">
+                        <span class="hidden md:inline" data-i18n="sendBtn">Send</span> <i class="fa-solid fa-paper-plane text-xs"></i>
                     </button>
                 </div>
                 </div> <!-- END Chat Area Wrapper -->

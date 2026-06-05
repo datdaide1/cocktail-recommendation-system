@@ -31,40 +31,44 @@ SESSIONS_FILE = Path(Config.COCKTAILS_PATH).parent / "chat_sessions.json"
 
 import uuid
 import datetime
+import threading
 
 # In-memory session cache for read/write error fallbacks (e.g. read-only filesystems)
 _in_memory_sessions = {}
+_session_lock = threading.Lock()
 
 def read_sessions():
     """Reads all chat sessions from local JSON storage with in-memory fallback"""
     global _in_memory_sessions
-    if not SESSIONS_FILE.exists():
+    with _session_lock:
+        if not SESSIONS_FILE.exists():
+            try:
+                SESSIONS_FILE.parent.mkdir(parents=True, exist_ok=True)
+                with open(SESSIONS_FILE, "w", encoding="utf-8") as f:
+                    json.dump({"sessions": {}}, f)
+            except Exception as e:
+                print(f"Error creating sessions file (falling back to memory): {e}")
+                return _in_memory_sessions
+            return {}
         try:
-            SESSIONS_FILE.parent.mkdir(parents=True, exist_ok=True)
-            with open(SESSIONS_FILE, "w", encoding="utf-8") as f:
-                json.dump({"sessions": {}}, f)
+            with open(SESSIONS_FILE, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                _in_memory_sessions = data.get("sessions", {})
+                return _in_memory_sessions
         except Exception as e:
-            print(f"Error creating sessions file (falling back to memory): {e}")
+            print(f"Error reading sessions file (falling back to memory): {e}")
             return _in_memory_sessions
-        return {}
-    try:
-        with open(SESSIONS_FILE, "r", encoding="utf-8") as f:
-            data = json.load(f)
-            _in_memory_sessions = data.get("sessions", {})
-            return _in_memory_sessions
-    except Exception as e:
-        print(f"Error reading sessions file (falling back to memory): {e}")
-        return _in_memory_sessions
 
 def write_sessions(sessions):
     """Writes all sessions back to local JSON storage with in-memory fallback"""
     global _in_memory_sessions
-    _in_memory_sessions = sessions
-    try:
-        with open(SESSIONS_FILE, "w", encoding="utf-8") as f:
-            json.dump({"sessions": sessions}, f, indent=2, ensure_ascii=False)
-    except Exception as e:
-        print(f"Error writing sessions file (sessions retained in memory): {e}")
+    with _session_lock:
+        _in_memory_sessions = sessions
+        try:
+            with open(SESSIONS_FILE, "w", encoding="utf-8") as f:
+                json.dump({"sessions": sessions}, f, indent=2, ensure_ascii=False)
+        except Exception as e:
+            print(f"Error writing sessions file (sessions retained in memory): {e}")
 
 @app.route('/')
 def index():
@@ -160,6 +164,12 @@ def delete_session(session_id):
         write_sessions(sessions)
         return jsonify({"success": True})
     return jsonify({"error": "Session not found"}), 404
+
+@app.route('/api/export_sessions', methods=['GET'])
+def export_sessions():
+    """Exports all sessions as a JSON file attachment"""
+    sessions = read_sessions()
+    return jsonify(sessions)
 
 @app.route('/api/chat', methods=['POST'])
 def chat():
