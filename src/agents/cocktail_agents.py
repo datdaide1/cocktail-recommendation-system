@@ -80,7 +80,9 @@ class CocktailAgentSystem:
         provider = Config.LLM_PROVIDER
         if not provider:
             # Auto-detect by checking configured keys
-            if Config.OPENROUTER_API_KEY:
+            if Config.CUSTOM_API_KEY:
+                provider = "custom"
+            elif Config.OPENROUTER_API_KEY:
                 provider = "openrouter"
             elif Config.OPENAI_API_KEY:
                 provider = "openai"
@@ -166,6 +168,16 @@ Category:"""
                         "Authorization": f"Bearer {api_key}",
                         "Content-Type": "application/json"
                     }
+                elif self.provider == "custom":
+                    url = Config.CUSTOM_API_BASE or "http://127.0.0.1:20128/v1"
+                    if not url.endswith("/chat/completions"):
+                        url = url.rstrip("/") + "/chat/completions"
+                    api_key = Config.CUSTOM_API_KEY
+                    model_name = Config.CUSTOM_MODEL or "beeknoee/gemini-3.5-flash"
+                    headers = {
+                        "Authorization": f"Bearer {api_key}",
+                        "Content-Type": "application/json"
+                    }
                 else:
                     url = "https://api.openai.com/v1/chat/completions"
                     api_key = Config.OPENAI_API_KEY
@@ -204,9 +216,8 @@ Category:"""
         if self.provider == "gemini":
             return self.run_chat_gemini(user_message, chat_history, role)
         else:
-            # OpenAI or OpenRouter
-            is_openrouter = (self.provider == "openrouter")
-            return self.run_chat_openai_compatible(user_message, chat_history, role, is_openrouter)
+            # OpenAI, OpenRouter, or Custom
+            return self.run_chat_openai_compatible(user_message, chat_history, role)
 
     def run_chat_gemini(self, user_message: str, chat_history: list, role: str) -> dict:
         """
@@ -310,9 +321,9 @@ Category:"""
                 ]
             }
 
-    def run_chat_openai_compatible(self, user_message: str, chat_history: list, role: str, is_openrouter: bool = False) -> dict:
+    def run_chat_openai_compatible(self, user_message: str, chat_history: list, role: str) -> dict:
         """
-        Executes a turn using OpenAI-compatible HTTP requests (OpenAI/OpenRouter) with dynamic tool subsets.
+        Executes a turn using OpenAI-compatible HTTP requests (OpenAI/OpenRouter/Custom) with dynamic tool subsets.
         """
         import requests
         
@@ -321,7 +332,7 @@ Category:"""
             print(f"[Tool Router] Classified query as: {category}")
             active_tool_names = TOOL_GROUPS.get(category, [])
             
-            if is_openrouter:
+            if self.provider == "openrouter":
                 url = "https://openrouter.ai/api/v1/chat/completions"
                 api_key = Config.OPENROUTER_API_KEY
                 model_name = Config.OPENROUTER_MODEL or "google/gemini-2.5-flash"
@@ -330,6 +341,16 @@ Category:"""
                     "Content-Type": "application/json",
                     "HTTP-Referer": "https://github.com/datdaide1/cocktail-recommendation-system",
                     "X-Title": "AI Cocktail Lounge"
+                }
+            elif self.provider == "custom":
+                url = Config.CUSTOM_API_BASE or "http://127.0.0.1:20128/v1"
+                if not url.endswith("/chat/completions"):
+                    url = url.rstrip("/") + "/chat/completions"
+                api_key = Config.CUSTOM_API_KEY
+                model_name = Config.CUSTOM_MODEL or "beeknoee/gemini-3.5-flash"
+                headers = {
+                    "Authorization": f"Bearer {api_key}",
+                    "Content-Type": "application/json"
                 }
             else:
                 url = "https://api.openai.com/v1/chat/completions"

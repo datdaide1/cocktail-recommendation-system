@@ -28,5 +28,10 @@ class Config:
     OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "")
     OPENROUTER_MODEL = os.getenv("OPENROUTER_MODEL", "google/gemini-2.5-flash")
     
+    # Custom API configurations (e.g. beeknoee/9router)
+    CUSTOM_API_KEY = os.getenv("CUSTOM_API_KEY", "")
+    CUSTOM_API_BASE = os.getenv("CUSTOM_API_BASE", "")
+    CUSTOM_MODEL = os.getenv("CUSTOM_MODEL", "beeknoee/gemini-3.5-flash")
+    
     # Embedding config
     EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "all-MiniLM-L6-v2")
