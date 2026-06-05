@@ -17,12 +17,24 @@ def run_test_scenario(system, name, query, role):
     print(f"==================================================")
     try:
         res = system.run_chat(query, [], role)
-        print(f"AI Response:\n{res['message']}\n")
+        msg = res['message']
+        # Safely handle Windows console encoding issues for Vietnamese characters
+        encoding = sys.stdout.encoding or 'utf-8'
+        safe_msg = msg.encode(encoding, errors='replace').decode(encoding)
+        print(f"AI Response:\n{safe_msg}\n")
         # Print actual history size
         print(f"History elements returned: {len(res['chat_history'])}")
+        import time
+        print("Pausing 5 seconds to prevent rate limits...")
+        time.sleep(5)
         return res
     except Exception as e:
-        print(f"Test failed with error: {e}")
+        # Avoid charmap errors in the exception print as well
+        encoding = sys.stdout.encoding or 'utf-8'
+        safe_err = str(e).encode(encoding, errors='replace').decode(encoding)
+        print(f"Test failed with error: {safe_err}")
+        import time
+        time.sleep(5)
         return None
 
 def test_advanced_scenarios():

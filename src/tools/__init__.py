@@ -7,10 +7,14 @@ from src.tools.mixology import substitute_ingredient, generate_custom_recipe, re
 TOOL_DECLARATIONS = [
     {
         "name": "db_search_cocktails",
-        "description": "Searches for cocktails in the database by ingredients, category, flavor profile, and alcohol level.",
+        "description": "Searches for cocktails in the database using hybrid search combining exact filters and free-text semantic vibe/mood queries.",
         "parameters": {
             "type": "OBJECT",
             "properties": {
+                "query": {
+                    "type": "STRING",
+                    "description": "Free-text vibe, mood, feeling, context, or style description (e.g., 'sweet romantic summer sunset drink', 'strong warm winter night cap')"
+                },
                 "ingredients_query": {
                     "type": "STRING",
                     "description": "Comma-separated ingredients list, e.g. 'gin, lemon, sugar'"
@@ -141,6 +145,7 @@ def execute_tool(name: str, args: dict) -> str:
     """Invokes the appropriate Python tool based on name"""
     if name == "db_search_cocktails":
         return db_search_cocktails(
+            query=args.get("query", ""),
             ingredients_query=args.get("ingredients_query", ""),
             category=args.get("category", ""),
             flavor=args.get("flavor", ""),

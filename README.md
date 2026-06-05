@@ -14,7 +14,8 @@ An advanced, smart Cocktail Recommendation & Bar Discovery system built with a *
 3. **Data Enrichment Pipeline**:
    - Uses Gemini API to expand a standard cocktail dataset with rich metadata (flavor profiles, history/meanings, proper glassware, and ABV categories).
 4. **Premium Dark-Theme UI**:
-   - A high-end Streamlit web interface styled like a luxury lounge with two distinct modes (Guest & Bartender).
+   - A high-end Single Page Application (SPA) web interface built with a Flask backend and modern, responsive vanilla HTML/JS/CSS frontend, styled like a luxury cocktail lounge.
+   - Dual modes: Guest Concierge (for discovery/bar recommendations) and Master Bartender (for mixology, ABV calculations, and custom recipes).
    - **Menu Builder**: Compile a list of drinks and export a formatted cocktail menu.
 
 ---
@@ -34,14 +35,19 @@ cocktail-recommendation-system/
 │   │   ├── __init__.py
 │   │   └── cocktail_agents.py     # Multi-Agent logic (Orchestrator, Guest, Bartender)
 │   ├── tools/
-│   │   ├── __init__.py
-│   │   └── cocktail_tools.py      # Python tools for Gemini (DB Search, ABV, Substitutes)
+│   │   ├── __init__.py            # Tool declarations and execute mapping
+│   │   ├── base.py                # Shared dataset loaders
+│   │   ├── calculators.py         # ABV and ingredient cost calculators
+│   │   ├── db_search.py           # Cocktail and bar database search queries
+│   │   ├── mixology.py            # Ingredient substitution and custom signature recipe helpers
+│   │   └── semantic_search.py     # SentenceTransformers local vector search
 │   ├── ui/
-│   │   └── app.py                 # Streamlit UI (Guest / Bartender tabs)
+│   │   ├── static/                # Single Page Application (HTML/JS/CSS) frontend assets
+│   │   └── app.py                 # Flask server (serves static SPA and runs REST API endpoints)
 │   └── utils/
 │       ├── __init__.py
-│       ├── config.py              # Environment configuration & path loader
-│       └── menu_exporter.py       # Exporter utility for menu generation
+│       ├── config.py              # Environment configurations & paths loader
+│       └── menu_exporter.py       # Premium menu HTML generator
 ├── requirements.txt
 ├── .env.example
 └── README.md
@@ -80,7 +86,23 @@ python scripts/data_enricher.py
 ```
 
 ### 4. Launch the Web Application
+
+To run the application locally in development mode:
 ```bash
-streamlit run src/ui/app.py
+python src/ui/app.py
 ```
-The app will automatically launch in your browser at `http://localhost:8501`.
+The app will start at `http://localhost:5000`.
+
+### 5. Production Deployment
+
+To run the application in a production-grade WSGI server:
+
+**For Linux / Docker Containers (Render, Railway, VPS):**
+```bash
+gunicorn --bind 0.0.0.0:5000 src.ui.app:app
+```
+
+**For Windows Servers:**
+```bash
+waitress-serve --listen=0.0.0.0:5000 src.ui.app:app
+```

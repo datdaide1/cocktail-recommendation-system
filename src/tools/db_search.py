@@ -1,11 +1,12 @@
 import json
 from src.tools.base import get_cocktails_df, get_bars_df
 
-def db_search_cocktails(ingredients_query: str = "", category: str = "", flavor: str = "", abv: str = "") -> str:
+def db_search_cocktails(query: str = "", ingredients_query: str = "", category: str = "", flavor: str = "", abv: str = "") -> str:
     """
-    Search for cocktails in the database based on ingredients, category, flavor profile, or alcohol level.
+    Search for cocktails in the database using hybrid search (combining strict filters and vector semantic search).
     
     Args:
+        query: Free-text search describing vibe, mood, feeling, or style (runs vector embedding match)
         ingredients_query: Comma-separated list of ingredients (e.g., 'gin, lemon')
         category: Cocktail category (e.g., 'Cocktail', 'Shot', 'Ordinary Drink')
         flavor: Target flavor profile (options: 'Chua', 'Ngọt', 'Đắng', 'Thảo mộc', 'Ấm nồng')
@@ -54,6 +55,19 @@ def db_search_cocktails(ingredients_query: str = "", category: str = "", flavor:
         results = results[results['match_score'] > 0]
         results = results.sort_values(by='match_score', ascending=False)
         
+    # 5. Semantic Vibe Ranking
+    if query:
+        from src.tools.semantic_search import semantic_search_cocktails
+        semantic_hits = semantic_search_cocktails(query, top_n=len(df))
+        
+        score_map = {hit["index"]: hit["score"] for hit in semantic_hits}
+        results['similarity_score'] = results.index.map(score_map).fillna(0.0)
+        
+        if 'match_score' in results.columns:
+            results = results.sort_values(by=['match_score', 'similarity_score'], ascending=[False, False])
+        else:
+            results = results.sort_values(by='similarity_score', ascending=False)
+            
     # Get top 5 results
     top_results = results.head(5)
     

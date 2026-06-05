@@ -32,32 +32,39 @@ SESSIONS_FILE = Path(Config.COCKTAILS_PATH).parent / "chat_sessions.json"
 import uuid
 import datetime
 
+# In-memory session cache for read/write error fallbacks (e.g. read-only filesystems)
+_in_memory_sessions = {}
+
 def read_sessions():
-    """Reads all chat sessions from local JSON storage"""
+    """Reads all chat sessions from local JSON storage with in-memory fallback"""
+    global _in_memory_sessions
     if not SESSIONS_FILE.exists():
         try:
             SESSIONS_FILE.parent.mkdir(parents=True, exist_ok=True)
             with open(SESSIONS_FILE, "w", encoding="utf-8") as f:
                 json.dump({"sessions": {}}, f)
         except Exception as e:
-            print(f"Error creating sessions file: {e}")
-            return {}
+            print(f"Error creating sessions file (falling back to memory): {e}")
+            return _in_memory_sessions
         return {}
     try:
         with open(SESSIONS_FILE, "r", encoding="utf-8") as f:
             data = json.load(f)
-            return data.get("sessions", {})
+            _in_memory_sessions = data.get("sessions", {})
+            return _in_memory_sessions
     except Exception as e:
-        print(f"Error reading sessions file: {e}")
-        return {}
+        print(f"Error reading sessions file (falling back to memory): {e}")
+        return _in_memory_sessions
 
 def write_sessions(sessions):
-    """Writes all sessions back to local JSON storage"""
+    """Writes all sessions back to local JSON storage with in-memory fallback"""
+    global _in_memory_sessions
+    _in_memory_sessions = sessions
     try:
         with open(SESSIONS_FILE, "w", encoding="utf-8") as f:
             json.dump({"sessions": sessions}, f, indent=2, ensure_ascii=False)
     except Exception as e:
-        print(f"Error writing sessions file: {e}")
+        print(f"Error writing sessions file (sessions retained in memory): {e}")
 
 @app.route('/')
 def index():
@@ -328,6 +335,6 @@ def export_menu():
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 5000))
-    host = os.getenv("HOST", "127.0.0.1")
+    host = os.getenv("HOST", "0.0.0.0")
     print(f"Starting Premium AI Lounge Web App at http://{host}:{port} ...")
     app.run(host=host, port=port, debug=True)
