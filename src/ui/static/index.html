@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Lounge - Premium Cocktail & Bar Discovery</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        gold: {
+                            light: '#e5c158',
+                            DEFAULT: '#c5a059',
+                            dark: '#aa7c11',
+                        },
+                        lounge: {
+                            darkest: '#080b11',
+                            dark: '#0c0f17',
+                            card: '#121622',
+                            border: '#1c2335',
+                            text: '#f1f3f8',
+                            muted: '#8b9bb4'
+                        }
+                    },
+                    fontFamily: {
+                        cinzel: ['Cinzel', 'serif'],
+                        montserrat: ['Montserrat', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts & FontAwesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom Style Sheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-lounge-darkest text-lounge-text font-montserrat min-h-screen flex flex-col">
+
+    <!-- Header Navigation -->
+    <header class="bg-lounge-card border-b border-lounge-border px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4 sticky top-0 z-50 shadow-lg backdrop-blur-md bg-opacity-90">
+        <div class="flex items-center gap-3">
+            <span class="text-3xl text-gold"><i class="fa-solid fa-martini-glass-citrus"></i></span>
+            <div>
+                <h1 class="font-cinzel font-bold text-2xl tracking-widest text-gold">AI LOUNGE</h1>
+                <p class="text-[10px] text-lounge-muted uppercase tracking-widest">Multi-Agent Cocktail & Bar Assistant</p>
+            </div>
+        </div>
+        
+        <!-- Persona Switcher -->
+        <div class="flex items-center bg-lounge-dark p-1 rounded-full border border-lounge-border">
+            <button id="btn-guest-mode" class="px-5 py-2 rounded-full font-semibold text-sm transition-all duration-300 flex items-center gap-2 bg-gold text-lounge-darkest shadow-md">
+                <i class="fa-solid fa-users"></i> Guest Concierge
+            </button>
+            <button id="btn-bartender-mode" class="px-5 py-2 rounded-full font-semibold text-sm transition-all duration-300 flex items-center gap-2 text-lounge-muted hover:text-lounge-text">
+                <i class="fa-solid fa-user-tie"></i> Master Bartender
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Workspace Container -->
+    <main class="flex-grow p-4 md:p-6 max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- ==================== GUEST CONCIERGE VIEW ==================== -->
+        <div id="guest-view" class="col-span-12 grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- Left Side: Chat Widget -->
+            <section class="col-span-12 lg:col-span-7 flex flex-col bg-lounge-card border border-lounge-border rounded-2xl overflow-hidden shadow-2xl h-[calc(100vh-180px)] min-h-[500px]">
+                <div class="p-4 border-b border-lounge-border bg-lounge-dark flex justify-between items-center">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-gold bg-opacity-10 border border-gold flex items-center justify-center text-gold">
+                            <i class="fa-solid fa-comments"></i>
+                        </div>
+                        <div>
+                            <h2 class="font-cinzel text-gold font-bold">Lounge Host</h2>
+                            <p class="text-xs text-lounge-muted">Always active | Guest Specialist Agent</p>
+                        </div>
+                    </div>
+                    <button class="btn-clear-chat text-xs text-lounge-muted hover:text-red-400 transition-colors flex items-center gap-1">
+                        <i class="fa-solid fa-trash-can"></i> Clear Chat
+                    </button>
+                </div>
+
+                <!-- Chat Messages Screen -->
+                <div id="guest-chat-box" class="flex-grow p-4 overflow-y-auto space-y-4 scroll-smooth">
+                    <!-- Initial Welcome Message -->
+                    <div class="flex gap-3 max-w-[85%]">
+                        <div class="w-8 h-8 rounded-full bg-gold bg-opacity-20 flex items-center justify-center text-gold flex-shrink-0">
+                            <i class="fa-solid fa-bell"></i>
+                        </div>
+                        <div class="bg-lounge-dark p-3 rounded-2xl rounded-tl-none border border-lounge-border text-sm leading-relaxed">
+                            Good evening. Welcome to the **AI Lounge**. I am your Guest Concierge. Tell me, what kind of flavor profile are you craving tonight, or are you looking for an exceptional bar venue in Hanoi or Ho Chi Minh City?
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Suggested Query Chips -->
+                <div class="px-4 py-2 bg-lounge-dark bg-opacity-40 border-t border-lounge-border flex flex-wrap gap-2 items-center">
+                    <span class="text-[10px] text-lounge-muted font-semibold uppercase">Suggestions:</span>
+                    <button class="chip-query text-xs bg-lounge-card hover:bg-lounge-border text-lounge-text border border-lounge-border py-1 px-3 rounded-full transition-all duration-200">
+                        Suggest a sour cocktail
+                    </button>
+                    <button class="chip-query text-xs bg-lounge-card hover:bg-lounge-border text-lounge-text border border-lounge-border py-1 px-3 rounded-full transition-all duration-200">
+                        Best speakeasies in Hanoi
+                    </button>
+                    <button class="chip-query text-xs bg-lounge-card hover:bg-lounge-border text-lounge-text border border-lounge-border py-1 px-3 rounded-full transition-all duration-200">
+                        Fruity drinks in District 1 HCMC
+                    </button>
+                </div>
+
+                <!-- Chat Input area -->
+                <div class="p-4 bg-lounge-dark border-t border-lounge-border flex gap-3">
+                    <input type="text" id="guest-user-input" placeholder="Type your request here..." class="flex-grow bg-lounge-card text-lounge-text border border-lounge-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-gold transition-colors">
+                    <button id="btn-send-guest" class="bg-gold hover:bg-gold-light text-lounge-darkest px-6 rounded-xl font-bold transition-all duration-200 flex items-center gap-2">
+                        Send <i class="fa-solid fa-paper-plane text-xs"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Right Side: Bar Finder & Recommendations -->
+            <section class="col-span-12 lg:col-span-5 flex flex-col gap-6 h-[calc(100vh-180px)] overflow-y-auto pr-1">
+                
+                <!-- Bar Filter Card -->
+                <div class="bg-lounge-card border border-lounge-border rounded-2xl p-5 shadow-xl">
+                    <h2 class="font-cinzel font-bold text-gold text-lg mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-compass"></i> Discover Premium Venues
+                    </h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-lounge-muted mb-1">CITY</label>
+                            <select id="bar-city" class="w-full bg-lounge-dark border border-lounge-border text-lounge-text rounded-xl p-2.5 text-sm focus:outline-none focus:border-gold">
+                                <option value="Hanoi">Hanoi</option>
+                                <option value="Ho Chi Minh City">Ho Chi Minh City</option>
+                            </select>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-lounge-muted mb-1">VIBE STYLE</label>
+                                <select id="bar-style" class="w-full bg-lounge-dark border border-lounge-border text-lounge-text rounded-xl p-2.5 text-sm focus:outline-none focus:border-gold">
+                                    <option value="Any">Any Style</option>
+                                    <option value="Speakeasy">Speakeasy</option>
+                                    <option value="Rooftop">Rooftop</option>
+                                    <option value="Cozy Lounge">Cozy Lounge</option>
+                                    <option value="Jazz Bar">Jazz Bar</option>
+                                    <option value="Craft Bar">Craft Bar</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-lounge-muted mb-1">PRICE RANGE</label>
+                                <select id="bar-price" class="w-full bg-lounge-dark border border-lounge-border text-lounge-text rounded-xl p-2.5 text-sm focus:outline-none focus:border-gold">
+                                    <option value="Any">Any Price</option>
+                                    <option value="$">$ (Budgets)</option>
+                                    <option value="$$">$$ (Standard)</option>
+                                    <option value="$$$">$$$ (Premium)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-lounge-muted mb-1">DISTRICT</label>
+                            <input type="text" id="bar-district" placeholder="e.g. Hoan Kiem, District 1" class="w-full bg-lounge-dark border border-lounge-border text-lounge-text rounded-xl p-2.5 text-sm focus:outline-none focus:border-gold">
+                        </div>
+                        <button id="btn-search-bars" class="w-full bg-gold hover:bg-gold-light text-lounge-darkest font-bold py-3 rounded-xl transition-all duration-200 shadow-md">
+                            Search Directory
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Real-world Bar results panel -->
+                <div id="bars-results-container" class="space-y-4">
+                    <!-- Dynamic rendering place -->
+                    <div class="text-center py-8 text-lounge-muted text-sm border border-dashed border-lounge-border rounded-2xl">
+                        Filter options above to explore actual premium locations.
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- ==================== MASTER BARTENDER VIEW ==================== -->
+        <div id="bartender-view" class="col-span-12 grid grid-cols-1 lg:grid-cols-12 gap-6 hidden">
+            
+            <!-- Left Side: Technical Chat -->
+            <section class="col-span-12 lg:col-span-6 flex flex-col bg-lounge-card border border-lounge-border rounded-2xl overflow-hidden shadow-2xl h-[calc(100vh-180px)] min-h-[500px]">
+                <div class="p-4 border-b border-lounge-border bg-lounge-dark flex justify-between items-center">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-gold bg-opacity-10 border border-gold flex items-center justify-center text-gold">
+                            <i class="fa-solid fa-flask"></i>
+                        </div>
+                        <div>
+                            <h2 class="font-cinzel text-gold font-bold">Master Mixologist</h2>
+                            <p class="text-xs text-lounge-muted">Always active | Technical Expert Agent</p>
+                        </div>
+                    </div>
+                    <button class="btn-clear-chat text-xs text-lounge-muted hover:text-red-400 transition-colors flex items-center gap-1">
+                        <i class="fa-solid fa-trash-can"></i> Clear Chat
+                    </button>
+                </div>
+
+                <!-- Chat Message Area -->
+                <div id="bartender-chat-box" class="flex-grow p-4 overflow-y-auto space-y-4 scroll-smooth">
+                    <div class="flex gap-3 max-w-[85%]">
+                        <div class="w-8 h-8 rounded-full bg-gold bg-opacity-20 flex items-center justify-center text-gold flex-shrink-0">
+                            <i class="fa-solid fa-hat-cowboy-side"></i>
+                        </div>
+                        <div class="bg-lounge-dark p-3 rounded-2xl rounded-tl-none border border-lounge-border text-sm leading-relaxed">
+                            Hello. I am the **Master Bartender**. I can help you compile classic recipes, troubleshoot flavor profiles, recommend professional substitutes for missing ingredients, and calculate precise ABV rates.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Suggested Query Chips -->
+                <div class="px-4 py-2 bg-lounge-dark bg-opacity-40 border-t border-lounge-border flex flex-wrap gap-2 items-center">
+                    <span class="text-[10px] text-lounge-muted font-semibold uppercase">Mixology Tools:</span>
+                    <button class="chip-query text-xs bg-lounge-card hover:bg-lounge-border text-lounge-text border border-lounge-border py-1 px-3 rounded-full transition-all duration-200">
+                        Bourbon substitute in Mint Julep
+                    </button>
+                    <button class="chip-query text-xs bg-lounge-card hover:bg-lounge-border text-lounge-text border border-lounge-border py-1 px-3 rounded-full transition-all duration-200">
+                        How to shake vs stir cocktails
+                    </button>
+                    <button class="chip-query text-xs bg-lounge-card hover:bg-lounge-border text-lounge-text border border-lounge-border py-1 px-3 rounded-full transition-all duration-200">
+                        Calculate ABV for Negroni
+                    </button>
+                </div>
+
+                <!-- Chat Input area -->
+                <div class="p-4 bg-lounge-dark border-t border-lounge-border flex gap-3">
+                    <input type="text" id="bartender-user-input" placeholder="Consult the master bartender..." class="flex-grow bg-lounge-card text-lounge-text border border-lounge-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-gold transition-colors">
+                    <button id="btn-send-bartender" class="bg-gold hover:bg-gold-light text-lounge-darkest px-6 rounded-xl font-bold transition-all duration-200 flex items-center gap-2">
+                        Send <i class="fa-solid fa-paper-plane text-xs"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Right Side: Bartender Tools Hub -->
+            <section class="col-span-12 lg:col-span-6 flex flex-col gap-6 h-[calc(100vh-180px)] overflow-y-auto pr-1">
+                
+                <!-- Sub Tab Navigation for Tools -->
+                <div class="flex border-b border-lounge-border">
+                    <button id="tab-recipe-search" class="flex-1 py-3 text-center border-b-2 border-gold font-bold text-sm text-gold">
+                        <i class="fa-solid fa-magnifying-glass"></i> Recipes
+                    </button>
+                    <button id="tab-abv-calc" class="flex-1 py-3 text-center border-b-2 border-transparent font-semibold text-sm text-lounge-muted hover:text-lounge-text">
+                        <i class="fa-solid fa-percent"></i> ABV Calc
+                    </button>
+                    <button id="tab-menu-builder" class="flex-1 py-3 text-center border-b-2 border-transparent font-semibold text-sm text-lounge-muted hover:text-lounge-text">
+                        <i class="fa-solid fa-list-check"></i> Menu Builder
+                    </button>
+                </div>
+
+                <!-- Tool Content 1: Recipe Finder -->
+                <div id="tool-recipe-search-content" class="space-y-4">
+                    <div class="bg-lounge-card border border-lounge-border rounded-2xl p-4 flex gap-2">
+                        <input type="text" id="recipe-search-input" placeholder="Search by name or ingredient (e.g. Margarita, Rum)..." class="flex-grow bg-lounge-dark text-lounge-text border border-lounge-border rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-gold">
+                        <button id="btn-search-recipes" class="bg-gold hover:bg-gold-light text-lounge-darkest px-4 rounded-xl font-bold text-sm">
+                            Search
+                        </button>
+                    </div>
+                    <div id="recipes-results-container" class="space-y-4">
+                        <div class="text-center py-8 text-lounge-muted text-sm border border-dashed border-lounge-border rounded-2xl">
+                            Enter a search query to browse verified cocktail database.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tool Content 2: ABV Calculator -->
+                <div id="tool-abv-calc-content" class="space-y-4 hidden">
+                    <div class="bg-lounge-card border border-lounge-border rounded-2xl p-5 shadow-xl">
+                        <h3 class="font-cinzel text-gold font-bold mb-4">Chemical ABV Estimation</h3>
+                        <p class="text-xs text-lounge-muted mb-4">Add your recipe ingredients, volumes, and estimated ABV percentage to compute the final strength.</p>
+                        
+                        <div id="abv-ingredients-list" class="space-y-3 mb-4">
+                            <!-- Dynamic rows inject here -->
+                        </div>
+                        
+                        <div class="flex gap-2">
+                            <button id="btn-abv-add-row" class="flex-1 bg-lounge-border hover:bg-lounge-text hover:text-lounge-darkest text-lounge-text border border-lounge-border font-bold py-2 rounded-xl text-sm transition-all duration-200">
+                                <i class="fa-solid fa-plus text-xs"></i> Add Ingredient
+                            </button>
+                            <button id="btn-abv-calculate" class="flex-1 bg-gold hover:bg-gold-light text-lounge-darkest font-bold py-2 rounded-xl text-sm transition-all duration-200 shadow-md">
+                                <i class="fa-solid fa-square-root-variable text-xs"></i> Calculate ABV
+                            </button>
+                        </div>
+                        
+                        <!-- Calculation Result Box -->
+                        <div id="abv-result-box" class="mt-5 hidden"></div>
+                    </div>
+                </div>
+
+                <!-- Tool Content 3: Menu Builder -->
+                <div id="tool-menu-builder-content" class="space-y-4 hidden">
+                    <div class="bg-lounge-card border border-lounge-border rounded-2xl p-5 shadow-xl space-y-4">
+                        <h3 class="font-cinzel text-gold font-bold">Custom Menu Compiler</h3>
+                        <p class="text-xs text-lounge-muted">Pick items from the list below, name your menu, and download a highly styled HTML print file.</p>
+                        
+                        <div>
+                            <label class="block text-xs font-semibold text-lounge-muted mb-1">MENU TITLE</label>
+                            <input type="text" id="menu-title-input" value="THE ARTISAN LOUNGE" class="w-full bg-lounge-dark border border-lounge-border text-lounge-text rounded-xl p-2.5 text-sm focus:outline-none focus:border-gold">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-lounge-muted mb-1">SELECT DRINKS</label>
+                            <!-- Search list of drinks -->
+                            <div class="border border-lounge-border rounded-xl bg-lounge-dark p-3 max-h-48 overflow-y-auto space-y-2" id="menu-cocktails-checklist">
+                                <!-- Dynamically populated list of checkboxes -->
+                                <div class="text-xs text-lounge-muted text-center py-4">Loading drinks list...</div>
+                            </div>
+                        </div>
+
+                        <button id="btn-compile-menu" class="w-full bg-gold hover:bg-gold-light text-lounge-darkest font-bold py-3 rounded-xl transition-all duration-200">
+                            Compile & Preview
+                        </button>
+                    </div>
+
+                    <!-- Live Preview Iframe Container -->
+                    <div id="menu-preview-container" class="bg-lounge-card border border-lounge-border rounded-2xl p-5 hidden space-y-4">
+                        <div class="flex justify-between items-center">
+                            <h4 class="font-cinzel text-gold font-bold">Menu Preview</h4>
+                            <button id="btn-download-menu" class="bg-green-600 hover:bg-green-500 text-white text-xs px-4 py-2 rounded-lg font-bold flex items-center gap-1">
+                                <i class="fa-solid fa-download"></i> Download HTML
+                            </button>
+                        </div>
+                        <div class="border border-lounge-border rounded-xl overflow-hidden h-96 bg-white">
+                            <iframe id="menu-preview-iframe" class="w-full h-full border-none"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-lounge-card border-t border-lounge-border px-6 py-4 text-center text-xs text-lounge-muted">
+        &copy; 2026 AI Lounge Assistant. Powered by Gemini API and Hybrid RAG. Crafted with premium mixology metrics.
+    </footer>
+
+    <!-- Script Integrations -->
+    <script src="app.js"></script>
+</body>
+</html>
