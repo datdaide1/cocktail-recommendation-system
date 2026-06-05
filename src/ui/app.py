@@ -51,49 +51,49 @@ def main():
     
     # Sidebar
     st.sidebar.title("Configuration")
-    role = st.sidebar.radio("Chọn vai trò:", ["🍸 Guest (Khách hàng)", "🤵 Bartender (Chuyên gia)"])
+    role = st.sidebar.radio("Choose Role:", ["🍸 Guest (Customer)", "🤵 Bartender (Professional)"])
     
     # UI Layout based on Role
-    if role == "🍸 Guest (Khách hàng)":
-        st.subheader("Chào mừng đến với Chế độ Khách hàng (Guest Mode)")
-        st.markdown("Hãy trò chuyện với AI Concierge để tìm kiếm ly cocktail phù hợp với tâm trạng hoặc tìm các quán bar cực chất tại Hà Nội & TP.HCM.")
+    if role == "🍸 Guest (Customer)":
+        st.subheader("Welcome to Guest Mode")
+        st.markdown("Chat with the AI Concierge to find cocktails matching your mood, or discover top-rated bars in Hanoi & Ho Chi Minh City.")
         
-        tab1, tab2 = st.tabs(["💬 Chat với AI Concierge", "📍 Tìm kiếm Quán Bar"])
+        tab1, tab2 = st.tabs(["💬 Chat with AI Concierge", "📍 Discover Bars"])
         
         with tab1:
             st.markdown("#### Chat")
-            user_msg = st.text_input("Nhập yêu cầu của bạn (ví dụ: 'Tôi muốn tìm cocktail vị chua nhẹ cho tối nay'):")
-            if st.button("Gửi"):
-                st.info(f"AI Concierge Skeleton nhận tin nhắn: '{user_msg}'. Tính năng AI hoàn thiện sẽ sẵn sàng ở bước tiếp theo.")
+            user_msg = st.text_input("Enter your request (e.g. 'I want a sour gin cocktail for tonight'):")
+            if st.button("Send"):
+                st.info(f"AI Concierge Skeleton received message: '{user_msg}'. Agent implementation will be activated in the next step.")
                 
         with tab2:
-            st.markdown("#### Khám phá Quán Bar nổi tiếng")
-            city = st.selectbox("Thành phố:", ["Hanoi", "Ho Chi Minh City"])
-            district = st.text_input("Quận (ví dụ: Hoan Kiem, District 1):")
-            style = st.selectbox("Phong cách:", ["Bất kỳ", "Speakeasy", "Rooftop", "Cozy Lounge", "Jazz Bar"])
+            st.markdown("#### Explore Premium Bars")
+            city = st.selectbox("City:", ["Hanoi", "Ho Chi Minh City"])
+            district = st.text_input("District (e.g. Hoan Kiem, District 1):")
+            style = st.selectbox("Style/Vibe:", ["Any", "Speakeasy", "Rooftop", "Cozy Lounge", "Jazz Bar"])
             
-            if st.button("Tìm kiếm Quán Bar"):
-                st.write("Kết quả tìm kiếm mẫu từ `bars_vietnam.csv`...")
+            if st.button("Search Bars"):
+                st.write("Search results from `bars_vietnam.csv` will be displayed here.")
                 
     else:
-        st.subheader("Chào mừng đến với Chế độ Bartender (Bartender Mode)")
-        st.markdown("Chuyên trang công cụ hỗ trợ Bartender tìm kiếm công thức chuẩn xác, tính toán ABV và thiết kế Menu.")
+        st.subheader("Welcome to Bartender Mode")
+        st.markdown("A specialized toolkit for professional bartenders to lookup recipes, calculate ABV, and compile menus.")
         
-        tab1, tab2, tab3 = st.tabs(["📜 Công thức & Kỹ thuật", "⚗️ Tính toán ABV", "📋 Menu Builder"])
+        tab1, tab2, tab3 = st.tabs(["📜 Recipes & Mixology", "⚗️ ABV Calculator", "📋 Menu Builder"])
         
         with tab1:
-            st.markdown("#### Tra cứu Công thức")
-            search_name = st.text_input("Nhập tên cocktail:")
-            if st.button("Tìm công thức"):
-                st.write("Chi tiết công thức sẽ được hiển thị ở đây.")
+            st.markdown("#### Recipe Lookup")
+            search_name = st.text_input("Enter cocktail name:")
+            if st.button("Find Recipe"):
+                st.write("Detailed recipe and instructions will be shown here.")
                 
         with tab2:
-            st.markdown("#### Tính toán ABV tự động")
-            st.write("Nhập thông tin các nguyên liệu để tính toán ABV của ly cocktail tự chế.")
+            st.markdown("#### Automatic ABV Calculator")
+            st.write("Enter ingredients details to estimate the overall ABV percentage of your mix.")
             
         with tab3:
             st.markdown("#### Menu Builder")
-            st.write("Tích chọn các ly cocktail để xuất bản thực đơn cocktail PDF/HTML cho quán của bạn.")
+            st.write("Select cocktails to compile and export a beautiful custom menu.")
 
 if __name__ == "__main__":
     main()

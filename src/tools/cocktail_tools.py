@@ -24,41 +24,40 @@ def get_bars_df():
 # -----------------------------------------------------------------------------
 def db_search_cocktails(ingredients_query: str = "", category: str = "", flavor: str = "", abv: str = "") -> str:
     """
-    Tìm kiếm cocktail trong cơ sở dữ liệu dựa trên nguyên liệu, phân loại, hương vị hoặc độ mạnh của cồn.
+    Search for cocktails in the database based on ingredients, category, flavor profile, or alcohol level.
     
     Args:
-        ingredients_query: Chuỗi chứa các nguyên liệu ngăn cách bằng dấu phẩy (ví dụ: 'gin, chanh')
-        category: Thể loại cocktail (ví dụ: 'Cocktail', 'Shot', 'Ordinary Drink')
-        flavor: Hương vị mong muốn (chọn từ: 'Chua', 'Ngọt', 'Đắng', 'Thảo mộc', 'Ấm nồng')
-        abv: Phân loại cồn (chọn từ: 'Mocktail (Không cồn)', 'Nhẹ (Low ABV)', 'Vừa (Medium ABV)', 'Mạnh (Strong ABV)')
+        ingredients_query: Comma-separated list of ingredients (e.g., 'gin, lemon')
+        category: Cocktail category (e.g., 'Cocktail', 'Shot', 'Ordinary Drink')
+        flavor: Target flavor profile (options: 'Chua', 'Ngọt', 'Đắng', 'Thảo mộc', 'Ấm nồng')
+        abv: Alcohol level category (options: 'Mocktail (Không cồn)', 'Nhẹ (Low ABV)', 'Vừa (Medium ABV)', 'Mạnh (Strong ABV)')
         
     Returns:
-        JSON string danh sách tối đa 5 cocktail phù hợp nhất
+        JSON string containing a list of up to 5 matching cocktails
     """
     df = get_cocktails_df()
     if df.empty:
-        return json.dumps({"error": "Không có dữ liệu cocktail."})
+        return json.dumps({"error": "No cocktail data available."})
         
     results = df.copy()
     
-    # 1. Lọc theo Phân loại (Category)
+    # 1. Filter by Category
     if category:
         results = results[results['category'].str.lower().str.contains(category.lower())]
         
-    # 2. Lọc theo Hương vị (Flavor)
+    # 2. Filter by Flavor
     if flavor:
         results = results[results['flavor_profile'].str.lower().str.contains(flavor.lower())]
         
-    # 3. Lọc theo Phân loại Cồn (ABV)
+    # 3. Filter by ABV Category
     if abv:
         results = results[results['abv_category'].str.lower().str.contains(abv.lower())]
         
-    # 4. Tìm kiếm theo Nguyên liệu (Ingredients)
+    # 4. Search by Ingredients
     if ingredients_query:
         query_ingredients = [i.strip().lower() for i in ingredients_query.split(',') if i.strip()]
         
         def calculate_match_score(ingredients_list_str):
-            # Parse list of ingredients from string
             try:
                 ing_list = eval(ingredients_list_str)
                 ing_list_lower = [str(i).lower() for i in ing_list]
@@ -72,11 +71,11 @@ def db_search_cocktails(ingredients_query: str = "", category: str = "", flavor:
             return matches
             
         results['match_score'] = results['ingredients'].apply(calculate_match_score)
-        # Chỉ giữ lại các cocktail có ít nhất 1 nguyên liệu khớp
+        # Keep only entries with at least 1 match
         results = results[results['match_score'] > 0]
         results = results.sort_values(by='match_score', ascending=False)
         
-    # Lấy top 5 kết quả
+    # Get top 5 results
     top_results = results.head(5)
     
     output = []
@@ -104,20 +103,20 @@ def db_search_cocktails(ingredients_query: str = "", category: str = "", flavor:
 # -----------------------------------------------------------------------------
 def db_search_bars(city: str = "", district: str = "", style: str = "", price_range: str = "") -> str:
     """
-    Tìm kiếm các quán bar thực tế tại Việt Nam dựa trên thành phố, quận, phong cách và tầm giá.
+    Search for real cocktail bars in Vietnam based on city, district, vibe style, and price range.
     
     Args:
-        city: Tên thành phố ('Hanoi' hoặc 'Ho Chi Minh City')
-        district: Tên quận (ví dụ: 'Hoan Kiem', 'District 1', 'District 3')
-        style: Phong cách quán ('Speakeasy', 'Rooftop', 'Cozy Lounge', 'Jazz Bar', 'Craft Bar', 'Luxury Bar')
-        price_range: Tầm giá (chọn từ: '$', '$$', '$$$')
+        city: City name ('Hanoi' or 'Ho Chi Minh City')
+        district: District name (e.g., 'Hoan Kiem', 'District 1', 'District 3')
+        style: Bar style/vibe (e.g., 'Speakeasy', 'Rooftop', 'Cozy Lounge', 'Jazz Bar', 'Craft Bar')
+        price_range: Price level (options: '$', '$$', '$$$')
         
     Returns:
-        JSON string danh sách tối đa 5 quán bar phù hợp
+        JSON string containing a list of up to 5 matching bars
     """
     df = get_bars_df()
     if df.empty:
-        return json.dumps({"error": "Không có dữ liệu quán bar."})
+        return json.dumps({"error": "No bar data available."})
         
     results = df.copy()
     
@@ -153,19 +152,19 @@ def db_search_bars(city: str = "", district: str = "", style: str = "", price_ra
 # -----------------------------------------------------------------------------
 def calculate_abv(ingredients_with_ml: str) -> str:
     """
-    Tính toán nồng độ cồn ước tính (ABV - Alcohol By Volume) của một ly cocktail dựa trên danh sách các nguyên liệu cồn và thể tích của chúng.
+    Calculate the estimated Alcohol By Volume (ABV) percentage of a cocktail based on volumes and ingredient ABVs.
     
     Args:
-        ingredients_with_ml: Chuỗi JSON đại diện cho danh sách các nguyên liệu, ví dụ:
+        ingredients_with_ml: JSON string of ingredients and their volumes, e.g.:
           '[{"name": "Gin", "abv": 40, "volume_ml": 45}, {"name": "Lime Juice", "abv": 0, "volume_ml": 15}]'
           
     Returns:
-        JSON string chứa kết quả tính ABV phần trăm và phân hạng mức độ mạnh
+        JSON string containing the total volume, estimated ABV percentage, and description
     """
     try:
         items = json.loads(ingredients_with_ml)
     except Exception as e:
-        return json.dumps({"error": f"Lỗi định dạng JSON đầu vào: {e}"})
+        return json.dumps({"error": f"JSON parsing error: {e}"})
         
     total_volume = 0.0
     total_alcohol = 0.0
@@ -178,24 +177,24 @@ def calculate_abv(ingredients_with_ml: str) -> str:
         total_alcohol += (vol * abv / 100.0)
         
     if total_volume == 0:
-        return json.dumps({"error": "Tổng thể tích đồ uống phải lớn hơn 0ml."})
+        return json.dumps({"error": "Total volume must be greater than 0ml."})
         
     final_abv = (total_alcohol / total_volume) * 100.0
     
     if final_abv == 0:
-        abv_category = "Mocktail (Không cồn)"
+        abv_category = "Mocktail (Non-alcoholic)"
     elif final_abv < 10:
-        abv_category = "Nhẹ (Low ABV)"
+        abv_category = "Low ABV"
     elif final_abv < 20:
-        abv_category = "Vừa (Medium ABV)"
+        abv_category = "Medium ABV"
     else:
-        abv_category = "Mạnh (Strong ABV)"
+        abv_category = "Strong ABV"
         
     result = {
         "total_volume_ml": round(total_volume, 1),
         "estimated_abv": round(final_abv, 1),
         "abv_category": abv_category,
-        "description": f"Ly cocktail có tổng thể tích là {round(total_volume, 1)}ml với nồng độ cồn ước tính khoảng {round(final_abv, 1)}% ({abv_category})."
+        "description": f"The cocktail has a total volume of {round(total_volume, 1)}ml with an estimated ABV of {round(final_abv, 1)}% ({abv_category})."
     }
     
     return json.dumps(result, ensure_ascii=False)
@@ -206,62 +205,61 @@ def calculate_abv(ingredients_with_ml: str) -> str:
 # -----------------------------------------------------------------------------
 def substitute_ingredient(missing_ingredient: str) -> str:
     """
-    Đưa ra các giải pháp thay thế chuẩn chuyên nghiệp cho một nguyên liệu cocktail bị thiếu.
+    Suggest professional bartender substitutions for a missing cocktail ingredient.
     
     Args:
-        missing_ingredient: Tên nguyên liệu bị thiếu (ví dụ: 'cointreau', 'bourbon')
+        missing_ingredient: The name of the missing ingredient (e.g., 'cointreau', 'bourbon')
         
     Returns:
-        JSON string chứa danh sách các nguyên liệu thay thế và tỷ lệ tương ứng
+        JSON string containing a list of substitutes and ratios
     """
     sub_map = {
         "cointreau": [
-            {"substitute": "Triple Sec", "ratio": "1:1", "notes": "Hương cam ngọt ngào tương đương, phù hợp cho Margarita hoặc Cosmopolitan."},
-            {"substitute": "Grand Marnier", "ratio": "1:1", "notes": "Hương cam đậm đặc hơn trên nền rượu cognac, mang lại vị đậm đà hơn."}
+            {"substitute": "Triple Sec", "ratio": "1:1", "notes": "Similar orange flavor profile, suitable for Margaritas or Cosmopolitans."},
+            {"substitute": "Grand Marnier", "ratio": "1:1", "notes": "Cognac-based orange liqueur, yields a richer flavor."}
         ],
         "triple sec": [
-            {"substitute": "Cointreau", "ratio": "1:1", "notes": "Cointreau tinh tế và ít ngọt hơn một chút nhưng thay thế hoàn hảo."},
-            {"substitute": "Orange Curaçao", "ratio": "1:1", "notes": "Mang hương cam hơi chát nhẹ cổ điển hơn."}
+            {"substitute": "Cointreau", "ratio": "1:1", "notes": "Cointreau is less sweet and cleaner but acts as a perfect swap."},
+            {"substitute": "Orange Curaçao", "ratio": "1:1", "notes": "Provides a slightly dry, classic orange profile."}
         ],
         "bourbon": [
-            {"substitute": "Rye Whiskey", "ratio": "1:1", "notes": "Cho vị cay nồng và khô hơn so với vị ngọt caramel đặc trưng của Bourbon."},
-            {"substitute": "Irish Whiskey", "ratio": "1:1", "notes": "Cho vị nhẹ nhàng, mượt mà hơn."}
+            {"substitute": "Rye Whiskey", "ratio": "1:1", "notes": "Gives a spicier, drier taste profile compared to bourbon's sweet caramel notes."},
+            {"substitute": "Irish Whiskey", "ratio": "1:1", "notes": "Gives a smoother, lighter finish."}
         ],
         "rye whiskey": [
-            {"substitute": "Bourbon", "ratio": "1:1", "notes": "Bourbon sẽ ngọt hơn một chút nhưng thay thế rất tốt trong Old Fashioned hay Manhattan."}
+            {"substitute": "Bourbon", "ratio": "1:1", "notes": "Bourbon is sweeter but works beautifully in an Old Fashioned or Manhattan."}
         ],
         "gin": [
-            {"substitute": "Vodka", "ratio": "1:1", "notes": "Vodka là rượu trung tính, sẽ thiếu đi mùi thảo mộc quả thông của Gin nhưng thay thế tốt nếu cần uống nhẹ vị."}
+            {"substitute": "Vodka", "ratio": "1:1", "notes": "Neutral spirit; will lack juniper botanical notes but works well if a cleaner taste is desired."}
         ],
         "vodka": [
-            {"substitute": "White Rum", "ratio": "1:1", "notes": "Rum trắng sẽ ngọt nhẹ hơn nhưng thay thế tốt trong các loại cocktail trái cây."}
+            {"substitute": "White Rum", "ratio": "1:1", "notes": "White rum is slightly sweeter but replaces vodka well in fruit cocktails."}
         ],
         "lemon juice": [
-            {"substitute": "Lime Juice", "ratio": "1:1", "notes": "Nước cốt chanh xanh có vị chua sắc hơn chanh vàng nhưng thay thế cực kỳ phổ biến."},
-            {"substitute": "Axit Citric pha loãng", "ratio": "1:1", "notes": "Thích hợp khi pha chế chuyên nghiệp để kiểm soát độ chua ổn định."}
+            {"substitute": "Lime Juice", "ratio": "1:1", "notes": "Lime juice is slightly more acidic/sharp but is a very common swap."},
+            {"substitute": "Diluted Citric Acid", "ratio": "1:1", "notes": "Used professionally to maintain consistent acidity."}
         ],
         "lime juice": [
-            {"substitute": "Lemon Juice", "ratio": "1:1", "notes": "Nước cốt chanh vàng thơm mát và có vị chua dịu hơn."}
+            {"substitute": "Lemon Juice", "ratio": "1:1", "notes": "Lemon juice is milder and fresh."}
         ],
         "simple syrup": [
-            {"substitute": "Honey Syrup", "ratio": "1:1", "notes": "Pha mật ong với nước ấm theo tỉ lệ 1:1, đem lại vị ngọt thanh tự nhiên thơm ngon."},
-            {"substitute": "Agave Nectar", "ratio": "0.75:1", "notes": "Mật cây thùa rất ngọt, hãy giảm bớt 25% lượng dùng so với syrup thông thường."}
+            {"substitute": "Honey Syrup", "ratio": "1:1", "notes": "Mix honey and warm water 1:1, brings a rich floral sweetness."},
+            {"substitute": "Agave Nectar", "ratio": "0.75:1", "notes": "Agave is sweeter; reduce amount by 25%."}
         ],
         "angostura bitters": [
-            {"substitute": "Peychaud's Bitters", "ratio": "1:1", "notes": "Mang hương vị cam thảo và hoa cỏ ngọt hơn nhẹ nhàng hơn."},
-            {"substitute": "Orange Bitters", "ratio": "1:1", "notes": "Thay đổi vị đắng thảo mộc sang vị đắng vỏ cam tươi mát."}
+            {"substitute": "Peychaud's Bitters", "ratio": "1:1", "notes": "Anise and floral-forward profile, slightly sweeter."},
+            {"substitute": "Orange Bitters", "ratio": "1:1", "notes": "Swaps herbal bitterness for a crisp citrus peel bitterness."}
         ],
         "campari": [
-            {"substitute": "Aperol", "ratio": "1:1", "notes": "Aperol có nồng độ cồn thấp hơn và ngọt hơn Campari (độ đắng giảm đi một nửa)."}
+            {"substitute": "Aperol", "ratio": "1:1", "notes": "Aperol is lower ABV and sweeter, with about half the bitterness of Campari."}
         ],
         "vermouth": [
-            {"substitute": "Lillet Blanc", "ratio": "1:1", "notes": "Rượu vang khai vị Pháp ngọt dịu và thơm hương hoa cỏ."}
+            {"substitute": "Lillet Blanc", "ratio": "1:1", "notes": "French aperitif wine, sweet and floral."}
         ]
     }
     
     ing_key = str(missing_ingredient).lower().strip()
     
-    # Tìm kiếm gần đúng trong từ điển
     results = []
     for k, v in sub_map.items():
         if k in ing_key or ing_key in k:
@@ -269,11 +267,10 @@ def substitute_ingredient(missing_ingredient: str) -> str:
             break
             
     if not results:
-        # Fallback thông báo chung
         results = [{
-            "substitute": "Vodka hoặc Rượu nền trung tính tương đương",
+            "substitute": "Vodka or similar neutral base spirit",
             "ratio": "1:1",
-            "notes": "Chúng tôi chưa có dữ liệu thay thế cụ thể cho nguyên liệu này. Bạn có thể thay thế bằng rượu nền nhẹ vị hoặc liên hệ Master Bartender để được gợi ý nâng cao."
+            "notes": "No specific replacement rules. Neutral spirit can be used to balance volume."
         }]
         
     return json.dumps({
@@ -281,29 +278,29 @@ def substitute_ingredient(missing_ingredient: str) -> str:
         "substitutes": results
     }, ensure_ascii=False)
 
-# Bọc các tool để khai báo cho Gemini API
+# Tool schemas for Gemini Function Calling
 TOOL_DECLARATIONS = [
     {
         "name": "db_search_cocktails",
-        "description": "Tìm kiếm các ly cocktail trong cơ sở dữ liệu theo nguyên liệu, thể loại, hương vị và phân hạng cồn.",
+        "description": "Searches for cocktails in the database by ingredients, category, flavor profile, and alcohol level.",
         "parameters": {
             "type": "OBJECT",
             "properties": {
                 "ingredients_query": {
                     "type": "STRING",
-                    "description": "Các nguyên liệu cách nhau bằng dấu phẩy, ví dụ: 'gin, chanh, đường'"
+                    "description": "Comma-separated ingredients list, e.g. 'gin, lemon, sugar'"
                 },
                 "category": {
                     "type": "STRING",
-                    "description": "Thể loại cocktail (ví dụ: 'Cocktail', 'Shot')"
+                    "description": "Cocktail category (e.g. 'Cocktail', 'Shot')"
                 },
                 "flavor": {
                     "type": "STRING",
-                    "description": "Hương vị chính mong muốn ('Chua', 'Ngọt', 'Đắng', 'Thảo mộc', 'Ấm nồng')"
+                    "description": "Main flavor profile ('Chua', 'Ngọt', 'Đắng', 'Thảo mộc', 'Ấm nồng')"
                 },
                 "abv": {
                     "type": "STRING",
-                    "description": "Mức độ cồn ('Mocktail (Không cồn)', 'Nhẹ (Low ABV)', 'Vừa (Medium ABV)', 'Mạnh (Strong ABV)')"
+                    "description": "Alcohol category ('Mocktail (Không cồn)', 'Nhẹ (Low ABV)', 'Vừa (Medium ABV)', 'Mạnh (Strong ABV)')"
                 }
             },
             "required": []
@@ -311,25 +308,25 @@ TOOL_DECLARATIONS = [
     },
     {
         "name": "db_search_bars",
-        "description": "Tìm kiếm các quán bar thực tế nổi tiếng ở Hà Nội và Hồ Chí Minh theo phong cách, tầm giá, quận.",
+        "description": "Searches for actual premium cocktail bars in Vietnam (Hanoi & Ho Chi Minh City) by vibe style, price range, and district.",
         "parameters": {
             "type": "OBJECT",
             "properties": {
                 "city": {
                     "type": "STRING",
-                    "description": "Tên thành phố ('Hanoi' hoặc 'Ho Chi Minh City')"
+                    "description": "City name ('Hanoi' or 'Ho Chi Minh City')"
                 },
                 "district": {
                     "type": "STRING",
-                    "description": "Tên quận bằng tiếng Anh không dấu, ví dụ: 'Hoan Kiem', 'District 1', 'District 3'"
+                    "description": "District name in English without accents, e.g., 'Hoan Kiem', 'District 1', 'District 3'"
                 },
                 "style": {
                     "type": "STRING",
-                    "description": "Phong cách quán ('Speakeasy', 'Rooftop', 'Cozy Lounge', 'Jazz Bar', 'Craft Bar')"
+                    "description": "Bar vibe style ('Speakeasy', 'Rooftop', 'Cozy Lounge', 'Jazz Bar', 'Craft Bar')"
                 },
                 "price_range": {
                     "type": "STRING",
-                    "description": "Tầm giá của quán ('$', '$$', '$$$')"
+                    "description": "Price level ('$', '$$', '$$$')"
                 }
             },
             "required": []
@@ -337,13 +334,13 @@ TOOL_DECLARATIONS = [
     },
     {
         "name": "calculate_abv",
-        "description": "Tính toán nồng độ cồn ABV và phân loại độ mạnh của ly cocktail dựa trên lượng ml và ABV của nguyên liệu thành phần.",
+        "description": "Calculates estimated ABV percentage and classification of a cocktail based on ingredient volumes and their respective ABVs.",
         "parameters": {
             "type": "OBJECT",
             "properties": {
                 "ingredients_with_ml": {
                     "type": "STRING",
-                    "description": "Chuỗi JSON chứa danh sách nguyên liệu và thể tích ml, ví dụ: '[{\"name\": \"Gin\", \"abv\": 40, \"volume_ml\": 45}, {\"name\": \"Chanh\", \"abv\": 0, \"volume_ml\": 15}]'"
+                    "description": "JSON string containing ingredients and volume list, e.g., '[{\"name\": \"Gin\", \"abv\": 40, \"volume_ml\": 45}, {\"name\": \"Lime Juice\", \"abv\": 0, \"volume_ml\": 15}]'"
                 }
             },
             "required": ["ingredients_with_ml"]
@@ -351,13 +348,13 @@ TOOL_DECLARATIONS = [
     },
     {
         "name": "substitute_ingredient",
-        "description": "Tìm kiếm nguyên liệu thay thế chuẩn pha chế khi bị thiếu một nguyên liệu nào đó trong công thức.",
+        "description": "Finds bartender substitutions for missing ingredients in a recipe.",
         "parameters": {
             "type": "OBJECT",
             "properties": {
                 "missing_ingredient": {
                     "type": "STRING",
-                    "description": "Tên nguyên liệu bị thiếu, ví dụ: 'cointreau', 'bourbon', 'lemon juice'"
+                    "description": "The name of the missing ingredient, e.g., 'cointreau', 'bourbon', 'lemon juice'"
                 }
             },
             "required": ["missing_ingredient"]
@@ -366,7 +363,7 @@ TOOL_DECLARATIONS = [
 ]
 
 def execute_tool(name: str, args: dict) -> str:
-    """Hàm trung gian để thực thi các tool bằng tên"""
+    """Invokes the appropriate Python tool based on name"""
     if name == "db_search_cocktails":
         return db_search_cocktails(
             ingredients_query=args.get("ingredients_query", ""),
@@ -386,4 +383,4 @@ def execute_tool(name: str, args: dict) -> str:
     elif name == "substitute_ingredient":
         return substitute_ingredient(missing_ingredient=args.get("missing_ingredient", ""))
     else:
-        return json.dumps({"error": f"Tool '{name}' không tồn tại."})
+        return json.dumps({"error": f"Tool '{name}' not found."})
