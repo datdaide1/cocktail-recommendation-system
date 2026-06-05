@@ -136,93 +136,6 @@ class CocktailAgentSystem:
             system_instruction=instruction
         )
 
-    def classify_query(self, user_message: str) -> str:
-        """
-        Uses a quick zero-shot classification to route the query to 'discover', 'mixology', or 'general'.
-        """
-        prompt = f"""You are the Tool Router for AI Lounge.
-Classify the user's request into one of these categories:
-- 'discover': if they are searching for existing cocktails, recipes, bars, venues, locations, or food pairings.
-- 'mixology': if they want to calculate ABV, substitute ingredients, create new custom recipes, calculate shopping cost, or need mixing advice.
-- 'general': if it is just greeting, casual chat, or general question.
-
-Output ONLY the category name: 'discover', 'mixology', or 'general'. Do not write anything else.
-
-User Request: {user_message}
-Category:"""
-        
-        try:
-            if self.provider == "gemini":
-                # Quick call to Gemini without tool definitions
-                model = genai.GenerativeModel("gemini-3.1-flash-lite")
-                response = model.generate_content(prompt)
-                category = response.text.strip().lower()
-            else:
-                # OpenAI/OpenRouter quick call
-                import requests
-                if self.provider == "openrouter":
-                    url = "https://openrouter.ai/api/v1/chat/completions"
-                    api_key = Config.OPENROUTER_API_KEY
-                    model_name = Config.OPENROUTER_MODEL or "google/gemini-2.5-flash"
-                    headers = {
-                        "Authorization": f"Bearer {api_key}",
-                        "Content-Type": "application/json"
-                    }
-                elif self.provider == "custom":
-                    url = Config.CUSTOM_API_BASE or "http://127.0.0.1:20128/v1"
-                    if not url.endswith("/chat/completions"):
-                        url = url.rstrip("/") + "/chat/completions"
-                    api_key = Config.CUSTOM_API_KEY
-                    model_name = Config.CUSTOM_MODEL or "beeknoee/gemini-3.5-flash"
-                    headers = {
-                        "Authorization": f"Bearer {api_key}",
-                        "Content-Type": "application/json"
-                    }
-                else:
-                    url = "https://api.openai.com/v1/chat/completions"
-                    api_key = Config.OPENAI_API_KEY
-                    model_name = Config.OPENAI_MODEL or "gpt-4o-mini"
-                    headers = {
-                        "Authorization": f"Bearer {api_key}",
-                        "Content-Type": "application/json"
-                    }
-                
-                payload = {
-                    "model": model_name,
-                    "messages": [{"role": "user", "content": prompt}]
-                }
-                resp = requests.post(url, headers=headers, json=payload, timeout=30)
-                if resp.status_code == 200:
-                    try:
-                        res_data = resp.json()
-                    except ValueError:
-                        import json
-                        import re
-                        raw = resp.text.strip()
-                        try:
-                            res_data = json.loads(raw.split('\n')[0])
-                        except Exception:
-                            match = re.search(r'^(\{.*\})', raw, re.DOTALL)
-                            if match:
-                                res_data = json.loads(match.group(1))
-                            else:
-                                raise Exception("Failed to parse JSON")
-                        
-                    category = res_data["choices"][0]["message"]["content"].strip().lower()
-                else:
-                    category = "general"
-        except Exception as e:
-            print(f"Routing failed: {e}. Defaulting to 'general'.")
-            category = "general"
-            
-        # Standardize return
-        if "discover" in category:
-            return "discover"
-        elif "mixology" in category:
-            return "mixology"
-        else:
-            return "general"
-
     def run_chat(self, user_message: str, chat_history: list, role: str) -> dict:
         """
         Routes the chat turn to the active LLM provider.
@@ -233,14 +146,29 @@ Category:"""
             # OpenAI, OpenRouter, or Custom
             return self.run_chat_openai_compatible(user_message, chat_history, role)
 
+    def _get_role_tools(self, role: str) -> list:
+        if role == "bartender":
+            return [
+                "db_search_cocktails",
+                "generate_custom_recipe",
+                "substitute_ingredient",
+                "calculate_abv",
+                "calculate_cost_and_shopping_list"
+            ]
+        else:
+            return [
+                "db_search_cocktails",
+                "db_search_bars",
+                "recommend_food_pairing"
+            ]
+
     def run_chat_gemini(self, user_message: str, chat_history: list, role: str) -> dict:
         """
         Executes a turn using Gemini native SDK with dynamic tool subsets.
         """
         try:
-            category = self.classify_query(user_message)
-            print(f"[Tool Router] Classified query as: {category}")
-            active_tool_names = TOOL_GROUPS.get(category, [])
+            active_tool_names = self._get_role_tools(role)
+            print(f"[Tool Router] Role: {role} -> Assigned {len(active_tool_names)} tools")
             active_tools = [t for t in self.tools if t.__name__ in active_tool_names]
             
             model = self.get_agent_model(role, active_tools)
@@ -342,9 +270,8 @@ Category:"""
         import requests
         
         try:
-            category = self.classify_query(user_message)
-            print(f"[Tool Router] Classified query as: {category}")
-            active_tool_names = TOOL_GROUPS.get(category, [])
+            active_tool_names = self._get_role_tools(role)
+            print(f"[Tool Router] Role: {role} -> Assigned {len(active_tool_names)} tools")
             
             if self.provider == "openrouter":
                 url = "https://openrouter.ai/api/v1/chat/completions"
