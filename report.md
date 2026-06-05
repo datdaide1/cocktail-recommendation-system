@@ -77,3 +77,22 @@ This file tracks the completed features and development tasks for the **AI Cockt
   - Implemented a unified chat request dispatcher inside `src/agents/cocktail_agents.py` with auto-detection capability based on active keys.
   - Implemented OpenAI-compatible Chat Completions REST calls supporting full manual multi-turn function calling schemas.
   - Staged, committed, and pushed provider support to the GitHub remote repository on `main`.
+
+### 9. Modular Tools Package & Specialized Mixology Tools
+- **Date**: June 5, 2026
+- **Status**: Completed
+- **Details**:
+  - Modularized `src/tools/` from a single monolithic file into a Python package with clean, domain-specific modules: `base.py`, `db_search.py`, `calculators.py`, and `mixology.py`.
+  - Added new high-utility tools: `calculate_cost_and_shopping_list` (party planner pricing in VND), `generate_custom_recipe` (recipes baseline matcher), and `recommend_food_pairing` (flavor profile snack pairings).
+  - Implemented a Zero-Shot Tool Router inside the agent orchestrator to classify queries into `discover`, `mixology`, or `general` and dynamically bind only relevant tools, optimizing API token usage and preventing hallucinations.
+  - Built `test_agents_advanced.py` to validate scenarios representing picky customers, clueless customers, and edge-cases.
+
+### 10. Unified Hybrid Search, XML Prompting & Production Optimization
+- **Date**: June 5, 2026
+- **Status**: Completed
+- **Details**:
+  - Implemented **Unified Hybrid Search** in `db_search_cocktails` using local `all-MiniLM-L6-v2` embeddings (via `sentence-transformers`) for semantic similarity ranking while preserving exact SQL-like database filtering.
+  - Structured all agent system instructions (`GUEST_CONCIERGE_INSTRUCTION` and `MASTER_BARTENDER_INSTRUCTION`) into XML format (`<system_prompt>`, `<persona>`, `<rules>`) to improve instruction adherence.
+  - Expanded `data/bars_vietnam.csv` with **15 new premium real-world bars in Hanoi** covering multiple districts (Hoan Kiem, Ba Dinh, Tay Ho, Dong Da, Hai Ba Trung, Cau Giay, Long Bien).
+  - Optimized the app for production by binding the host to `0.0.0.0` in `src/ui/app.py` and implementing an in-memory session write fallback to handle read-only filesystems.
+  - Pushed all production-ready hybrid search code and database additions to the GitHub remote repository.
