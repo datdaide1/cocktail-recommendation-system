@@ -10,6 +10,7 @@ class Config:
     PROJECT_ROOT = BASE_DIR
     DATA_DIR = BASE_DIR / "data"
     
+    DATABASE_PATH = DATA_DIR / "chat_data.db"
     COCKTAILS_PATH = DATA_DIR / "enriched_cocktails.csv"
     BARS_PATH = DATA_DIR / "bars_vietnam.csv"
     

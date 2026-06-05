@@ -14,6 +14,17 @@ let abvIngredients = [
 let cocktailsList = [];
 let compiledMenuHtml = '';
 
+// Multi-User Anonymous ID Generation
+function getOrGenerateUserId() {
+    let uid = localStorage.getItem('cocktail_user_id');
+    if (!uid) {
+        uid = 'usr-' + Math.random().toString(36).substr(2, 9) + '-' + Date.now();
+        localStorage.setItem('cocktail_user_id', uid);
+    }
+    return uid;
+}
+const CLIENT_USER_ID = getOrGenerateUserId();
+
 // DOM Elements
 const btnGuestMode = document.getElementById('btn-guest-mode');
 const btnBartenderMode = document.getElementById('btn-bartender-mode');
@@ -120,7 +131,7 @@ function setupRoleSwitcher() {
 // 1.5 SESSIONS PERSISTENCE LOGIC
 async function fetchSessions(role) {
     try {
-        const response = await fetch(`/api/sessions?role=${role}`);
+        const response = await fetch(`/api/sessions?role=${role}&user_id=${CLIENT_USER_ID}`);
         const data = await response.json();
         const sessions = data.sessions || [];
         
@@ -183,7 +194,7 @@ async function createNewSession(role) {
         const response = await fetch('/api/sessions', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ role: role })
+            body: JSON.stringify({ role: role, user_id: CLIENT_USER_ID })
         });
         const session = await response.json();
         
@@ -453,7 +464,8 @@ async function sendChatMessage(role) {
                 message: message,
                 chat_history: history.slice(0, -1),
                 role: role,
-                session_id: sessionId
+                session_id: sessionId,
+                user_id: CLIENT_USER_ID
             })
         });
         

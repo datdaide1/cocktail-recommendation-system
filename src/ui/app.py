@@ -26,49 +26,34 @@ except Exception as e:
     print(f"Error initializing Agent System: {e}")
     agent_system = None
 
-# Path to Chat Sessions Database
-SESSIONS_FILE = Path(Config.COCKTAILS_PATH).parent / "chat_sessions.json"
-
 import uuid
 import datetime
-import threading
+import sqlite3
 
-# In-memory session cache for read/write error fallbacks (e.g. read-only filesystems)
-_in_memory_sessions = {}
-_session_lock = threading.Lock()
+# Path to Chat Sessions Database
+DB_PATH = Config.DATABASE_PATH
 
-def read_sessions():
-    """Reads all chat sessions from local JSON storage with in-memory fallback"""
-    global _in_memory_sessions
-    with _session_lock:
-        if not SESSIONS_FILE.exists():
-            try:
-                SESSIONS_FILE.parent.mkdir(parents=True, exist_ok=True)
-                with open(SESSIONS_FILE, "w", encoding="utf-8") as f:
-                    json.dump({"sessions": {}}, f)
-            except Exception as e:
-                print(f"Error creating sessions file (falling back to memory): {e}")
-                return _in_memory_sessions
-            return {}
-        try:
-            with open(SESSIONS_FILE, "r", encoding="utf-8") as f:
-                data = json.load(f)
-                _in_memory_sessions = data.get("sessions", {})
-                return _in_memory_sessions
-        except Exception as e:
-            print(f"Error reading sessions file (falling back to memory): {e}")
-            return _in_memory_sessions
+def get_db_connection():
+    DB_PATH.parent.mkdir(parents=True, exist_ok=True)
+    conn = sqlite3.connect(DB_PATH, check_same_thread=False)
+    conn.row_factory = sqlite3.Row
+    return conn
 
-def write_sessions(sessions):
-    """Writes all sessions back to local JSON storage with in-memory fallback"""
-    global _in_memory_sessions
-    with _session_lock:
-        _in_memory_sessions = sessions
-        try:
-            with open(SESSIONS_FILE, "w", encoding="utf-8") as f:
-                json.dump({"sessions": sessions}, f, indent=2, ensure_ascii=False)
-        except Exception as e:
-            print(f"Error writing sessions file (sessions retained in memory): {e}")
+def init_db():
+    conn = get_db_connection()
+    conn.execute('''
+        CREATE TABLE IF NOT EXISTS chat_sessions (
+            id TEXT PRIMARY KEY,
+            user_id TEXT,
+            role TEXT,
+            timestamp TEXT,
+            data TEXT
+        )
+    ''')
+    conn.commit()
+    conn.close()
+
+init_db()
 
 @app.route('/')
 def index():
@@ -78,31 +63,48 @@ def index():
 @app.route('/api/sessions', methods=['GET'])
 def get_sessions():
     """Returns list of sessions sorted by newest timestamp"""
-    sessions = read_sessions()
-    role = request.args.get("role", "") # optionally filter by role
+    role = request.args.get("role", "")
+    user_id = request.args.get("user_id", "")
+    
+    conn = get_db_connection()
+    query = "SELECT data FROM chat_sessions WHERE 1=1"
+    params = []
+    
+    if role:
+        query += " AND role = ?"
+        params.append(role)
+    if user_id:
+        query += " AND user_id = ?"
+        params.append(user_id)
+        
+    query += " ORDER BY timestamp DESC"
+    
+    rows = conn.execute(query, params).fetchall()
+    conn.close()
     
     sessions_list = []
-    for sid, sdata in sessions.items():
-        if role and sdata.get("role") != role:
-            continue
+    for row in rows:
+        session_data = json.loads(row["data"])
         sessions_list.append({
-            "id": sid,
-            "title": sdata.get("title", "New Chat"),
-            "role": sdata.get("role", "guest"),
-            "timestamp": sdata.get("timestamp", "")
+            "id": session_data.get("id"),
+            "title": session_data.get("title", "New Chat"),
+            "role": session_data.get("role", "guest"),
+            "timestamp": session_data.get("timestamp", "")
         })
         
-    # Sort by timestamp descending
-    sessions_list.sort(key=lambda x: x["timestamp"], reverse=True)
     return jsonify({"sessions": sessions_list})
 
 @app.route('/api/sessions/<session_id>', methods=['GET'])
 def get_session(session_id):
     """Returns details including messages list of a specific session"""
-    sessions = read_sessions()
-    session = sessions.get(session_id)
-    if not session:
+    conn = get_db_connection()
+    row = conn.execute("SELECT data FROM chat_sessions WHERE id = ?", (session_id,)).fetchone()
+    conn.close()
+    
+    if not row:
         return jsonify({"error": "Session not found"}), 404
+        
+    session = json.loads(row["data"])
     return jsonify(session)
 
 @app.route('/api/sessions', methods=['POST'])
@@ -110,20 +112,27 @@ def create_session():
     """Creates a new empty chat session"""
     data = request.json or {}
     role = data.get("role", "guest")
+    user_id = data.get("user_id", "")
     
-    sessions = read_sessions()
     session_id = str(uuid.uuid4())
+    timestamp = datetime.datetime.now().isoformat()
     
     new_session = {
         "id": session_id,
         "title": "New Chat",
         "role": role,
-        "timestamp": datetime.datetime.now().isoformat(),
+        "timestamp": timestamp,
         "chat_history": []
     }
     
-    sessions[session_id] = new_session
-    write_sessions(sessions)
+    conn = get_db_connection()
+    conn.execute(
+        "INSERT INTO chat_sessions (id, user_id, role, timestamp, data) VALUES (?, ?, ?, ?, ?)",
+        (session_id, user_id, role, timestamp, json.dumps(new_session))
+    )
+    conn.commit()
+    conn.close()
+    
     return jsonify(new_session)
 
 @app.route('/api/sessions/<session_id>', methods=['PUT'])
@@ -132,13 +141,17 @@ def update_session(session_id):
     data = request.json or {}
     history = data.get("chat_history", [])
     
-    sessions = read_sessions()
-    session = sessions.get(session_id)
-    if not session:
+    conn = get_db_connection()
+    row = conn.execute("SELECT data FROM chat_sessions WHERE id = ?", (session_id,)).fetchone()
+    
+    if not row:
+        conn.close()
         return jsonify({"error": "Session not found"}), 404
         
+    session = json.loads(row["data"])
     session["chat_history"] = history
-    session["timestamp"] = datetime.datetime.now().isoformat()
+    timestamp = datetime.datetime.now().isoformat()
+    session["timestamp"] = timestamp
     
     # Auto titling if the session title is still default
     if session["title"] == "New Chat" and len(history) > 0:
@@ -151,24 +164,39 @@ def update_session(session_id):
             else:
                 session["title"] = clean_text
                 
-    sessions[session_id] = session
-    write_sessions(sessions)
+    conn.execute(
+        "UPDATE chat_sessions SET timestamp = ?, data = ? WHERE id = ?",
+        (timestamp, json.dumps(session), session_id)
+    )
+    conn.commit()
+    conn.close()
+    
     return jsonify(session)
 
 @app.route('/api/sessions/<session_id>', methods=['DELETE'])
 def delete_session(session_id):
     """Deletes a chat session"""
-    sessions = read_sessions()
-    if session_id in sessions:
-        del sessions[session_id]
-        write_sessions(sessions)
+    conn = get_db_connection()
+    cursor = conn.execute("DELETE FROM chat_sessions WHERE id = ?", (session_id,))
+    conn.commit()
+    deleted = cursor.rowcount > 0
+    conn.close()
+    
+    if deleted:
         return jsonify({"success": True})
     return jsonify({"error": "Session not found"}), 404
 
 @app.route('/api/export_sessions', methods=['GET'])
 def export_sessions():
     """Exports all sessions as a JSON file attachment"""
-    sessions = read_sessions()
+    conn = get_db_connection()
+    rows = conn.execute("SELECT id, data FROM chat_sessions").fetchall()
+    conn.close()
+    
+    sessions = {}
+    for row in rows:
+        sessions[row["id"]] = json.loads(row["data"])
+        
     return jsonify(sessions)
 
 @app.route('/api/chat', methods=['POST'])
@@ -188,13 +216,16 @@ def chat():
         
     result = agent_system.run_chat(message, history, role)
     
-    # Auto-log updates into the json database file if session_id exists
+    # Auto-log updates into the sqlite database if session_id exists
     if session_id:
-        sessions = read_sessions()
-        session = sessions.get(session_id)
-        if session:
+        conn = get_db_connection()
+        row = conn.execute("SELECT data FROM chat_sessions WHERE id = ?", (session_id,)).fetchone()
+        
+        if row:
+            session = json.loads(row["data"])
             session["chat_history"] = result["chat_history"]
-            session["timestamp"] = datetime.datetime.now().isoformat()
+            timestamp = datetime.datetime.now().isoformat()
+            session["timestamp"] = timestamp
             
             # Auto titling if the session title is still default
             if session["title"] == "New Chat" and len(result["chat_history"]) > 0:
@@ -207,8 +238,12 @@ def chat():
                     else:
                         session["title"] = clean_text
                         
-            sessions[session_id] = session
-            write_sessions(sessions)
+            conn.execute(
+                "UPDATE chat_sessions SET timestamp = ?, data = ? WHERE id = ?",
+                (timestamp, json.dumps(session), session_id)
+            )
+            conn.commit()
+        conn.close()
             
     return jsonify(result)
 
