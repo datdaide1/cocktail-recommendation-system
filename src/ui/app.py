@@ -11,7 +11,7 @@ if str(project_root) not in sys.path:
 
 from src.utils.config import Config
 from src.agents.cocktail_agents import CocktailAgentSystem
-from src.tools.cocktail_tools import get_cocktails_df, get_bars_df
+from src.tools.base import get_cocktails_df, get_bars_df
 from src.utils.menu_exporter import MenuExporter
 
 # Initialize Flask App

@@ -2,13 +2,13 @@ import os
 import json
 import google.generativeai as genai
 from src.utils.config import Config
-from src.tools.cocktail_tools import (
-    db_search_cocktails,
-    db_search_bars,
-    calculate_abv,
-    substitute_ingredient,
-    execute_tool
-)
+
+# Define tool groups for dynamic routing
+TOOL_GROUPS = {
+    "discover": ["db_search_cocktails", "db_search_bars", "recommend_food_pairing"],
+    "mixology": ["generate_custom_recipe", "substitute_ingredient", "calculate_abv", "calculate_cost_and_shopping_list"],
+    "general": [] # No tools for general casual talk / chit-chat
+}
 
 # Define system instructions for both personas
 GUEST_CONCIERGE_INSTRUCTION = """
@@ -67,17 +67,29 @@ class CocktailAgentSystem:
                 raise ValueError("Active provider is Gemini but GEMINI_API_KEY is not configured in .env.")
             genai.configure(api_key=api_key)
             
-        # Define tools for native model configuration
+        # Import and hold references to all available tools
+        from src.tools import (
+            db_search_cocktails,
+            db_search_bars,
+            calculate_abv,
+            substitute_ingredient,
+            calculate_cost_and_shopping_list,
+            generate_custom_recipe,
+            recommend_food_pairing
+        )
         self.tools = [
             db_search_cocktails,
             db_search_bars,
             calculate_abv,
-            substitute_ingredient
+            substitute_ingredient,
+            calculate_cost_and_shopping_list,
+            generate_custom_recipe,
+            recommend_food_pairing
         ]
         
-    def get_agent_model(self, role: str):
+    def get_agent_model(self, role: str, active_tools: list):
         """
-        Creates a GenerativeModel configured for a specific role and its tools.
+        Creates a GenerativeModel configured for a specific role and active tools.
         """
         if role == "bartender":
             instruction = MASTER_BARTENDER_INSTRUCTION
@@ -86,9 +98,72 @@ class CocktailAgentSystem:
             
         return genai.GenerativeModel(
             model_name=Config.GEMINI_MODEL,
-            tools=self.tools,
+            tools=active_tools if active_tools else None,
             system_instruction=instruction
         )
+
+    def classify_query(self, user_message: str) -> str:
+        """
+        Uses a quick zero-shot classification to route the query to 'discover', 'mixology', or 'general'.
+        """
+        prompt = f"""You are the Tool Router for AI Lounge.
+Classify the user's request into one of these categories:
+- 'discover': if they are searching for existing cocktails, recipes, bars, venues, locations, or food pairings.
+- 'mixology': if they want to calculate ABV, substitute ingredients, create new custom recipes, calculate shopping cost, or need mixing advice.
+- 'general': if it is just greeting, casual chat, or general question.
+
+Output ONLY the category name: 'discover', 'mixology', or 'general'. Do not write anything else.
+
+User Request: {user_message}
+Category:"""
+        
+        try:
+            if self.provider == "gemini":
+                # Quick call to Gemini without tool definitions
+                model = genai.GenerativeModel("gemini-3.1-flash-lite")
+                response = model.generate_content(prompt)
+                category = response.text.strip().lower()
+            else:
+                # OpenAI/OpenRouter quick call
+                import requests
+                if self.provider == "openrouter":
+                    url = "https://openrouter.ai/api/v1/chat/completions"
+                    api_key = Config.OPENROUTER_API_KEY
+                    model_name = Config.OPENROUTER_MODEL or "google/gemini-2.5-flash"
+                    headers = {
+                        "Authorization": f"Bearer {api_key}",
+                        "Content-Type": "application/json"
+                    }
+                else:
+                    url = "https://api.openai.com/v1/chat/completions"
+                    api_key = Config.OPENAI_API_KEY
+                    model_name = Config.OPENAI_MODEL or "gpt-4o-mini"
+                    headers = {
+                        "Authorization": f"Bearer {api_key}",
+                        "Content-Type": "application/json"
+                    }
+                
+                payload = {
+                    "model": model_name,
+                    "messages": [{"role": "user", "content": prompt}]
+                }
+                resp = requests.post(url, headers=headers, json=payload, timeout=10)
+                if resp.status_code == 200:
+                    res_data = resp.json()
+                    category = res_data["choices"][0]["message"]["content"].strip().lower()
+                else:
+                    category = "general"
+        except Exception as e:
+            print(f"Routing failed: {e}. Defaulting to 'general'.")
+            category = "general"
+            
+        # Standardize return
+        if "discover" in category:
+            return "discover"
+        elif "mixology" in category:
+            return "mixology"
+        else:
+            return "general"
 
     def run_chat(self, user_message: str, chat_history: list, role: str) -> dict:
         """
@@ -103,10 +178,15 @@ class CocktailAgentSystem:
 
     def run_chat_gemini(self, user_message: str, chat_history: list, role: str) -> dict:
         """
-        Executes a turn using Gemini native SDK.
+        Executes a turn using Gemini native SDK with dynamic tool subsets.
         """
         try:
-            model = self.get_agent_model(role)
+            category = self.classify_query(user_message)
+            print(f"[Tool Router] Classified query as: {category}")
+            active_tool_names = TOOL_GROUPS.get(category, [])
+            active_tools = [t for t in self.tools if t.__name__ in active_tool_names]
+            
+            model = self.get_agent_model(role, active_tools)
             
             # Format chat history for Gemini SDK
             gemini_history = []
@@ -121,6 +201,9 @@ class CocktailAgentSystem:
             # Start chat session
             chat = model.start_chat(history=gemini_history)
             response = chat.send_message(user_message)
+            
+            # Import execute_tool dispatcher
+            from src.tools import execute_tool
             
             # Manual function calling loop (supporting up to 5 rounds of tool execution)
             for round_idx in range(5):
@@ -197,11 +280,15 @@ class CocktailAgentSystem:
 
     def run_chat_openai_compatible(self, user_message: str, chat_history: list, role: str, is_openrouter: bool = False) -> dict:
         """
-        Executes a turn using OpenAI-compatible HTTP requests (OpenAI/OpenRouter).
+        Executes a turn using OpenAI-compatible HTTP requests (OpenAI/OpenRouter) with dynamic tool subsets.
         """
         import requests
         
         try:
+            category = self.classify_query(user_message)
+            print(f"[Tool Router] Classified query as: {category}")
+            active_tool_names = TOOL_GROUPS.get(category, [])
+            
             if is_openrouter:
                 url = "https://openrouter.ai/api/v1/chat/completions"
                 api_key = Config.OPENROUTER_API_KEY
@@ -239,9 +326,11 @@ class CocktailAgentSystem:
             messages.append({"role": "user", "content": user_message})
             
             # Build tool definitions compliant with OpenAI / OpenRouter schemas
-            from src.tools.cocktail_tools import TOOL_DECLARATIONS
+            from src.tools import TOOL_DECLARATIONS, execute_tool
             openai_tools = []
             for tool in TOOL_DECLARATIONS:
+                if tool["name"] not in active_tool_names:
+                    continue
                 properties = {}
                 for prop, val in tool["parameters"].get("properties", {}).items():
                     properties[prop] = {
@@ -265,10 +354,11 @@ class CocktailAgentSystem:
             for round_idx in range(5):
                 payload = {
                     "model": model_name,
-                    "messages": messages,
-                    "tools": openai_tools,
-                    "tool_choice": "auto"
+                    "messages": messages
                 }
+                if openai_tools:
+                    payload["tools"] = openai_tools
+                    payload["tool_choice"] = "auto"
                 
                 resp = requests.post(url, headers=headers, json=payload, timeout=60)
                 if resp.status_code != 200:
