@@ -68,3 +68,12 @@ This file tracks the completed features and development tasks for the **AI Cockt
   - Integrated dynamic, message-based auto-titling to name sessions after the user's first query.
   - Integrated a clean sidebar navigation system in both Guest Concierge and Master Bartender chat widgets to let users manage, clear, and jump between chat logs.
   - Checked in and pushed all chat session updates to the GitHub remote repository.
+
+### 8. Multi-Provider LLM Integration (OpenAI & OpenRouter)
+- **Date**: June 5, 2026
+- **Status**: Completed
+- **Details**:
+  - Added template configurations to `.env` and `.env.example` supporting custom LLM providers (`gemini`, `openai`, `openrouter`).
+  - Implemented a unified chat request dispatcher inside `src/agents/cocktail_agents.py` with auto-detection capability based on active keys.
+  - Implemented OpenAI-compatible Chat Completions REST calls supporting full manual multi-turn function calling schemas.
+  - Staged, committed, and pushed provider support to the GitHub remote repository on `main`.
