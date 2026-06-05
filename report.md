@@ -31,3 +31,12 @@ This file tracks the completed features and development tasks for the **AI Cockt
   - Defined function call tools template under `src/tools/cocktail_tools.py` including `db_search_cocktails`, `db_search_bars`, `calculate_abv`, and `substitute_ingredient`.
   - Created the initial UI layout and themes in `src/ui/app.py` utilizing Streamlit.
   - Set up a clean HTML menu template in `src/utils/menu_exporter.py`.
+
+### 4. Codebase Translation & Standardization
+- **Date**: June 5, 2026
+- **Status**: Completed
+- **Details**:
+  - Fully translated `README.md` to English, detailing architecture, features, and setup.
+  - Standardized all codebase comments, docstrings, tool descriptions, and parameters inside `src/tools/cocktail_tools.py` and other modules to English.
+  - Translated all UI labels, options, headers, and descriptions inside `src/ui/app.py` to English for a global user experience.
+  - Pushed all translation updates to GitHub.
