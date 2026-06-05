@@ -22,3 +22,6 @@ Thumbs.db
 
 # Chat session log files
 data/chat_sessions.json
+
+# model
+model/
