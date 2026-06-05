@@ -26,14 +26,137 @@ except Exception as e:
     print(f"Error initializing Agent System: {e}")
     agent_system = None
 
+# Path to Chat Sessions Database
+SESSIONS_FILE = Path(Config.COCKTAILS_PATH).parent / "chat_sessions.json"
+
+import uuid
+import datetime
+
+def read_sessions():
+    """Reads all chat sessions from local JSON storage"""
+    if not SESSIONS_FILE.exists():
+        try:
+            SESSIONS_FILE.parent.mkdir(parents=True, exist_ok=True)
+            with open(SESSIONS_FILE, "w", encoding="utf-8") as f:
+                json.dump({"sessions": {}}, f)
+        except Exception as e:
+            print(f"Error creating sessions file: {e}")
+            return {}
+        return {}
+    try:
+        with open(SESSIONS_FILE, "r", encoding="utf-8") as f:
+            data = json.load(f)
+            return data.get("sessions", {})
+    except Exception as e:
+        print(f"Error reading sessions file: {e}")
+        return {}
+
+def write_sessions(sessions):
+    """Writes all sessions back to local JSON storage"""
+    try:
+        with open(SESSIONS_FILE, "w", encoding="utf-8") as f:
+            json.dump({"sessions": sessions}, f, indent=2, ensure_ascii=False)
+    except Exception as e:
+        print(f"Error writing sessions file: {e}")
+
 @app.route('/')
 def index():
     """Serves the main single page web application"""
     return app.send_static_file('index.html')
 
+@app.route('/api/sessions', methods=['GET'])
+def get_sessions():
+    """Returns list of sessions sorted by newest timestamp"""
+    sessions = read_sessions()
+    role = request.args.get("role", "") # optionally filter by role
+    
+    sessions_list = []
+    for sid, sdata in sessions.items():
+        if role and sdata.get("role") != role:
+            continue
+        sessions_list.append({
+            "id": sid,
+            "title": sdata.get("title", "New Chat"),
+            "role": sdata.get("role", "guest"),
+            "timestamp": sdata.get("timestamp", "")
+        })
+        
+    # Sort by timestamp descending
+    sessions_list.sort(key=lambda x: x["timestamp"], reverse=True)
+    return jsonify({"sessions": sessions_list})
+
+@app.route('/api/sessions/<session_id>', methods=['GET'])
+def get_session(session_id):
+    """Returns details including messages list of a specific session"""
+    sessions = read_sessions()
+    session = sessions.get(session_id)
+    if not session:
+        return jsonify({"error": "Session not found"}), 404
+    return jsonify(session)
+
+@app.route('/api/sessions', methods=['POST'])
+def create_session():
+    """Creates a new empty chat session"""
+    data = request.json or {}
+    role = data.get("role", "guest")
+    
+    sessions = read_sessions()
+    session_id = str(uuid.uuid4())
+    
+    new_session = {
+        "id": session_id,
+        "title": "New Chat",
+        "role": role,
+        "timestamp": datetime.datetime.now().isoformat(),
+        "chat_history": []
+    }
+    
+    sessions[session_id] = new_session
+    write_sessions(sessions)
+    return jsonify(new_session)
+
+@app.route('/api/sessions/<session_id>', methods=['PUT'])
+def update_session(session_id):
+    """Updates the chat history and title of a session"""
+    data = request.json or {}
+    history = data.get("chat_history", [])
+    
+    sessions = read_sessions()
+    session = sessions.get(session_id)
+    if not session:
+        return jsonify({"error": "Session not found"}), 404
+        
+    session["chat_history"] = history
+    session["timestamp"] = datetime.datetime.now().isoformat()
+    
+    # Auto titling if the session title is still default
+    if session["title"] == "New Chat" and len(history) > 0:
+        first_user_msg = next((msg for msg in history if msg["role"] == "user"), None)
+        if first_user_msg and first_user_msg.get("parts"):
+            text = first_user_msg["parts"][0]
+            clean_text = text.replace("\n", " ").strip()
+            if len(clean_text) > 35:
+                session["title"] = clean_text[:35] + "..."
+            else:
+                session["title"] = clean_text
+                
+    sessions[session_id] = session
+    write_sessions(sessions)
+    return jsonify(session)
+
+@app.route('/api/sessions/<session_id>', methods=['DELETE'])
+def delete_session(session_id):
+    """Deletes a chat session"""
+    sessions = read_sessions()
+    if session_id in sessions:
+        del sessions[session_id]
+        write_sessions(sessions)
+        return jsonify({"success": True})
+    return jsonify({"error": "Session not found"}), 404
+
 @app.route('/api/chat', methods=['POST'])
 def chat():
-    """Handles conversational agent requests with automatic tool use"""
+    """Handles conversational agent requests with automatic tool use and session logs logging"""
     if not agent_system:
         return jsonify({"message": "Gemini API key is not configured on the backend.", "chat_history": []}), 500
         
@@ -41,11 +164,35 @@ def chat():
     message = data.get("message", "")
     history = data.get("chat_history", [])
     role = data.get("role", "guest") # 'guest' or 'bartender'
+    session_id = data.get("session_id", "")
     
     if not message:
         return jsonify({"error": "Message is required"}), 400
         
     result = agent_system.run_chat(message, history, role)
+    
+    # Auto-log updates into the json database file if session_id exists
+    if session_id:
+        sessions = read_sessions()
+        session = sessions.get(session_id)
+        if session:
+            session["chat_history"] = result["chat_history"]
+            session["timestamp"] = datetime.datetime.now().isoformat()
+            
+            # Auto titling if the session title is still default
+            if session["title"] == "New Chat" and len(result["chat_history"]) > 0:
+                first_user_msg = next((msg for msg in result["chat_history"] if msg["role"] == "user"), None)
+                if first_user_msg and first_user_msg.get("parts"):
+                    text = first_user_msg["parts"][0]
+                    clean_text = text.replace("\n", " ").strip()
+                    if len(clean_text) > 35:
+                        session["title"] = clean_text[:35] + "..."
+                    else:
+                        session["title"] = clean_text
+                        
+            sessions[session_id] = session
+            write_sessions(sessions)
+            
     return jsonify(result)
 
 @app.route('/api/bars', methods=['GET'])

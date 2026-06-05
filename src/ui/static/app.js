@@ -1,5 +1,9 @@
 // Application State
 let activeRole = 'guest'; // 'guest' or 'bartender'
+let currentGuestSessionId = '';
+let currentBartenderSessionId = '';
+let guestSessions = [];
+let bartenderSessions = [];
 let guestHistory = [];
 let bartenderHistory = [];
 let abvIngredients = [
@@ -69,7 +73,9 @@ document.addEventListener('DOMContentLoaded', () => {
     setupAbvCalculator();
     setupMenuBuilder();
     
-    // Initial fetch to load cocktails list
+    // Initial fetch to load sessions and cocktail list
+    fetchSessions('guest');
+    fetchSessions('bartender');
     fetchCocktailsForMenu();
 });
 
@@ -86,6 +92,9 @@ function setupRoleSwitcher() {
         // Switch Views
         guestView.classList.remove('hidden');
         bartenderView.classList.add('hidden');
+        
+        // Render lists for guest
+        renderSessionsList('guest');
     });
 
     btnBartenderMode.addEventListener('click', () => {
@@ -99,10 +108,220 @@ function setupRoleSwitcher() {
         // Switch Views
         bartenderView.classList.remove('hidden');
         guestView.classList.add('hidden');
+        
+        // Render lists for bartender
+        renderSessionsList('bartender');
     });
 }
 
-// 2. CHAT SYSTEM
+// 1.5 SESSIONS PERSISTENCE LOGIC
+async function fetchSessions(role) {
+    try {
+        const response = await fetch(`/api/sessions?role=${role}`);
+        const data = await response.json();
+        const sessions = data.sessions || [];
+        
+        if (role === 'guest') {
+            guestSessions = sessions;
+            renderSessionsList('guest');
+            if (sessions.length === 0) {
+                await createNewSession('guest');
+            } else if (!currentGuestSessionId) {
+                selectSession(sessions[0].id, 'guest');
+            }
+        } else {
+            bartenderSessions = sessions;
+            renderSessionsList('bartender');
+            if (sessions.length === 0) {
+                await createNewSession('bartender');
+            } else if (!currentBartenderSessionId) {
+                selectSession(sessions[0].id, 'bartender');
+            }
+        }
+    } catch (err) {
+        console.error("Error fetching sessions:", err);
+    }
+}
+
+function renderSessionsList(role) {
+    const listContainer = document.getElementById(`${role}-sessions-list`);
+    const sessions = role === 'guest' ? guestSessions : bartenderSessions;
+    const currentId = role === 'guest' ? currentGuestSessionId : currentBartenderSessionId;
+    
+    if (!listContainer) return;
+    
+    listContainer.innerHTML = '';
+    sessions.forEach(s => {
+        const item = document.createElement('div');
+        const isSelected = s.id === currentId;
+        
+        item.className = `p-2 rounded-lg text-xs cursor-pointer truncate transition-all duration-200 border ${
+            isSelected 
+            ? 'bg-lounge-card border-gold text-gold font-bold shadow-md' 
+            : 'border-transparent text-lounge-muted hover:text-lounge-text hover:bg-lounge-card hover:bg-opacity-50'
+        }`;
+        
+        item.innerHTML = `
+            <div class="flex justify-between items-center gap-1">
+                <span class="truncate flex-grow"><i class="fa-solid fa-message mr-1.5 opacity-70"></i>${s.title}</span>
+            </div>
+        `;
+        
+        item.addEventListener('click', () => {
+            selectSession(s.id, role);
+        });
+        
+        listContainer.appendChild(item);
+    });
+}
+
+async function createNewSession(role) {
+    try {
+        const response = await fetch('/api/sessions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ role: role })
+        });
+        const session = await response.json();
+        
+        if (role === 'guest') {
+            currentGuestSessionId = session.id;
+            guestSessions.unshift(session);
+            renderSessionsList('guest');
+            loadSessionHistory(session, 'guest');
+        } else {
+            currentBartenderSessionId = session.id;
+            bartenderSessions.unshift(session);
+            renderSessionsList('bartender');
+            loadSessionHistory(session, 'bartender');
+        }
+    } catch (err) {
+        console.error("Error creating session:", err);
+    }
+}
+
+async function selectSession(sessionId, role) {
+    if (role === 'guest') {
+        currentGuestSessionId = sessionId;
+        renderSessionsList('guest');
+    } else {
+        currentBartenderSessionId = sessionId;
+        renderSessionsList('bartender');
+    }
+    
+    try {
+        const response = await fetch(`/api/sessions/${sessionId}`);
+        const session = await response.json();
+        loadSessionHistory(session, role);
+    } catch (err) {
+        console.error("Error loading session:", err);
+    }
+}
+
+function loadSessionHistory(session, role) {
+    const chatBox = role === 'guest' ? guestChatBox : bartenderChatBox;
+    const titleDisplay = document.querySelector(`.${role}-chat-title-display`);
+    
+    if (titleDisplay) {
+        titleDisplay.innerText = session.title || (role === 'guest' ? "Lounge Host" : "Master Mixologist");
+    }
+    
+    chatBox.innerHTML = '';
+    const history = session.chat_history || [];
+    
+    if (role === 'guest') {
+        guestHistory = history;
+    } else {
+        bartenderHistory = history;
+    }
+    
+    if (history.length === 0) {
+        // Render Initial Welcome Message
+        const welcomeBubble = document.createElement('div');
+        welcomeBubble.className = "flex gap-3 max-w-[85%] fade-in";
+        if (role === 'guest') {
+            welcomeBubble.innerHTML = `
+                <div class="w-8 h-8 rounded-full bg-gold bg-opacity-20 flex items-center justify-center text-gold flex-shrink-0">
+                    <i class="fa-solid fa-bell"></i>
+                </div>
+                <div class="bg-lounge-dark p-3 rounded-2xl rounded-tl-none border border-lounge-border text-sm leading-relaxed">
+                    Good evening. Welcome to the **AI Lounge**. I am your Guest Concierge. Tell me, what kind of flavor profile are you craving tonight, or are you looking for an exceptional bar venue in Hanoi or Ho Chi Minh City?
+                </div>
+            `;
+        } else {
+            welcomeBubble.innerHTML = `
+                <div class="w-8 h-8 rounded-full bg-gold bg-opacity-20 flex items-center justify-center text-gold flex-shrink-0">
+                    <i class="fa-solid fa-hat-cowboy-side"></i>
+                </div>
+                <div class="bg-lounge-dark p-3 rounded-2xl rounded-tl-none border border-lounge-border text-sm leading-relaxed">
+                    Hello. I am the **Master Bartender**. I can help you compile classic recipes, troubleshoot flavor profiles, recommend professional substitutes for missing ingredients, and calculate precise ABV rates.
+                </div>
+            `;
+        }
+        chatBox.appendChild(welcomeBubble);
+    } else {
+        // Render History messages
+        history.forEach(msg => {
+            const bubble = document.createElement('div');
+            if (msg.role === 'user') {
+                bubble.className = "flex gap-3 max-w-[85%] ml-auto justify-end fade-in";
+                bubble.innerHTML = `
+                    <div class="bg-lounge-border p-3 rounded-2xl rounded-tr-none border border-gold border-opacity-10 text-sm leading-relaxed">
+                        ${msg.parts[0]}
+                    </div>
+                    <div class="w-8 h-8 rounded-full bg-gold bg-opacity-20 flex items-center justify-center text-gold flex-shrink-0">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                `;
+            } else {
+                bubble.className = "flex gap-3 max-w-[85%] fade-in";
+                bubble.innerHTML = `
+                    <div class="w-8 h-8 rounded-full bg-gold bg-opacity-20 flex items-center justify-center text-gold flex-shrink-0">
+                        <i class="fa-solid ${role === 'guest' ? 'fa-bell' : 'fa-hat-cowboy-side'}"></i>
+                    </div>
+                    <div class="bg-lounge-dark p-3 rounded-2xl rounded-tl-none border border-lounge-border text-sm leading-relaxed">
+                        ${parseMarkdown(msg.parts[0])}
+                    </div>
+                `;
+            }
+            chatBox.appendChild(bubble);
+        });
+    }
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+async function deleteCurrentSession(role) {
+    const sessionId = role === 'guest' ? currentGuestSessionId : currentBartenderSessionId;
+    if (!sessionId) {
+        alert("No active session to delete.");
+        return;
+    }
+    
+    if (!confirm("Are you sure you want to delete this chat session?")) return;
+    
+    try {
+        const response = await fetch(`/api/sessions/${sessionId}`, {
+            method: 'DELETE'
+        });
+        
+        if (response.ok) {
+            if (role === 'guest') {
+                currentGuestSessionId = '';
+            } else {
+                currentBartenderSessionId = '';
+            }
+            await fetchSessions(role);
+        } else {
+            const errData = await response.json();
+            alert(`Failed to delete session: ${errData.error || response.statusText}`);
+        }
+    } catch (err) {
+        console.error("Error deleting session:", err);
+        alert(`Error deleting session: ${err.message}`);
+    }
+}
+
+// 2. CHAT SYSTEM SETUP
 function setupChatSystem() {
     // Guest Chat send triggers
     btnSendGuest.addEventListener('click', () => sendChatMessage('guest'));
@@ -116,34 +335,19 @@ function setupChatSystem() {
         if (e.key === 'Enter') sendChatMessage('bartender');
     });
 
-    // Clear Chats
-    document.querySelectorAll('.btn-clear-chat').forEach(btn => {
+    // Delete Current Chat Hook
+    document.querySelectorAll('.btn-delete-current-chat').forEach(btn => {
         btn.addEventListener('click', () => {
-            if (activeRole === 'guest') {
-                guestHistory = [];
-                guestChatBox.innerHTML = `
-                    <div class="flex gap-3 max-w-[85%]">
-                        <div class="w-8 h-8 rounded-full bg-gold bg-opacity-20 flex items-center justify-center text-gold flex-shrink-0">
-                            <i class="fa-solid fa-bell"></i>
-                        </div>
-                        <div class="bg-lounge-dark p-3 rounded-2xl rounded-tl-none border border-lounge-border text-sm leading-relaxed">
-                            Good evening. Welcome to the **AI Lounge**. I am your Guest Concierge. Tell me, what kind of flavor profile are you craving tonight, or are you looking for an exceptional bar venue in Hanoi or Ho Chi Minh City?
-                        </div>
-                    </div>
-                `;
-            } else {
-                bartenderHistory = [];
-                bartenderChatBox.innerHTML = `
-                    <div class="flex gap-3 max-w-[85%]">
-                        <div class="w-8 h-8 rounded-full bg-gold bg-opacity-20 flex items-center justify-center text-gold flex-shrink-0">
-                            <i class="fa-solid fa-hat-cowboy-side"></i>
-                        </div>
-                        <div class="bg-lounge-dark p-3 rounded-2xl rounded-tl-none border border-lounge-border text-sm leading-relaxed">
-                            Hello. I am the **Master Bartender**. I can help you compile classic recipes, troubleshoot flavor profiles, recommend professional substitutes for missing ingredients, and calculate precise ABV rates.
-                        </div>
-                    </div>
-                `;
-            }
+            const role = btn.getAttribute('data-role');
+            deleteCurrentSession(role);
+        });
+    });
+
+    // New Chat Click Hook
+    document.querySelectorAll('.btn-new-chat').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const role = btn.getAttribute('data-role');
+            createNewSession(role);
         });
     });
 
@@ -163,7 +367,6 @@ function setupChatSystem() {
 }
 
 function parseMarkdown(text) {
-    // Basic Markdown Parser for Bold, Lists, Headers and Paragraphs
     let parsed = text;
     
     // Bold **text**
@@ -193,6 +396,7 @@ async function sendChatMessage(role) {
     const inputField = role === 'guest' ? guestUserInput : bartenderUserInput;
     const chatBox = role === 'guest' ? guestChatBox : bartenderChatBox;
     const history = role === 'guest' ? guestHistory : bartenderHistory;
+    const sessionId = role === 'guest' ? currentGuestSessionId : currentBartenderSessionId;
     
     const message = inputField.value.trim();
     if (!message) return;
@@ -244,8 +448,9 @@ async function sendChatMessage(role) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 message: message,
-                chat_history: history.slice(0, -1), // send history without the last user message as backend appends it
-                role: role
+                chat_history: history.slice(0, -1),
+                role: role,
+                session_id: sessionId
             })
         });
         
@@ -275,6 +480,9 @@ async function sendChatMessage(role) {
                 role: "model",
                 parts: [responseText]
             });
+            
+            // Trigger background reload of sessions metadata to update the title
+            fetchSessions(role);
         } else {
             throw new Error(data.message || "Failed to query backend agents.");
         }
