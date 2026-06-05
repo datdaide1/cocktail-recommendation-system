@@ -191,9 +191,23 @@ Category:"""
                     "model": model_name,
                     "messages": [{"role": "user", "content": prompt}]
                 }
-                resp = requests.post(url, headers=headers, json=payload, timeout=10)
+                resp = requests.post(url, headers=headers, json=payload, timeout=30)
                 if resp.status_code == 200:
-                    res_data = resp.json()
+                    try:
+                        res_data = resp.json()
+                    except ValueError:
+                        import json
+                        import re
+                        raw = resp.text.strip()
+                        try:
+                            res_data = json.loads(raw.split('\n')[0])
+                        except Exception:
+                            match = re.search(r'^(\{.*\})', raw, re.DOTALL)
+                            if match:
+                                res_data = json.loads(match.group(1))
+                            else:
+                                raise Exception("Failed to parse JSON")
+                        
                     category = res_data["choices"][0]["message"]["content"].strip().lower()
                 else:
                     category = "general"
@@ -413,11 +427,28 @@ Category:"""
                     payload["tools"] = openai_tools
                     payload["tool_choice"] = "auto"
                 
-                resp = requests.post(url, headers=headers, json=payload, timeout=60)
+                resp = requests.post(url, headers=headers, json=payload, timeout=90)
                 if resp.status_code != 200:
                     raise Exception(f"API error from '{self.provider}' ({resp.status_code}): {resp.text}")
                     
-                res_data = resp.json()
+                try:
+                    res_data = resp.json()
+                except ValueError:
+                    import json
+                    # 9router sometimes returns trailing data or multiple lines
+                    raw = resp.text.strip()
+                    try:
+                        # Extract the first valid JSON string from potentially broken output
+                        res_data = json.loads(raw.split('\n')[0])
+                    except Exception:
+                        # Fallback for extra data
+                        import re
+                        match = re.search(r'^(\{.*\})', raw, re.DOTALL)
+                        if match:
+                            res_data = json.loads(match.group(1))
+                        else:
+                            raise Exception(f"Failed to parse JSON response: {raw[:200]}")
+                            
                 choice = res_data["choices"][0]
                 assistant_msg = choice["message"]
                 
