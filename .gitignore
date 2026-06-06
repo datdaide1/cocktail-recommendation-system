@@ -25,3 +25,11 @@ data/chat_sessions.json
 
 # model
 model/
+
+# Backup and temporary files
+*.backup
+*.bak
+*.bak2
+patch_*.py
+fix_*.py
+scratch/
