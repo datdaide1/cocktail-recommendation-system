@@ -10,17 +10,49 @@ import google.generativeai as genai
 load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 
 def get_gemini_client():
+    provider = os.getenv("LLM_PROVIDER", "").lower()
+    
+    # 9router / Custom Provider
+    custom_key = os.getenv("CUSTOM_API_KEY")
+    custom_base = os.getenv("CUSTOM_API_BASE")
+    if (provider == "custom" or custom_key) and custom_base:
+        print(f"Using 9router (Custom) Provider for enrichment at {custom_base}")
+        return {"type": "custom", "api_key": custom_key, "api_base": custom_base, "model": os.getenv("CUSTOM_MODEL", "beeknoee/gemini-3.5-flash")}
+        
+    # OpenRouter Provider
+    or_key = os.getenv("OPENROUTER_API_KEY")
+    if provider == "openrouter" or or_key:
+        print(f"Using OpenRouter Provider for enrichment")
+        return {"type": "openrouter", "api_key": or_key, "model": os.getenv("OPENROUTER_MODEL", "google/gemini-2.0-flash-lite-preview-02-05:free")}
+        
+    # Native Gemini Provider
     api_key = os.getenv("GEMINI_API_KEY")
     if not api_key or api_key == "your_gemini_api_key_here":
-        print("Warning: GEMINI_API_KEY is not set. Using local fallback rule-based enrichment.")
+        print("Warning: No valid API key found. Using local fallback rule-based enrichment.")
         return None
     try:
         genai.configure(api_key=api_key)
         model = genai.GenerativeModel("gemini-3.1-flash-lite")
-        return model
+        print("Using Native Gemini SDK for enrichment")
+        return {"type": "gemini", "model": model}
     except Exception as e:
         print(f"Error configuring Gemini API: {e}. Falling back to rule-based enrichment.")
         return None
+
+
+def fetch_cocktail_image(name):
+    import requests
+    import urllib.parse
+    try:
+        url = f"https://www.thecocktaildb.com/api/json/v1/1/search.php?s={urllib.parse.quote(name)}"
+        resp = requests.get(url, timeout=10)
+        if resp.status_code == 200:
+            data = resp.json()
+            if data and data.get("drinks") and len(data["drinks"]) > 0:
+                return data["drinks"][0].get("strDrinkThumb", "")
+    except Exception as e:
+        print(f"Warning: Failed to fetch image for {name} - {e}")
+    return ""
 
 def fallback_enrich(row):
     """Fallback function to enrich metadata using simple heuristics if Gemini is not available"""
@@ -97,6 +129,7 @@ def main():
     df['meaning_and_history'] = ""
     df['glassware_recommendation'] = ""
     df['abv_category'] = ""
+    df['image_url'] = ""
     
     if model is None:
         print("Running fast local rule-based enrichment...")
@@ -111,6 +144,10 @@ def main():
             if idx >= 30:
                 fallback_res = fallback_enrich(row)
                 df.at[idx, 'flavor_profile'] = fallback_res[0]
+                img = fetch_cocktail_image(name)
+                df.at[idx, 'image_url'] = img
+                img = fetch_cocktail_image(name)
+                df.at[idx, 'image_url'] = img
                 df.at[idx, 'meaning_and_history'] = fallback_res[1]
                 df.at[idx, 'glassware_recommendation'] = fallback_res[2]
                 df.at[idx, 'abv_category'] = fallback_res[3]
@@ -133,8 +170,42 @@ def main():
             """
             
             try:
-                response = model.generate_content(prompt)
-                res_text = response.text.strip()
+                res_text = ""
+                if model["type"] == "gemini":
+                    response = model["model"].generate_content(prompt)
+                    res_text = response.text.strip()
+                else:
+                    # OpenRouter or 9Router
+                    import requests
+                    import json
+                    url = "https://openrouter.ai/api/v1/chat/completions"
+                    if model["type"] == "custom":
+                        url = f"{model['api_base'].rstrip('/')}/v1/chat/completions"
+                    
+                    headers = {
+                        "Authorization": f"Bearer {model['api_key']}",
+                        "Content-Type": "application/json"
+                    }
+                    payload = {
+                        "model": model["model"],
+                        "messages": [{"role": "user", "content": prompt}],
+                        "temperature": 0.3
+                    }
+                    if model["type"] == "openrouter":
+                        payload["max_tokens"] = 1000
+                    
+                    resp = requests.post(url, headers=headers, json=payload, timeout=180)
+                    if resp.status_code == 200:
+                        try:
+                            res_data = resp.json()
+                        except ValueError:
+                            raw = resp.text.strip()
+                            import json
+                            decoder = json.JSONDecoder()
+                            res_data, _ = decoder.raw_decode(raw)
+                        res_text = res_data["choices"][0]["message"]["content"].strip()
+                    else:
+                        raise Exception(f"API Error {resp.status_code}: {resp.text}")
                 
                 # Parse lines
                 flavor_profile = "Cân bằng"
@@ -160,6 +231,8 @@ def main():
                 df.at[idx, 'meaning_and_history'] = meaning_and_history
                 df.at[idx, 'glassware_recommendation'] = glassware_recommendation
                 df.at[idx, 'abv_category'] = abv_category
+                img = fetch_cocktail_image(name)
+                df.at[idx, 'image_url'] = img
                 
                 print(f"Enriched via LLM: {name} ({idx+1}/30)")
                 time.sleep(1.0)  # Rate limiting
@@ -168,6 +241,10 @@ def main():
                 print(f"Failed to enrich {name} via Gemini ({e}). Using local fallback.")
                 fallback_res = fallback_enrich(row)
                 df.at[idx, 'flavor_profile'] = fallback_res[0]
+                img = fetch_cocktail_image(name)
+                df.at[idx, 'image_url'] = img
+                img = fetch_cocktail_image(name)
+                df.at[idx, 'image_url'] = img
                 df.at[idx, 'meaning_and_history'] = fallback_res[1]
                 df.at[idx, 'glassware_recommendation'] = fallback_res[2]
                 df.at[idx, 'abv_category'] = fallback_res[3]
