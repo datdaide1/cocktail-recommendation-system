@@ -214,7 +214,11 @@ def chat():
     if not message:
         return jsonify({"error": "Message is required"}), 400
         
-    result = agent_system.run_chat(message, history, role)
+    try:
+        result = agent_system.run_chat(message, history, role)
+    except Exception as e:
+        print(f"Error executing run_chat: {e}")
+        return jsonify({"error": f"Agent error: {str(e)}"}), 500
     
     # Auto-log updates into the sqlite database if session_id exists
     if session_id:

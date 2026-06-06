@@ -468,16 +468,20 @@ async function sendChatMessage(role) {
                 user_id: CLIENT_USER_ID
             })
         });
-        
-        const data = await response.json();
+        let data;
+        try {
+            data = await response.json();
+        } catch (e) {
+            data = { error: `Server error (Status ${response.status}). The request may have timed out or the AI model failed to respond.` };
+        }
         
         // Remove Typing Indicator
         const indicator = document.getElementById(`${role}-typing-indicator`);
         if (indicator) indicator.remove();
         
-        if (response.ok) {
+        if (response.ok && !data.error) {
             // Append Model response
-            const responseText = data.message;
+            const responseText = data.message || "No response generated.";
             const modelBubble = document.createElement('div');
             modelBubble.className = "flex gap-3 max-w-[85%] fade-in";
             modelBubble.innerHTML = `
