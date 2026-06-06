@@ -350,6 +350,12 @@ class CocktailAgentSystem:
                     "model": model_name,
                     "messages": messages
                 }
+                
+                # Free OpenRouter accounts have a strict limit on requested tokens.
+                # If we don't specify max_tokens, it defaults to the model's max context (up to 2M) and fails.
+                if self.provider == "openrouter":
+                    payload["max_tokens"] = 4096
+                    
                 if openai_tools:
                     payload["tools"] = openai_tools
                     payload["tool_choice"] = "auto"

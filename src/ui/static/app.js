@@ -503,7 +503,7 @@ async function sendChatMessage(role) {
             // Trigger background reload of sessions metadata to update the title
             fetchSessions(role);
         } else {
-            throw new Error(data.message || "Failed to query backend agents.");
+            throw new Error(data.error || data.message || "Failed to query backend agents.");
         }
     } catch (err) {
         console.error(err);
