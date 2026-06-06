@@ -390,14 +390,22 @@ def calculate_abv_endpoint():
 @app.route('/api/export-menu', methods=['POST'])
 def export_menu():
     """Generates and returns customized premium HTML menu string"""
-    data = request.json or {}
-    title = data.get("title", "THE ARTISAN LOUNGE")
-    selected_cocktails = data.get("cocktails", [])
-    
-    exporter = MenuExporter(menu_title=title)
-    html_menu = exporter.generate_html_menu(selected_cocktails)
-    
-    return jsonify({"html": html_menu})
+    try:
+        data = request.json or {}
+        title = data.get("title", "THE ARTISAN LOUNGE")
+        selected_cocktails = data.get("cocktails", [])
+        
+        exporter = MenuExporter(menu_title=title)
+        html_menu = exporter.generate_html_menu(selected_cocktails)
+        
+        return jsonify({"html": html_menu})
+
+    except Exception as e:
+        print(f"Unhandled error in chat endpoint: {e}")
+        import traceback
+        traceback.print_exc()
+        from flask import jsonify
+        return jsonify({"error": f"Internal Server Error: {str(e)}"}), 500
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 5000))
