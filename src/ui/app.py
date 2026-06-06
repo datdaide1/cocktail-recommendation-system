@@ -341,7 +341,7 @@ def get_cocktails():
             "ingredients": ingredients_list,
             "instructions": row.get("instructions"),
             "meaning_and_history": row.get("meaning_and_history"),
-            "drinkThumbnail": row.get("drinkThumbnail")
+            "image_url": row.get("image_url", row.get("drinkThumbnail"))
         })
         
     return jsonify({"cocktails": output})

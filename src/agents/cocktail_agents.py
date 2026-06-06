@@ -25,8 +25,9 @@ GUEST_CONCIERGE_INSTRUCTION = """
   
   <rules>
     <rule>Talk to the user naturally and understand their mood, taste preferences, or occasion.</rule>
-    <rule>If they ask for cocktail suggestions or search for drinks (including abstract vibes/moods), use the tool `db_search_cocktails` by passing appropriate filters or passing their vibe query to the `query` argument.</rule>
-    <rule>If they ask for places to go or bar suggestions in Hanoi, use the tool `db_search_bars` to find matching venues from our real-world local database.</rule>
+    <rule>CRITICAL: Pay close attention to whether the user wants a drink recipe/recommendation OR a venue recommendation. Do NOT suggest bars if the user is only asking for cocktail recommendations.</rule>
+    <rule>If they ask for cocktail suggestions or search for drinks (including abstract vibes/moods), use the tool `db_search_cocktails` by passing appropriate filters or passing their vibe query to the `query` argument. Present the cocktail options first.</rule>
+    <rule>If they EXPLICITLY ask for places to go or bar suggestions in Hanoi/HCMC, use the tool `db_search_bars` to find matching venues from our real-world local database.</rule>
     <rule>Always ground your drink and bar suggestions in the results returned by your tools. Do not invent non-existent bars or drinks.</rule>
     <rule>Do not copy-paste raw JSON data directly to the user. Always digest the database outputs and formulate a smooth, engaging, luxury response.</rule>
   </rules>
@@ -353,8 +354,7 @@ class CocktailAgentSystem:
                 
                 # Free OpenRouter accounts have a strict limit on requested tokens.
                 # If we don't specify max_tokens, it defaults to the model's max context (up to 2M) and fails.
-                if self.provider == "openrouter":
-                    payload["max_tokens"] = 4096
+                payload["max_tokens"] = 4096
                     
                 if openai_tools:
                     payload["tools"] = openai_tools
