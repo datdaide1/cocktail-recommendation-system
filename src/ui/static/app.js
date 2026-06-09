@@ -379,13 +379,13 @@ function renderGrid(items, type) {
             }
             
             card.innerHTML = `
-                <div class="h-48 relative overflow-hidden">
+                <div class="h-48 relative overflow-hidden pointer-events-none">
                     ${imageHtml}
                     <div class="absolute top-3 right-3 bg-lounge-darkest bg-opacity-80 backdrop-blur-md px-2.5 py-1 rounded-lg border border-gold border-opacity-30">
                         <span class="text-[10px] font-bold text-gold uppercase tracking-wider">${item.abv_category || 'N/A'}</span>
                     </div>
                 </div>
-                <div class="p-5 flex flex-col flex-grow">
+                <div class="p-5 flex flex-col flex-grow pointer-events-none">
                     <h3 class="font-cinzel font-bold text-gold text-lg mb-1 truncate">${item.name}</h3>
                     <p class="text-xs text-lounge-muted mb-4 uppercase tracking-wide">
                         <i class="fa-solid fa-glass-water text-[10px]"></i> ${item.glassware_recommendation || 'Classic Glass'}
@@ -399,6 +399,10 @@ function renderGrid(items, type) {
                     </div>
                 </div>
             `;
+            
+            card.style.cursor = 'pointer';
+            card.addEventListener('click', () => openDetailModal(item, 'cocktails'));
+            
         } else {
             // Render Bar Card
             const colors = ['from-gray-900 to-gray-800', 'from-slate-900 to-slate-800', 'from-zinc-900 to-zinc-800', 'from-neutral-900 to-neutral-800'];
@@ -406,13 +410,13 @@ function renderGrid(items, type) {
             const imageHtml = `<div class="w-full h-full bg-gradient-to-br ${randomColor} flex items-center justify-center transition-transform duration-700 group-hover:scale-110"><i class="fa-solid fa-compass text-gold opacity-50 text-6xl"></i></div>`;
 
             card.innerHTML = `
-                <div class="h-32 relative overflow-hidden border-b border-lounge-border">
+                <div class="h-32 relative overflow-hidden border-b border-lounge-border pointer-events-none">
                     ${imageHtml}
                     <div class="absolute top-3 right-3 bg-lounge-darkest bg-opacity-80 backdrop-blur-md px-2.5 py-1 rounded-lg border border-gold border-opacity-30">
                         <span class="text-[10px] font-bold text-gold uppercase tracking-wider">${item.price_range || '$$'}</span>
                     </div>
                 </div>
-                <div class="p-5 flex flex-col flex-grow">
+                <div class="p-5 flex flex-col flex-grow pointer-events-none">
                     <h3 class="font-cinzel font-bold text-gold text-lg mb-1 truncate">${item.name}</h3>
                     <p class="text-[10px] text-lounge-muted mb-4 uppercase tracking-wide">
                         <i class="fa-solid fa-location-dot text-[9px] mr-1"></i> ${item.district}, ${item.city}
@@ -426,10 +430,102 @@ function renderGrid(items, type) {
                     </div>
                 </div>
             `;
+            
+            card.style.cursor = 'pointer';
+            card.addEventListener('click', () => openDetailModal(item, 'bars'));
         }
         
         mainGrid.appendChild(card);
     });
+}
+
+// Detail Modal Logic
+const detailModal = document.getElementById('detail-modal');
+const btnCloseDetailModal = document.getElementById('btn-close-detail-modal');
+const dmImageContainer = document.getElementById('detail-modal-image-container');
+const dmTags = document.getElementById('detail-modal-tags');
+const dmTitle = document.getElementById('detail-modal-title');
+const dmSubtitle = document.getElementById('detail-modal-subtitle');
+const dmDescription = document.getElementById('detail-modal-description');
+const dmContentArea = document.getElementById('detail-modal-content-area');
+
+btnCloseDetailModal.addEventListener('click', () => {
+    detailModal.classList.add('hidden');
+    detailModal.classList.remove('flex');
+});
+
+function openDetailModal(item, type) {
+    // Reset contents
+    dmImageContainer.innerHTML = '';
+    dmTags.innerHTML = '';
+    dmContentArea.innerHTML = '';
+    
+    if (type === 'cocktails') {
+        // Image
+        if (item.image_url && item.image_url.trim() !== '') {
+            dmImageContainer.innerHTML = `<img src="${item.image_url}" alt="${item.name}" class="w-full h-full object-cover">`;
+        } else {
+            dmImageContainer.innerHTML = `<div class="w-full h-full bg-gradient-to-br from-zinc-900 to-zinc-800 flex items-center justify-center"><i class="fa-solid fa-martini-glass-citrus text-gold opacity-50 text-6xl"></i></div>`;
+        }
+        
+        // Tags
+        const tags = (item.flavor_profile || 'Balanced').split(',').slice(0, 3);
+        tags.push(item.abv_category || 'N/A');
+        tags.forEach(t => {
+            dmTags.innerHTML += `<span class="text-xs bg-lounge-darkest bg-opacity-80 px-2.5 py-1 rounded-lg text-gold border border-gold border-opacity-30 whitespace-nowrap">${t.trim()}</span>`;
+        });
+        
+        // Text
+        dmTitle.innerText = item.name;
+        dmSubtitle.innerHTML = `<i class="fa-solid fa-glass-water"></i> ${item.glassware_recommendation || 'Classic Glass'} &bull; ${item.category || 'Cocktail'}`;
+        dmDescription.innerHTML = parseMarkdown(item.meaning_and_history || 'A premium selection crafted with the finest ingredients.');
+        
+        // Ingredients & Instructions
+        let ingHtml = `<h4 class="font-cinzel text-gold text-lg mb-3 border-b border-lounge-border pb-1">Ingredients</h4><ul class="space-y-2 mb-6">`;
+        if (item.ingredients && Array.isArray(item.ingredients)) {
+            item.ingredients.forEach(ing => {
+                ingHtml += `<li class="text-sm text-lounge-text flex items-start gap-2"><i class="fa-solid fa-check text-gold mt-1 text-xs"></i><span>${ing}</span></li>`;
+            });
+        }
+        ingHtml += `</ul>`;
+        
+        let instHtml = `<h4 class="font-cinzel text-gold text-lg mb-3 border-b border-lounge-border pb-1">Instructions</h4><div class="text-sm text-lounge-text leading-relaxed bg-lounge-dark p-4 rounded-xl border border-lounge-border shadow-inner">`;
+        instHtml += parseMarkdown(item.instructions || 'Combine ingredients and serve.');
+        instHtml += `</div>`;
+        
+        dmContentArea.innerHTML = ingHtml + instHtml;
+        
+    } else {
+        // Image
+        dmImageContainer.innerHTML = `<div class="w-full h-full bg-gradient-to-br from-zinc-900 to-zinc-800 flex items-center justify-center"><i class="fa-solid fa-compass text-gold opacity-50 text-6xl"></i></div>`;
+        
+        // Tags
+        dmTags.innerHTML = `
+            <span class="text-xs bg-lounge-darkest bg-opacity-80 px-2.5 py-1 rounded-lg text-gold border border-gold border-opacity-30"><i class="fa-solid fa-star mr-1"></i>${item.style}</span>
+            <span class="text-xs bg-lounge-darkest bg-opacity-80 px-2.5 py-1 rounded-lg text-gold border border-gold border-opacity-30">${item.price_range || '$$'}</span>
+        `;
+        
+        // Text
+        dmTitle.innerText = item.name;
+        dmSubtitle.innerHTML = `<i class="fa-solid fa-location-dot"></i> ${item.district}, ${item.city}`;
+        dmDescription.innerHTML = parseMarkdown(item.vibe_description || 'A stunning venue to experience premium mixology.');
+        
+        // Address & Signature
+        let contentHtml = `
+            <div class="bg-lounge-dark p-4 rounded-xl border border-lounge-border shadow-inner mb-6">
+                <h4 class="font-cinzel text-gold text-sm uppercase tracking-wider mb-2">Location</h4>
+                <p class="text-sm text-lounge-text"><i class="fa-solid fa-map-pin text-lounge-muted mr-2"></i>${item.address}</p>
+            </div>
+            <div class="bg-gold bg-opacity-10 p-4 rounded-xl border border-gold border-opacity-30 shadow-inner">
+                <h4 class="font-cinzel text-gold text-sm uppercase tracking-wider mb-2">Signature Cocktail</h4>
+                <p class="text-sm text-gold font-bold"><i class="fa-solid fa-martini-glass text-gold mr-2"></i>${item.signature_cocktail}</p>
+            </div>
+        `;
+        dmContentArea.innerHTML = contentHtml;
+    }
+    
+    detailModal.classList.remove('hidden');
+    detailModal.classList.add('flex');
 }
 
 // 6. FILTERS AND SEARCH
@@ -474,18 +570,26 @@ function applyFilters() {
 
 // Smart feature: If AI recommends a specific drink or bar, search for it
 function smartFilterGrid(aiResponse) {
-    if (activeTab === 'cocktails') {
-        const activeDrinks = cocktailsData.filter(d => aiResponse.toLowerCase().includes(d.name.toLowerCase()));
-        if (activeDrinks.length > 0) {
-            searchInput.value = activeDrinks[0].name;
-            applyFilters();
-        }
-    } else {
-        const activeBars = barsData.filter(b => aiResponse.toLowerCase().includes(b.name.toLowerCase()));
-        if (activeBars.length > 0) {
-            searchInput.value = activeBars[0].name;
-            applyFilters();
-        }
+    const text = aiResponse.toLowerCase();
+    
+    // Check bars first (they are usually proper nouns)
+    const activeBars = barsData.filter(b => text.includes(b.name.toLowerCase()));
+    if (activeBars.length > 0) {
+        if (activeTab !== 'bars') switchTab('bars');
+        searchInput.value = activeBars[0].name;
+        applyFilters();
+        // Optional: Open modal directly
+        // openDetailModal(activeBars[0], 'bars');
+        return;
+    }
+    
+    // Check cocktails
+    const activeDrinks = cocktailsData.filter(d => text.includes(d.name.toLowerCase()));
+    if (activeDrinks.length > 0) {
+        if (activeTab !== 'cocktails') switchTab('cocktails');
+        searchInput.value = activeDrinks[0].name;
+        applyFilters();
+        return;
     }
 }
 

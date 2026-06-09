@@ -217,8 +217,25 @@ def chat():
     try:
         result = agent_system.run_chat(message, history, role)
     except Exception as e:
-        print(f"Error executing run_chat: {e}")
-        return jsonify({"error": f"Agent error: {str(e)}"}), 500
+        error_msg = str(e)
+        print(f"Error executing run_chat: {error_msg}")
+        
+        # Log error to database if session exists
+        if session_id:
+            conn = get_db_connection()
+            row = conn.execute("SELECT data FROM chat_sessions WHERE id = ?", (session_id,)).fetchone()
+            if row:
+                session = json.loads(row["data"])
+                # Append user message and system error
+                session["chat_history"].append({"role": "user", "parts": [message]})
+                session["chat_history"].append({"role": "system_error", "parts": [error_msg]})
+                timestamp = datetime.datetime.now().isoformat()
+                session["timestamp"] = timestamp
+                conn.execute("UPDATE chat_sessions SET timestamp = ?, data = ? WHERE id = ?", (timestamp, json.dumps(session), session_id))
+                conn.commit()
+            conn.close()
+            
+        return jsonify({"error": f"Agent error: {error_msg}", "chat_history": history + [{"role": "user", "parts": [message]}, {"role": "system_error", "parts": [error_msg]}]}), 500
     
     # Auto-log updates into the sqlite database if session_id exists
     if session_id:

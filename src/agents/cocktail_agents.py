@@ -71,6 +71,24 @@ MASTER_BARTENDER_INSTRUCTION = """
 </system_prompt>
 """
 
+QA_AGENT_INSTRUCTION = """
+<system_prompt>
+  <agent>
+    <name>Quality Assurance Evaluator</name>
+    <organization>AI Lounge</organization>
+    <persona>Strict, observant, logical fact-checker.</persona>
+  </agent>
+  <objective>
+    Evaluate the proposed response from the main AI. Ensure it does not hallucinate fake bars, invent unsafe/toxic cocktail recipes, or misinterpret the user's intent.
+  </objective>
+  <rules>
+    <rule>If the response recommends a Bar, verify if the bar is realistic or if the AI admits it couldn't find it. If it hallucinated a fake bar, respond with "REJECT: Hallucinated Bar".</rule>
+    <rule>If the response provides a recipe with dangerous or toxic ingredients (e.g. bleach, raw unsafe items), respond with "REJECT: Unsafe recipe".</rule>
+    <rule>If the response is perfectly fine, safe, and logical, simply respond with "APPROVE".</rule>
+  </rules>
+</system_prompt>
+"""
+
 class CocktailAgentSystem:
     """
     Main controller for the Multi-Agent System.
@@ -142,11 +160,80 @@ class CocktailAgentSystem:
         Routes the chat turn to the active LLM provider.
         """
         if self.provider == "gemini":
-            return self.run_chat_gemini(user_message, chat_history, role)
+            result = self.run_chat_gemini(user_message, chat_history, role)
         else:
             # OpenAI, OpenRouter, or Custom
-            return self.run_chat_openai_compatible(user_message, chat_history, role)
+            result = self.run_chat_openai_compatible(user_message, chat_history, role)
+            
+        # Multi-Agent Evaluation Loop
+        is_approved, feedback = self._evaluate_response(user_message, result["message"])
+        if not is_approved:
+            print(f"[QA Agent] Response rejected. Reason: {feedback}")
+            # Self-reflection: send the rejection back to the main agent to regenerate
+            reflection_msg = f"SYSTEM QA EVALUATION FAILED: {feedback}. Please rewrite your response to fix this issue."
+            # We recursively call run_chat but append the failure to the history
+            temp_history = result["chat_history"]
+            temp_history.append({"role": "user", "parts": [reflection_msg]})
+            
+            if self.provider == "gemini":
+                result = self.run_chat_gemini("I have noted the feedback. Let me try again.", temp_history, role)
+            else:
+                result = self.run_chat_openai_compatible("I have noted the feedback. Let me try again.", temp_history, role)
+                
+            # Strip the temporary reflection loop from the final history so the user doesn't see the internal QA dialogue
+            result["chat_history"] = chat_history + [
+                {"role": "user", "parts": [user_message]},
+                {"role": "model", "parts": [result["message"]]}
+            ]
+            
+        return result
 
+    def _evaluate_response(self, user_query: str, agent_response: str) -> tuple[bool, str]:
+        """
+        QA Agent evaluates the output. Returns (is_approved, feedback_string)
+        """
+        prompt = f"User asked: '{user_query}'\nAgent responded: '{agent_response}'\n\nBased on your system instructions, output 'APPROVE' if it's safe and realistic. Otherwise output 'REJECT: <reason>'."
+        
+        try:
+            import requests
+            if self.provider == "gemini":
+                model = genai.GenerativeModel(model_name=Config.GEMINI_MODEL, system_instruction=QA_AGENT_INSTRUCTION)
+                response = model.generate_content(prompt)
+                res_text = response.text.strip()
+            else:
+                # OpenRouter / OpenAI / Custom
+                api_key = Config.CUSTOM_API_KEY if self.provider == "custom" else Config.OPENROUTER_API_KEY if self.provider == "openrouter" else Config.OPENAI_API_KEY
+                url = Config.CUSTOM_API_BASE if self.provider == "custom" else "https://openrouter.ai/api/v1/chat/completions" if self.provider == "openrouter" else "https://api.openai.com/v1/chat/completions"
+                model_name = Config.CUSTOM_MODEL if self.provider == "custom" else Config.OPENROUTER_MODEL if self.provider == "openrouter" else Config.OPENAI_MODEL
+                
+                if self.provider == "custom" and not url.endswith("/chat/completions"):
+                    url = url.rstrip("/") + "/chat/completions"
+                    
+                payload = {
+                    "model": model_name,
+                    "messages": [
+                        {"role": "system", "content": QA_AGENT_INSTRUCTION},
+                        {"role": "user", "content": prompt}
+                    ],
+                    "temperature": 0.0,
+                    "max_tokens": 100
+                }
+                headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
+                resp = requests.post(url, headers=headers, json=payload, timeout=30)
+                if resp.status_code == 200:
+                    res_data = resp.json()
+                    res_text = res_data["choices"][0]["message"]["content"].strip()
+                else:
+                    res_text = "APPROVE" # Fallback if QA fails
+                    
+            if res_text.startswith("REJECT"):
+                return False, res_text.replace("REJECT:", "").strip()
+            return True, ""
+            
+        except Exception as e:
+            print(f"[QA Agent] Error evaluating response: {e}")
+            return True, "" # Failsafe approve
+            
     def _get_role_tools(self, role: str) -> list:
         if role == "bartender":
             return [

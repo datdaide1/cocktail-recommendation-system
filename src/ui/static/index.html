@@ -216,6 +216,39 @@
         </div>
     </div>
 
+    <!-- Detail Item Modal -->
+    <div id="detail-modal" class="fixed inset-0 bg-lounge-darkest bg-opacity-90 z-[80] hidden items-center justify-center p-4 backdrop-blur-sm fade-in">
+        <div class="bg-lounge-card border border-lounge-border rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-[0_0_40px_rgba(197,160,89,0.15)] overflow-hidden relative">
+            
+            <button id="btn-close-detail-modal" class="absolute top-4 right-4 z-10 w-8 h-8 bg-lounge-darkest bg-opacity-50 hover:bg-opacity-80 rounded-full flex items-center justify-center text-lounge-muted hover:text-white transition-all">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            
+            <div id="detail-modal-image-container" class="h-64 w-full relative shrink-0">
+                <!-- Image or Gradient injected via JS -->
+            </div>
+            
+            <div class="p-6 overflow-y-auto custom-scrollbar flex-grow bg-lounge-card relative">
+                <div id="detail-modal-tags" class="flex flex-wrap gap-2 absolute top-6 right-6 justify-end w-1/2">
+                    <!-- Tags injected via JS -->
+                </div>
+                
+                <h2 id="detail-modal-title" class="font-cinzel font-bold text-gold text-3xl mb-2 w-3/4">Title</h2>
+                <p id="detail-modal-subtitle" class="text-sm text-lounge-muted uppercase tracking-wider mb-6 flex items-center gap-2">
+                    <!-- Subtitle injected via JS -->
+                </p>
+                
+                <div id="detail-modal-description" class="text-lounge-text text-sm leading-relaxed mb-8 italic border-l-2 border-gold pl-4 opacity-90">
+                    <!-- Description injected via JS -->
+                </div>
+                
+                <div id="detail-modal-content-area" class="space-y-6">
+                    <!-- Dynamic content injected via JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer class="bg-lounge-card border-t border-lounge-border px-6 py-4 text-center text-xs text-lounge-muted absolute bottom-0 w-full z-10">
         &copy; 2026 AI Lounge Assistant. Powered by Hybrid RAG. Crafted with premium visual aesthetics.
