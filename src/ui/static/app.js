@@ -23,6 +23,7 @@ const CLIENT_USER_ID = getOrGenerateUserId();
 const chatBox = document.getElementById('chat-box');
 const chatInput = document.getElementById('chat-input');
 const btnSendChat = document.getElementById('btn-send-chat');
+const chatSessionSelect = document.getElementById('chat-session-select');
 
 const tabExploreCocktails = document.getElementById('tab-explore-cocktails');
 const tabExploreBars = document.getElementById('tab-explore-bars');
@@ -197,6 +198,29 @@ function setupChatWidget() {
         if (e.key === 'Enter') sendChatMessage();
     });
     
+    // Chat Session Selector
+    if (chatSessionSelect) {
+        chatSessionSelect.addEventListener('change', async (e) => {
+            const selectedId = e.target.value;
+            if (selectedId) {
+                currentSessionId = selectedId;
+                // Reset UI before loading
+                chatBox.innerHTML = `
+                    <div class="flex gap-4 max-w-[90%] fade-in">
+                        <div class="w-10 h-10 rounded-full bg-gold bg-opacity-20 flex items-center justify-center text-gold flex-shrink-0 border border-gold border-opacity-30">
+                            <i class="fa-solid fa-bell"></i>
+                        </div>
+                        <div class="bg-lounge-card p-4 rounded-2xl rounded-tl-none border border-lounge-border text-sm leading-relaxed shadow-lg">
+                            ${currentLang === 'VI' ? 'Chào mừng trở lại. Bạn muốn tiếp tục câu chuyện hay khám phá điều mới?' : 'Welcome back. Would you like to continue our chat or discover something new?'}
+                        </div>
+                    </div>
+                `;
+                chatHistory = [];
+                await loadSessionHistory(currentSessionId);
+            }
+        });
+    }
+
     // Add New Chat & Clear Chat functionality
     const btnNewChat = document.getElementById('btn-new-chat');
     const btnClearChat = document.getElementById('btn-clear-chat');
@@ -239,9 +263,34 @@ function setupChatWidget() {
 }
 
 // 5. SESSIONS PERSISTENCE
+function renderSessionSelect() {
+    if (!chatSessionSelect) return;
+    chatSessionSelect.innerHTML = '';
+    sessions.forEach(session => {
+        const option = document.createElement('option');
+        option.value = session.id;
+        option.className = "bg-lounge-dark text-gold";
+        
+        let title = session.title || "New Chat";
+        // Convert to local time string if timestamp exists
+        if (session.timestamp) {
+            try {
+                const date = new Date(session.timestamp);
+                title = `${date.toLocaleDateString()} - ${title}`;
+            } catch(e) {}
+        }
+        
+        option.textContent = title;
+        if (session.id === currentSessionId) {
+            option.selected = true;
+        }
+        chatSessionSelect.appendChild(option);
+    });
+}
+
 async function fetchSession() {
     try {
-        const response = await fetch(`/api/sessions?role=guest&user_id=${CLIENT_USER_ID}`);
+        const response = await fetch(`/api/sessions?role=guest`);
         const data = await response.json();
         sessions = data.sessions || [];
         
@@ -249,6 +298,7 @@ async function fetchSession() {
             await createNewSession();
         } else {
             currentSessionId = sessions[0].id;
+            renderSessionSelect();
             await loadSessionHistory(currentSessionId);
         }
     } catch (err) {
@@ -266,6 +316,7 @@ async function createNewSession() {
         const session = await response.json();
         currentSessionId = session.id;
         sessions.unshift(session);
+        renderSessionSelect();
         await loadSessionHistory(currentSessionId);
     } catch (err) {
         console.error("Error creating session:", err);
@@ -312,7 +363,7 @@ function appendMessageToUI(role, text, scrollToBottom = true) {
         `;
     }
     chatBox.appendChild(bubble);
-    if (scrollToBottom) chatBox.scrollTop = chatBox.scrollHeight;
+    if (scrollToBottom) chatBox.scrollTo({ top: chatBox.scrollHeight, behavior: 'smooth' });
 }
 
 // 6. CHAT SENDING
@@ -337,7 +388,7 @@ async function sendChatMessage() {
         </div>
     `;
     chatBox.appendChild(typingBubble);
-    chatBox.scrollTop = chatBox.scrollHeight;
+    chatBox.scrollTo({ top: chatBox.scrollHeight, behavior: 'smooth' });
     
     try {
         const response = await fetch('/api/chat', {
@@ -359,6 +410,14 @@ async function sendChatMessage() {
             appendMessageToUI('model', responseText);
             chatHistory.push({ role: "model", parts: [responseText] });
             smartFilterGrid(responseText);
+            
+            // Refresh title quietly
+            fetch(`/api/sessions?role=guest`)
+                .then(r => r.json())
+                .then(d => {
+                    sessions = d.sessions || [];
+                    renderSessionSelect();
+                });
         } else {
             throw new Error(data.error || "Failed to query AI.");
         }
@@ -488,6 +547,11 @@ function smartFilterGrid(aiResponse) {
         if(gridSearchInput) gridSearchInput.value = matchedBar.name;
         applyFilters();
         
+        // Auto open the detail modal to highlight the recommendation
+        setTimeout(() => {
+            openDetailModal(matchedBar, 'bars');
+        }, 300);
+        
         // Auto open panel on mobile
         if (window.innerWidth < 1024) {
             discoveryPanel.classList.remove('translate-x-full');
@@ -501,6 +565,11 @@ function smartFilterGrid(aiResponse) {
         if (activeTab !== 'cocktails') document.getElementById('tab-explore-cocktails').click();
         if(gridSearchInput) gridSearchInput.value = matchedDrink.name;
         applyFilters();
+        
+        // Auto open the detail modal to highlight the recommendation
+        setTimeout(() => {
+            openDetailModal(matchedDrink, 'cocktails');
+        }, 300);
         
         // Auto open panel on mobile
         if (window.innerWidth < 1024) {
