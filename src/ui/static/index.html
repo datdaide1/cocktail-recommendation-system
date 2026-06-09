@@ -80,7 +80,7 @@
         <!-- Left: Chat Interface -->
         <section id="chat-section" class="w-full lg:w-1/3 border-r border-lounge-border bg-lounge-darkest flex flex-col h-full z-20 transition-all duration-300">
             <!-- Chat Box -->
-            <div id="chat-box" class="flex-grow p-6 overflow-y-auto space-y-6 scroll-smooth custom-scrollbar pb-32">
+            <div id="chat-box" class="flex-grow p-6 overflow-y-auto space-y-6 scroll-smooth custom-scrollbar">
                 <!-- Initial Message -->
                 <div class="flex gap-4 max-w-[90%]">
                     <div class="w-10 h-10 rounded-full bg-gold bg-opacity-20 flex items-center justify-center text-gold flex-shrink-0 border border-gold border-opacity-30">
@@ -94,8 +94,8 @@
             </div>
             
             <!-- Chat Input Container -->
-            <div class="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-lounge-darkest via-lounge-darkest to-transparent">
-                <div class="bg-lounge-card border border-lounge-border rounded-2xl p-2 flex gap-2 shadow-2xl relative">
+            <div class="p-4 bg-lounge-darkest shrink-0 border-t border-lounge-border">
+                <div class="bg-lounge-card border border-lounge-border rounded-2xl p-2 flex gap-2 shadow-xl relative">
                     <input type="text" id="chat-input" placeholder="Ask for a recipe or venue..." class="flex-grow bg-transparent text-lounge-text px-4 py-3 text-sm focus:outline-none placeholder-lounge-muted">
                     <button id="btn-send-chat" class="bg-gold hover:bg-gold-light text-lounge-darkest w-12 h-12 rounded-xl font-bold transition-all duration-200 flex items-center justify-center shadow-md">
                         <i class="fa-solid fa-paper-plane"></i>
@@ -126,10 +126,17 @@
 
                 <div class="flex flex-wrap gap-2 w-full sm:w-auto justify-end pr-8 lg:pr-0">
                     <select id="filter-flavor" class="cocktail-filter bg-lounge-darkest border border-lounge-border text-xs rounded-lg p-2 focus:border-gold outline-none">
-                        <option value="">Flavor</option><option value="Chua">Sour</option><option value="Ngọt">Sweet</option>
+                        <option value="">All Flavors</option>
+                        <option value="Chua">Sour</option>
+                        <option value="Ngọt">Sweet</option>
+                        <option value="Đắng">Bitter</option>
+                        <option value="Thảo mộc">Herbal</option>
+                        <option value="Cân bằng">Balanced</option>
                     </select>
                     <select id="filter-city" class="bar-filter hidden bg-lounge-darkest border border-lounge-border text-xs rounded-lg p-2 focus:border-gold outline-none">
-                        <option value="">City</option><option value="Hanoi">Hanoi</option><option value="Ho Chi Minh City">HCMC</option>
+                        <option value="">All Cities</option>
+                        <option value="Hanoi">Hanoi</option>
+                        <option value="Ho Chi Minh City">HCMC</option>
                     </select>
                 </div>
             </div>

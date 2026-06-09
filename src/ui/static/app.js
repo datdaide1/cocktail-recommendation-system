@@ -43,6 +43,7 @@ const detailModal = document.getElementById('detail-modal');
 const btnCloseDetailModal = document.getElementById('btn-close-detail-modal');
 
 document.addEventListener('DOMContentLoaded', () => {
+    setupLanguageToggle();
     setupTabSwitcher();
     setupChatWidget();
     setupFilters();
@@ -53,6 +54,60 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchCocktailsDatabase();
     fetchBarsDatabase();
 });
+
+// 0. LANGUAGE TOGGLE
+let currentLang = 'EN';
+function setupLanguageToggle() {
+    const btnToggleLang = document.getElementById('btn-toggle-lang');
+    if(!btnToggleLang) return;
+    
+    btnToggleLang.addEventListener('click', () => {
+        currentLang = currentLang === 'EN' ? 'VI' : 'EN';
+        btnToggleLang.innerText = currentLang === 'EN' ? '🌐 EN | VI' : '🌐 VI | EN';
+        
+        // Update placeholders and static texts
+        if(currentLang === 'VI') {
+            document.getElementById('chat-input').placeholder = "Hỏi công thức hoặc địa điểm...";
+            document.getElementById('tab-explore-cocktails').innerHTML = '<i class="fa-solid fa-martini-glass-citrus mr-2"></i> Đồ uống';
+            document.getElementById('tab-explore-bars').innerHTML = '<i class="fa-solid fa-compass mr-2"></i> Địa điểm';
+            document.getElementById('btn-toggle-panel').innerHTML = '<i class="fa-solid fa-compass"></i> Khám phá';
+            // System prompt instruction for the LLM
+            chatHistory.push({ role: "user", parts: ["Please respond in Vietnamese from now on."] });
+            sendSilentChat("Please respond in Vietnamese from now on. Answer with: 'Dạ vâng, em sẽ dùng tiếng Việt ạ.'");
+        } else {
+            document.getElementById('chat-input').placeholder = "Ask for a recipe or venue...";
+            document.getElementById('tab-explore-cocktails').innerHTML = '<i class="fa-solid fa-martini-glass-citrus mr-2"></i> Cocktails';
+            document.getElementById('tab-explore-bars').innerHTML = '<i class="fa-solid fa-compass mr-2"></i> Venues';
+            document.getElementById('btn-toggle-panel').innerHTML = '<i class="fa-solid fa-compass"></i> Discover';
+            chatHistory.push({ role: "user", parts: ["Please respond in English from now on."] });
+            sendSilentChat("Please respond in English from now on. Answer with: 'Certainly, I will use English.'");
+        }
+    });
+}
+
+// Helper to silently change language mode on the backend
+async function sendSilentChat(message) {
+    try {
+        const response = await fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                message: message,
+                chat_history: chatHistory.slice(0, -1),
+                role: 'guest',
+                session_id: currentSessionId,
+                user_id: CLIENT_USER_ID
+            })
+        });
+        const data = await response.json();
+        if (response.ok && !data.error) {
+            chatHistory.push({ role: "model", parts: [data.message] });
+            appendMessageToUI('model', data.message);
+        }
+    } catch(err) {
+        console.error(err);
+    }
+}
 
 // 1. MOBILE RESPONSIVE PANEL
 function setupMobilePanel() {
