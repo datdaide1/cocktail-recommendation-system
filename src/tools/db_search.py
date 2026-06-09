@@ -13,7 +13,7 @@ def db_search_cocktails(query: str = "", ingredients_query: str = "", category: 
         abv: Alcohol level category (options: 'Mocktail (Không cồn)', 'Nhẹ (Low ABV)', 'Vừa (Medium ABV)', 'Mạnh (Strong ABV)')
         
     Returns:
-        JSON string containing a list of up to 5 matching cocktails
+        JSON string containing a list of up to 3 matching cocktails
     """
     df = get_cocktails_df()
     if df.empty:
@@ -68,8 +68,8 @@ def db_search_cocktails(query: str = "", ingredients_query: str = "", category: 
         else:
             results = results.sort_values(by='similarity_score', ascending=False)
             
-    # Get top 5 results
-    top_results = results.head(5)
+    # Get top 3 results
+    top_results = results.head(3)
     
     output = []
     for _, row in top_results.iterrows():
@@ -101,7 +101,7 @@ def db_search_bars(city: str = "", district: str = "", style: str = "", price_ra
         price_range: Price level (options: '$', '$$', '$$$')
         
     Returns:
-        JSON string containing a list of up to 5 matching bars
+        JSON string containing a list of up to 3 matching bars
     """
     df = get_bars_df()
     if df.empty:
@@ -118,7 +118,7 @@ def db_search_bars(city: str = "", district: str = "", style: str = "", price_ra
     if price_range:
         results = results[results['price_range'] == price_range]
         
-    top_results = results.head(5)
+    top_results = results.head(3)
     
     output = []
     for _, row in top_results.iterrows():

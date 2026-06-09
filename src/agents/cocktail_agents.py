@@ -52,22 +52,17 @@ MASTER_BARTENDER_INSTRUCTION = """
   </objective>
   
   <rules>
-    <rule>Focus on the technical aspects of cocktails: exact measurements, proper glassware recommendations, garnishes, and methods (shaking, stirring, building, muddling).</rule>
-    <rule>If the user wants to calculate the ABV of a customized drink, use the tool `calculate_abv`. Ask for volume and alcohol percentage of ingredients if missing.</rule>
-    <rule>If the user is missing an ingredient, use the tool `substitute_ingredient` to suggest professional swaps and ratios.</rule>
-    <rule>If they search for recipe details or ingredients, use `db_search_cocktails` to retrieve the database recipe.</rule>
+    <rule>Focus on the technical aspects of cocktails: exact measurements, proper glassware recommendations, garnishes, and methods.</rule>
+    <rule>If the user is missing an ingredient, use the tool `substitute_ingredient`.</rule>
     <rule>When asked to invent/sáng tạo a new custom recipe:
-      1. First call `generate_custom_recipe` or `db_search_cocktails` using the requested ingredients/vibe to fetch reference baseline recipes from our database.
-      2. Analyze the database reference ratios (alcohol vs acid vs sweetener) to ensure the new recipe is chemically balanced.
-      3. Use your mixology expertise to name the new cocktail creatively, describe its garnish, and provide step-by-step instructions. Do not copy-paste existing drinks—sáng tạo a truly custom signature cocktail.
+      1. First call `generate_custom_recipe` or `db_search_cocktails`.
+      2. Analyze the chemical balance.
+      3. CRITICAL - GENERATIVE ART HACK: You MUST include an image of your custom creation. To do this, append a Markdown image tag at the end of your recipe using this exact format:
+         `![Cocktail Image](https://image.pollinations.ai/prompt/A%20stunning%20professional%20photography%20of%20a%20cocktail%20with%20[INGREDIENTS]%20in%20a%20[MOOD]%20bar%20setting)`
+         Replace [INGREDIENTS] and [MOOD] with URL-encoded descriptions of your drink.
     </rule>
-    <rule>Provide historical context or interesting stories about the cocktails to add depth and interest.</rule>
+    <rule>Personalization: If a User Taste Profile is provided, strictly adhere to their likes and dislikes.</rule>
   </rules>
-  
-  <style_guidelines>
-    <tone>Professional, precise, clear, and informative.</tone>
-    <formatting>Use bold headers, numbered lists for steps, and clean tables or markdown lists for recipes.</formatting>
-  </style_guidelines>
 </system_prompt>
 """
 
@@ -155,10 +150,71 @@ class CocktailAgentSystem:
             system_instruction=instruction
         )
 
-    def run_chat(self, user_message: str, chat_history: list, role: str) -> dict:
+    def _extract_taste_profile(self, chat_history: list) -> str:
+        """
+        Analyzes chat history to extract a Long-Term Memory taste profile.
+        Returns a string summarizing the user's likes/dislikes.
+        """
+        # Very simple heuristic extractor to save cost, or we can just send the last 5 turns to an LLM.
+        # For simplicity and speed, we look for explicit keywords in user messages.
+        likes = []
+        dislikes = []
+        
+        for turn in chat_history:
+            if turn.get("role") == "user":
+                text = str(turn.get("parts", [""])[0]).lower()
+                if "thích" in text or "like" in text or "love" in text:
+                    # Simple heuristic: grab the next word or phrase
+                    likes.append(text)
+                if "ghét" in text or "không thích" in text or "hate" in text or "dislike" in text or "dị ứng" in text:
+                    dislikes.append(text)
+                    
+        profile = ""
+        if likes or dislikes:
+            profile = "USER TASTE PROFILE: "
+            if likes:
+                profile += f"User mentioned liking things related to: {' | '.join(likes[-3:])}. "
+            if dislikes:
+                profile += f"User mentioned DISLIKING things related to: {' | '.join(dislikes[-3:])}. AVOID THESE."
+        return profile
+
+    def _detect_intent(self, user_message: str) -> str:
+        """
+        Lightweight fast semantic router to determine user intent.
+        Returns one of: VENUE_SEARCH, MIXOLOGY_RECIPE, GENERAL_CHAT
+        """
+        # A simple keyword-based heuristic or a fast LLM call could be used here.
+        # For cost optimization and speed, we use a robust heuristic first.
+        msg = user_message.lower()
+        venue_keywords = ["where", "quán", "bar", "pub", "lounge", "địa điểm", "chơi", "hẹn hò", "place", "location", "go out"]
+        recipe_keywords = ["how to", "make", "recipe", "cách pha", "công thức", "nguyên liệu", "ingredient", "mix", "substitute", "thay thế", "abv"]
+        
+        if any(kw in msg for kw in venue_keywords):
+            return "VENUE_SEARCH"
+        elif any(kw in msg for kw in recipe_keywords):
+            return "MIXOLOGY_RECIPE"
+        else:
+            return "GENERAL_CHAT"
+
+    def run_chat(self, user_message: str, chat_history: list, role: str = None) -> dict:
         """
         Routes the chat turn to the active LLM provider.
+        The 'role' parameter is ignored in V2. Intent is auto-detected.
         """
+        # 1. Semantic Routing
+        intent = self._detect_intent(user_message)
+        print(f"[Semantic Router] Detected Intent: {intent}")
+        
+        # Override role based on intent for backward compatibility internally
+        role = "bartender" if intent == "MIXOLOGY_RECIPE" else "guest"
+        
+        # 2. Extract Taste Profile
+        taste_profile = self._extract_taste_profile(chat_history)
+        if taste_profile:
+            print(f"[Memory Agent] Extracted Profile: {taste_profile}")
+            user_message = f"{taste_profile}\n\nUSER REQUEST: {user_message}"
+            
+        # Determine active provider
         if self.provider == "gemini":
             result = self.run_chat_gemini(user_message, chat_history, role)
         else:

@@ -36,225 +36,137 @@
     <!-- Google Fonts & FontAwesome -->
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Leaflet CSS for Map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <!-- Custom Style Sheet -->
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Custom scrollbar for chat */
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #1c2335; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #c5a059; }
+        /* Markdown Image styling inside chat */
+        #chat-box img { max-width: 100%; border-radius: 0.75rem; margin-top: 10px; border: 1px solid #1c2335; }
+    </style>
 </head>
-<body class="bg-lounge-darkest text-lounge-text font-montserrat min-h-screen flex flex-col relative overflow-x-hidden">
+<body class="bg-lounge-darkest text-lounge-text font-montserrat h-screen flex flex-col overflow-hidden">
 
     <!-- Header Navigation -->
-    <header class="bg-lounge-card border-b border-lounge-border px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4 sticky top-0 z-40 shadow-lg backdrop-blur-md bg-opacity-90">
+    <header class="bg-lounge-card border-b border-lounge-border px-6 py-4 flex justify-between items-center z-40 shadow-lg shrink-0">
         <div class="flex items-center gap-3">
             <span class="text-3xl text-gold"><i class="fa-solid fa-martini-glass-citrus"></i></span>
             <div>
                 <h1 class="font-cinzel font-bold text-2xl tracking-widest text-gold">AI LOUNGE</h1>
-                <p class="text-[10px] text-lounge-muted uppercase tracking-widest">Premium Visual Explorer</p>
+                <p class="text-[10px] text-lounge-muted uppercase tracking-widest">Intelligent Concierge</p>
             </div>
         </div>
         
-        <!-- Persona Switcher & Controls -->
-        <div class="flex items-center gap-3 flex-wrap justify-end">
+        <!-- Controls -->
+        <div class="flex items-center gap-3">
             <button id="btn-toggle-lang" class="px-3 py-1.5 rounded-full text-xs font-bold border border-lounge-border bg-lounge-dark text-gold hover:bg-lounge-card transition-colors shadow-md">
                 🌐 EN | VI
             </button>
-            <div class="flex items-center bg-lounge-dark p-1 rounded-full border border-lounge-border">
-                <button id="btn-guest-mode" class="px-4 py-2 rounded-full font-semibold text-xs md:text-sm transition-all duration-300 flex items-center gap-2 bg-gold text-lounge-darkest shadow-md">
-                    <i class="fa-solid fa-users"></i> <span data-i18n="guestMode">Guest Concierge</span>
-                </button>
-                <button id="btn-bartender-mode" class="px-4 py-2 rounded-full font-semibold text-xs md:text-sm transition-all duration-300 flex items-center gap-2 text-lounge-muted hover:text-lounge-text">
-                    <i class="fa-solid fa-user-tie"></i> <span data-i18n="bartenderMode">Master Bartender</span>
-                </button>
-            </div>
+            <button id="btn-toggle-panel" class="lg:hidden px-3 py-1.5 rounded-full text-xs font-bold bg-gold text-lounge-darkest flex items-center gap-2">
+                <i class="fa-solid fa-compass"></i> Discover
+            </button>
         </div>
     </header>
 
-    <!-- Main Workspace Container -->
-    <main class="flex-grow p-4 md:p-8 max-w-[1400px] mx-auto w-full relative z-10">
+    <!-- Main Workspace (Split-Screen) -->
+    <main class="flex-grow flex h-[calc(100vh-76px)] relative overflow-hidden">
         
-        <!-- Main Tabs (Cocktails vs Bars) -->
-        <div class="flex border-b border-lounge-border mb-6">
-            <button id="tab-explore-cocktails" class="flex-1 py-3 text-center border-b-2 border-gold font-bold text-sm text-gold">
-                <i class="fa-solid fa-martini-glass-citrus mr-2"></i> Premium Cocktails
-            </button>
-            <button id="tab-explore-bars" class="flex-1 py-3 text-center border-b-2 border-transparent font-semibold text-sm text-lounge-muted hover:text-lounge-text transition-colors">
-                <i class="fa-solid fa-compass mr-2"></i> Venue Directory
-            </button>
-        </div>
-        
-        <!-- Top Toolbar (Filters & Actions) -->
-        <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4 bg-lounge-card p-4 rounded-2xl border border-lounge-border shadow-xl">
-            <div class="flex flex-wrap gap-3 items-center w-full md:w-auto flex-grow">
-                <!-- Search Input -->
-                <div class="relative flex-grow md:max-w-xs">
-                    <i class="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-lounge-muted"></i>
-                    <input type="text" id="main-search-input" placeholder="Search drinks or venues..." class="w-full bg-lounge-dark text-lounge-text border border-lounge-border rounded-xl pl-9 pr-3 py-2.5 text-sm focus:outline-none focus:border-gold transition-colors">
+        <!-- Left: Chat Interface -->
+        <section id="chat-section" class="w-full lg:w-1/3 border-r border-lounge-border bg-lounge-darkest flex flex-col h-full z-20 transition-all duration-300">
+            <!-- Chat Box -->
+            <div id="chat-box" class="flex-grow p-6 overflow-y-auto space-y-6 scroll-smooth custom-scrollbar pb-32">
+                <!-- Initial Message -->
+                <div class="flex gap-4 max-w-[90%]">
+                    <div class="w-10 h-10 rounded-full bg-gold bg-opacity-20 flex items-center justify-center text-gold flex-shrink-0 border border-gold border-opacity-30">
+                        <i class="fa-solid fa-bell"></i>
+                    </div>
+                    <div class="bg-lounge-card p-4 rounded-2xl rounded-tl-none border border-lounge-border text-sm leading-relaxed shadow-lg">
+                        Good evening. I am your <strong>AI Mixologist & Host</strong>. <br><br>
+                        Whether you want to discover a hidden speakeasy, learn a classic recipe, or invent a completely new signature cocktail, I'm at your service. What are you in the mood for tonight?
+                    </div>
                 </div>
-                <!-- Cocktail Filters -->
-                <select id="filter-flavor" class="cocktail-filter bg-lounge-dark border border-lounge-border text-lounge-text rounded-xl p-2.5 text-sm focus:outline-none focus:border-gold min-w-[140px]">
-                    <option value="">All Flavors</option>
-                    <option value="Chua">Sour</option>
-                    <option value="Ngọt">Sweet</option>
-                    <option value="Đắng">Bitter</option>
-                    <option value="Thảo mộc">Herbal</option>
-                    <option value="Cân bằng">Balanced</option>
-                </select>
-                <select id="filter-abv" class="cocktail-filter bg-lounge-dark border border-lounge-border text-lounge-text rounded-xl p-2.5 text-sm focus:outline-none focus:border-gold min-w-[140px]">
-                    <option value="">All ABV</option>
-                    <option value="Không cồn">Mocktail</option>
-                    <option value="Nhẹ">Low ABV</option>
-                    <option value="Vừa">Medium ABV</option>
-                    <option value="Mạnh">Strong ABV</option>
-                </select>
-
-                <!-- Bar Filters (Hidden initially) -->
-                <select id="filter-city" class="bar-filter hidden bg-lounge-dark border border-lounge-border text-lounge-text rounded-xl p-2.5 text-sm focus:outline-none focus:border-gold min-w-[140px]">
-                    <option value="">All Cities</option>
-                    <option value="Hanoi">Hanoi</option>
-                    <option value="Ho Chi Minh City">Ho Chi Minh City</option>
-                </select>
-                <select id="filter-style" class="bar-filter hidden bg-lounge-dark border border-lounge-border text-lounge-text rounded-xl p-2.5 text-sm focus:outline-none focus:border-gold min-w-[140px]">
-                    <option value="">Any Style</option>
-                    <option value="Speakeasy">Speakeasy</option>
-                    <option value="Rooftop">Rooftop</option>
-                    <option value="Cozy Lounge">Cozy Lounge</option>
-                    <option value="Jazz Bar">Jazz Bar</option>
-                    <option value="Craft Bar">Craft Bar</option>
-                </select>
-                <select id="filter-price" class="bar-filter hidden bg-lounge-dark border border-lounge-border text-lounge-text rounded-xl p-2.5 text-sm focus:outline-none focus:border-gold min-w-[140px]">
-                    <option value="">Any Price</option>
-                    <option value="$">$</option>
-                    <option value="$$">$$</option>
-                    <option value="$$$">$$$</option>
-                </select>
             </div>
             
-            <div class="flex gap-2 w-full md:w-auto">
-                <button id="btn-compile-menu" class="hidden w-full md:w-auto bg-gold hover:bg-gold-light text-lounge-darkest font-bold py-2.5 px-6 rounded-xl transition-all duration-200 shadow-[0_0_15px_rgba(197,160,89,0.2)]">
-                    <i class="fa-solid fa-file-export mr-2"></i> Compile Menu
-                </button>
+            <!-- Chat Input Container -->
+            <div class="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-lounge-darkest via-lounge-darkest to-transparent">
+                <div class="bg-lounge-card border border-lounge-border rounded-2xl p-2 flex gap-2 shadow-2xl relative">
+                    <input type="text" id="chat-input" placeholder="Ask for a recipe or venue..." class="flex-grow bg-transparent text-lounge-text px-4 py-3 text-sm focus:outline-none placeholder-lounge-muted">
+                    <button id="btn-send-chat" class="bg-gold hover:bg-gold-light text-lounge-darkest w-12 h-12 rounded-xl font-bold transition-all duration-200 flex items-center justify-center shadow-md">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </div>
             </div>
-        </div>
+        </section>
 
-        <!-- Dynamic Grid Container -->
-        <div id="main-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pb-24">
-            <!-- Cards will be injected here dynamically via JS -->
-            <div class="col-span-full text-center py-20 text-lounge-muted">
-                <i class="fa-solid fa-spinner fa-spin text-3xl mb-4 text-gold opacity-50"></i>
-                <p>Loading premium database...</p>
+        <!-- Right: Dynamic Discovery Panel (Artifacts / Grid) -->
+        <section id="discovery-panel" class="fixed inset-y-0 right-0 w-full lg:static lg:w-2/3 bg-lounge-dark flex flex-col h-full transform translate-x-full lg:translate-x-0 transition-transform duration-300 z-30">
+            
+            <!-- Top Toolbar -->
+            <div class="bg-lounge-card border-b border-lounge-border p-4 flex flex-col sm:flex-row justify-between items-center gap-4 shrink-0 shadow-md">
+                
+                <!-- Close button on Mobile -->
+                <button id="btn-close-panel" class="lg:hidden absolute top-4 right-4 text-lounge-muted hover:text-white">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+
+                <div class="flex gap-4 w-full sm:w-auto">
+                    <button id="tab-explore-cocktails" class="py-2 px-4 rounded-lg bg-lounge-dark border border-gold text-gold font-bold text-sm shadow-sm transition-all">
+                        <i class="fa-solid fa-martini-glass-citrus mr-2"></i> Cocktails
+                    </button>
+                    <button id="tab-explore-bars" class="py-2 px-4 rounded-lg bg-transparent border border-transparent text-lounge-muted font-bold text-sm hover:text-lounge-text transition-all">
+                        <i class="fa-solid fa-compass mr-2"></i> Venues
+                    </button>
+                </div>
+
+                <div class="flex flex-wrap gap-2 w-full sm:w-auto justify-end pr-8 lg:pr-0">
+                    <select id="filter-flavor" class="cocktail-filter bg-lounge-darkest border border-lounge-border text-xs rounded-lg p-2 focus:border-gold outline-none">
+                        <option value="">Flavor</option><option value="Chua">Sour</option><option value="Ngọt">Sweet</option>
+                    </select>
+                    <select id="filter-city" class="bar-filter hidden bg-lounge-darkest border border-lounge-border text-xs rounded-lg p-2 focus:border-gold outline-none">
+                        <option value="">City</option><option value="Hanoi">Hanoi</option><option value="Ho Chi Minh City">HCMC</option>
+                    </select>
+                </div>
             </div>
-        </div>
+
+            <!-- Map Container (Hidden initially) -->
+            <div id="map-container" class="w-full h-64 border-b border-lounge-border hidden shrink-0 relative z-10"></div>
+
+            <!-- Grid Content -->
+            <div class="flex-grow p-6 overflow-y-auto custom-scrollbar">
+                <div id="main-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="col-span-full text-center py-20 text-lounge-muted">
+                        <i class="fa-solid fa-compass text-4xl mb-4 opacity-30"></i>
+                        <p>Awaiting AI Recommendations...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
         
     </main>
 
-    <!-- Floating Chat Toggle Button -->
-    <button id="btn-toggle-chat" class="fixed bottom-6 right-6 w-16 h-16 bg-gold rounded-full shadow-[0_0_30px_rgba(197,160,89,0.4)] flex items-center justify-center text-lounge-darkest text-2xl hover:bg-gold-light hover:scale-105 transition-all duration-300 z-[60]">
-        <i class="fa-solid fa-message"></i>
-    </button>
-
-    <!-- Floating Chat Drawer -->
-    <div id="chat-drawer" class="fixed bottom-28 right-6 w-[380px] max-w-[calc(100vw-48px)] h-[600px] max-h-[calc(100vh-140px)] bg-lounge-card border border-lounge-border rounded-2xl shadow-2xl flex flex-col z-[50] transition-all duration-400 transform translate-y-8 opacity-0 pointer-events-none overflow-hidden">
-        
-        <!-- Header -->
-        <div class="p-4 border-b border-lounge-border bg-lounge-dark flex justify-between items-center shadow-md">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-full bg-gold bg-opacity-20 border border-gold flex items-center justify-center text-gold">
-                    <i id="chat-icon" class="fa-solid fa-bell"></i>
-                </div>
-                <div>
-                    <h2 id="chat-title" class="font-cinzel text-gold font-bold text-base tracking-wide">Guest Concierge</h2>
-                    <p id="chat-subtitle" class="text-[10px] text-lounge-muted uppercase tracking-wider">AI Lounge Host</p>
-                </div>
-            </div>
-            <div class="flex items-center gap-2">
-                <button id="btn-new-chat-drawer" class="text-lounge-muted hover:text-gold transition-colors w-8 h-8 rounded-full hover:bg-lounge-card flex items-center justify-center">
-                    <i class="fa-solid fa-plus"></i>
-                </button>
-                <button id="btn-close-chat" class="text-lounge-muted hover:text-red-400 transition-colors w-8 h-8 rounded-full hover:bg-lounge-card flex items-center justify-center">
-                    <i class="fa-solid fa-xmark text-lg"></i>
-                </button>
-            </div>
-        </div>
-        
-        <!-- Chat Box -->
-        <div id="chat-box" class="flex-grow p-4 overflow-y-auto space-y-4 scroll-smooth custom-scrollbar">
-            <!-- Initial Message -->
-            <div class="flex gap-3 max-w-[85%]">
-                <div class="w-8 h-8 rounded-full bg-gold bg-opacity-20 flex items-center justify-center text-gold flex-shrink-0">
-                    <i class="fa-solid fa-bell"></i>
-                </div>
-                <div class="bg-lounge-dark p-3 rounded-2xl rounded-tl-none border border-lounge-border text-sm leading-relaxed shadow-md">
-                    Good evening. Welcome to the **AI Lounge**. I am your Guest Concierge. Are you looking for a specific flavor profile or an exceptional bar venue tonight?
-                </div>
-            </div>
-        </div>
-        
-        <!-- Input Area -->
-        <div class="p-3 bg-lounge-dark border-t border-lounge-border flex gap-2">
-            <input type="text" id="chat-input" placeholder="Ask for recommendations..." class="flex-grow bg-lounge-card text-lounge-text border border-lounge-border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-gold transition-colors placeholder-lounge-muted">
-            <button id="btn-send-chat" class="bg-gold hover:bg-gold-light text-lounge-darkest w-12 rounded-xl font-bold transition-all duration-200 shadow-md flex items-center justify-center">
-                <i class="fa-solid fa-paper-plane"></i>
-            </button>
-        </div>
-    </div>
-
-    <!-- Hidden Menu Preview Modal -->
-    <div id="menu-modal" class="fixed inset-0 bg-lounge-darkest bg-opacity-90 z-[70] hidden items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-lounge-card border border-lounge-border rounded-2xl w-full max-w-4xl h-[80vh] flex flex-col shadow-2xl overflow-hidden">
-            <div class="p-4 border-b border-lounge-border flex justify-between items-center bg-lounge-dark">
-                <h3 class="font-cinzel font-bold text-gold text-lg">Compiled Menu Preview</h3>
-                <div class="flex gap-3">
-                    <button id="btn-download-menu-modal" class="bg-green-600 hover:bg-green-500 text-white text-xs px-4 py-2 rounded-lg font-bold flex items-center gap-2 shadow-md">
-                        <i class="fa-solid fa-download"></i> Download HTML
-                    </button>
-                    <button id="btn-close-modal" class="text-lounge-muted hover:text-red-400 w-8 h-8 flex items-center justify-center rounded-full hover:bg-lounge-card">
-                        <i class="fa-solid fa-xmark text-xl"></i>
-                    </button>
-                </div>
-            </div>
-            <div class="flex-grow bg-white">
-                <iframe id="menu-iframe" class="w-full h-full border-none"></iframe>
-            </div>
-        </div>
-    </div>
-
     <!-- Detail Item Modal -->
-    <div id="detail-modal" class="fixed inset-0 bg-lounge-darkest bg-opacity-90 z-[80] hidden items-center justify-center p-4 backdrop-blur-sm fade-in">
-        <div class="bg-lounge-card border border-lounge-border rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-[0_0_40px_rgba(197,160,89,0.15)] overflow-hidden relative">
-            
-            <button id="btn-close-detail-modal" class="absolute top-4 right-4 z-10 w-8 h-8 bg-lounge-darkest bg-opacity-50 hover:bg-opacity-80 rounded-full flex items-center justify-center text-lounge-muted hover:text-white transition-all">
+    <div id="detail-modal" class="fixed inset-0 bg-lounge-darkest bg-opacity-95 z-[80] hidden items-center justify-center p-4 backdrop-blur-md">
+        <div class="bg-lounge-card border border-lounge-border rounded-2xl w-full max-w-3xl max-h-[90vh] flex flex-col shadow-[0_0_40px_rgba(197,160,89,0.15)] overflow-hidden relative">
+            <button id="btn-close-detail-modal" class="absolute top-4 right-4 z-10 w-8 h-8 bg-lounge-darkest hover:bg-lounge-dark rounded-full flex items-center justify-center text-lounge-muted hover:text-white transition-all">
                 <i class="fa-solid fa-xmark"></i>
             </button>
-            
-            <div id="detail-modal-image-container" class="h-64 w-full relative shrink-0">
-                <!-- Image or Gradient injected via JS -->
-            </div>
-            
+            <div id="detail-modal-image-container" class="h-64 w-full relative shrink-0"></div>
             <div class="p-6 overflow-y-auto custom-scrollbar flex-grow bg-lounge-card relative">
-                <div id="detail-modal-tags" class="flex flex-wrap gap-2 absolute top-6 right-6 justify-end w-1/2">
-                    <!-- Tags injected via JS -->
-                </div>
-                
+                <div id="detail-modal-tags" class="flex flex-wrap gap-2 absolute top-6 right-6 justify-end w-1/2"></div>
                 <h2 id="detail-modal-title" class="font-cinzel font-bold text-gold text-3xl mb-2 w-3/4">Title</h2>
-                <p id="detail-modal-subtitle" class="text-sm text-lounge-muted uppercase tracking-wider mb-6 flex items-center gap-2">
-                    <!-- Subtitle injected via JS -->
-                </p>
-                
-                <div id="detail-modal-description" class="text-lounge-text text-sm leading-relaxed mb-8 italic border-l-2 border-gold pl-4 opacity-90">
-                    <!-- Description injected via JS -->
-                </div>
-                
-                <div id="detail-modal-content-area" class="space-y-6">
-                    <!-- Dynamic content injected via JS -->
-                </div>
+                <p id="detail-modal-subtitle" class="text-sm text-lounge-muted uppercase tracking-wider mb-6"></p>
+                <div id="detail-modal-description" class="text-lounge-text text-sm leading-relaxed mb-8 italic border-l-2 border-gold pl-4 opacity-90"></div>
+                <div id="detail-modal-content-area" class="space-y-6"></div>
             </div>
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="bg-lounge-card border-t border-lounge-border px-6 py-4 text-center text-xs text-lounge-muted absolute bottom-0 w-full z-10">
-        &copy; 2026 AI Lounge Assistant. Powered by Hybrid RAG. Crafted with premium visual aesthetics.
-    </footer>
-
-    <!-- Script Integrations -->
     <script src="app.js"></script>
 </body>
 </html>
