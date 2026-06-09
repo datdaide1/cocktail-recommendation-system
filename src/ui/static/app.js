@@ -193,6 +193,46 @@ function setupChatWidget() {
     chatInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') sendChatMessage();
     });
+    
+    // Add New Chat & Clear Chat functionality
+    const btnNewChat = document.getElementById('btn-new-chat');
+    const btnClearChat = document.getElementById('btn-clear-chat');
+    
+    if (btnNewChat) {
+        btnNewChat.addEventListener('click', async () => {
+            // Reset UI
+            chatBox.innerHTML = `
+                <div class="flex gap-4 max-w-[90%] fade-in">
+                    <div class="w-10 h-10 rounded-full bg-gold bg-opacity-20 flex items-center justify-center text-gold flex-shrink-0 border border-gold border-opacity-30">
+                        <i class="fa-solid fa-bell"></i>
+                    </div>
+                    <div class="bg-lounge-card p-4 rounded-2xl rounded-tl-none border border-lounge-border text-sm leading-relaxed shadow-lg">
+                        ${currentLang === 'VI' ? 'Chào quý khách. Tôi là AI Mixologist. Tôi có thể giúp gì cho ngài tối nay?' : 'Good evening. I am your AI Mixologist & Host. What are you in the mood for tonight?'}
+                    </div>
+                </div>
+            `;
+            chatHistory = [];
+            await createNewSession();
+        });
+    }
+    
+    if (btnClearChat) {
+        btnClearChat.addEventListener('click', () => {
+            if(confirm(currentLang === 'VI' ? "Xóa lịch sử chat hiện tại?" : "Clear current chat history?")) {
+                chatBox.innerHTML = `
+                    <div class="flex gap-4 max-w-[90%] fade-in">
+                        <div class="w-10 h-10 rounded-full bg-gold bg-opacity-20 flex items-center justify-center text-gold flex-shrink-0 border border-gold border-opacity-30">
+                            <i class="fa-solid fa-bell"></i>
+                        </div>
+                        <div class="bg-lounge-card p-4 rounded-2xl rounded-tl-none border border-lounge-border text-sm leading-relaxed shadow-lg">
+                            ${currentLang === 'VI' ? 'Lịch sử đã được xóa. Tôi có thể giúp gì tiếp theo?' : 'History cleared. How can I help you next?'}
+                        </div>
+                    </div>
+                `;
+                chatHistory = [];
+            }
+        });
+    }
 }
 
 // 5. SESSIONS PERSISTENCE

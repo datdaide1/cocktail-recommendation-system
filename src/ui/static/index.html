@@ -79,6 +79,19 @@
         
         <!-- Left: Chat Interface -->
         <section id="chat-section" class="w-full lg:w-1/3 border-r border-lounge-border bg-lounge-darkest flex flex-col h-full z-20 transition-all duration-300">
+            <!-- Chat Header / Controls -->
+            <div class="p-4 border-b border-lounge-border bg-lounge-dark flex justify-between items-center shrink-0">
+                <span class="text-xs font-bold text-gold uppercase tracking-widest"><i class="fa-solid fa-message mr-2"></i> <span data-i18n="chat-history">Session History</span></span>
+                <div class="flex gap-2">
+                    <button id="btn-clear-chat" class="w-8 h-8 rounded-lg bg-lounge-darkest border border-lounge-border text-lounge-muted hover:text-red-400 hover:border-red-400 flex items-center justify-center transition-all shadow-sm" title="Clear Chat">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                    <button id="btn-new-chat" class="w-8 h-8 rounded-lg bg-gold text-lounge-darkest hover:bg-gold-light flex items-center justify-center transition-all shadow-md" title="New Chat">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                </div>
+            </div>
+            
             <!-- Chat Box -->
             <div id="chat-box" class="flex-grow p-6 overflow-y-auto space-y-6 scroll-smooth custom-scrollbar">
                 <!-- Initial Message -->
