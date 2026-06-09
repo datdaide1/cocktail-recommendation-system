@@ -37,6 +37,7 @@ const discoveryPanel = document.getElementById('discovery-panel');
 // Filters
 const filterFlavor = document.getElementById('filter-flavor');
 const filterCity = document.getElementById('filter-city');
+const gridSearchInput = document.getElementById('grid-search-input');
 
 // Detail Modal
 const detailModal = document.getElementById('detail-modal');
@@ -68,6 +69,7 @@ function setupLanguageToggle() {
         // Update placeholders and static texts
         if(currentLang === 'VI') {
             document.getElementById('chat-input').placeholder = "Hỏi công thức hoặc địa điểm...";
+            if(gridSearchInput) gridSearchInput.placeholder = "Tìm kiếm...";
             document.getElementById('tab-explore-cocktails').innerHTML = '<i class="fa-solid fa-martini-glass-citrus mr-2"></i> Đồ uống';
             document.getElementById('tab-explore-bars').innerHTML = '<i class="fa-solid fa-compass mr-2"></i> Địa điểm';
             document.getElementById('btn-toggle-panel').innerHTML = '<i class="fa-solid fa-compass"></i> Khám phá';
@@ -76,6 +78,7 @@ function setupLanguageToggle() {
             sendSilentChat("Please respond in Vietnamese from now on. Answer with: 'Dạ vâng, em sẽ dùng tiếng Việt ạ.'");
         } else {
             document.getElementById('chat-input').placeholder = "Ask for a recipe or venue...";
+            if(gridSearchInput) gridSearchInput.placeholder = "Search...";
             document.getElementById('tab-explore-cocktails').innerHTML = '<i class="fa-solid fa-martini-glass-citrus mr-2"></i> Cocktails';
             document.getElementById('tab-explore-bars').innerHTML = '<i class="fa-solid fa-compass mr-2"></i> Venues';
             document.getElementById('btn-toggle-panel').innerHTML = '<i class="fa-solid fa-compass"></i> Discover';
@@ -450,19 +453,26 @@ function renderGrid(items, type) {
 function setupFilters() {
     filterFlavor.addEventListener('change', applyFilters);
     filterCity.addEventListener('change', applyFilters);
+    if(gridSearchInput) gridSearchInput.addEventListener('input', applyFilters);
 }
 
 function applyFilters() {
+    const searchTerm = gridSearchInput ? gridSearchInput.value.toLowerCase() : '';
+    
     if (activeTab === 'cocktails') {
         const flavor = filterFlavor.value.toLowerCase();
         const filtered = cocktailsData.filter(item => {
-            return flavor === '' || (item.flavor_profile && item.flavor_profile.toLowerCase().includes(flavor));
+            const matchesFlavor = flavor === '' || (item.flavor_profile && item.flavor_profile.toLowerCase().includes(flavor));
+            const matchesSearch = searchTerm === '' || item.name.toLowerCase().includes(searchTerm) || (item.category && item.category.toLowerCase().includes(searchTerm));
+            return matchesFlavor && matchesSearch;
         });
         renderGrid(filtered, 'cocktails');
     } else {
         const city = filterCity.value.toLowerCase();
         const filtered = barsData.filter(item => {
-            return city === '' || item.city.toLowerCase() === city;
+            const matchesCity = city === '' || item.city.toLowerCase() === city;
+            const matchesSearch = searchTerm === '' || item.name.toLowerCase().includes(searchTerm) || item.district.toLowerCase().includes(searchTerm);
+            return matchesCity && matchesSearch;
         });
         renderGrid(filtered, 'bars');
     }
@@ -470,27 +480,32 @@ function applyFilters() {
 
 function smartFilterGrid(aiResponse) {
     const text = aiResponse.toLowerCase();
-    let foundBar = false;
     
-    // Check bars
-    const matchedBars = barsData.filter(b => text.includes(b.name.toLowerCase()));
-    if (matchedBars.length > 0) {
+    // Check bars first
+    const matchedBar = barsData.find(b => text.includes(b.name.toLowerCase()));
+    if (matchedBar) {
         if (activeTab !== 'bars') document.getElementById('tab-explore-bars').click();
-        renderGrid(matchedBars, 'bars');
-        foundBar = true;
-    }
-    
-    if (!foundBar) {
-        const matchedDrinks = cocktailsData.filter(d => text.includes(d.name.toLowerCase()));
-        if (matchedDrinks.length > 0) {
-            if (activeTab !== 'cocktails') document.getElementById('tab-explore-cocktails').click();
-            renderGrid(matchedDrinks, 'cocktails');
+        if(gridSearchInput) gridSearchInput.value = matchedBar.name;
+        applyFilters();
+        
+        // Auto open panel on mobile
+        if (window.innerWidth < 1024) {
+            discoveryPanel.classList.remove('translate-x-full');
         }
+        return;
     }
     
-    // Auto open panel on mobile
-    if (window.innerWidth < 1024) {
-        discoveryPanel.classList.remove('translate-x-full');
+    // Check drinks
+    const matchedDrink = cocktailsData.find(d => text.includes(d.name.toLowerCase()));
+    if (matchedDrink) {
+        if (activeTab !== 'cocktails') document.getElementById('tab-explore-cocktails').click();
+        if(gridSearchInput) gridSearchInput.value = matchedDrink.name;
+        applyFilters();
+        
+        // Auto open panel on mobile
+        if (window.innerWidth < 1024) {
+            discoveryPanel.classList.remove('translate-x-full');
+        }
     }
 }
 

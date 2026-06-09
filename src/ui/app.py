@@ -340,7 +340,7 @@ def get_cocktails():
         ]
         
     output = []
-    for _, row in results.head(50).iterrows():
+    for _, row in results.iterrows():
         # Parse ingredients string representation of list to nice list
         ingredients_raw = row.get("ingredients", "")
         try:
