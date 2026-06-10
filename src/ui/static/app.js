@@ -36,9 +36,11 @@ const btnClosePanel = document.getElementById('btn-close-panel');
 const discoveryPanel = document.getElementById('discovery-panel');
 
 // Filters
-const filterFlavor = document.getElementById('filter-flavor');
-const filterCity = document.getElementById('filter-city');
 const gridSearchInput = document.getElementById('grid-search-input');
+const filterPanel = document.getElementById('filter-panel');
+const btnToggleFilters = document.getElementById('btn-toggle-filters');
+const cocktailFiltersDiv = document.getElementById('cocktail-filters');
+const barFiltersDiv = document.getElementById('bar-filters');
 
 // Detail Modal
 const detailModal = document.getElementById('detail-modal');
@@ -130,8 +132,8 @@ function setupTabSwitcher() {
         tabExploreCocktails.className = "py-2 px-4 rounded-lg bg-lounge-dark border border-gold text-gold font-bold text-sm shadow-sm transition-all";
         tabExploreBars.className = "py-2 px-4 rounded-lg bg-transparent border border-transparent text-lounge-muted font-bold text-sm hover:text-lounge-text transition-all";
         
-        filterFlavor.classList.remove('hidden');
-        filterCity.classList.add('hidden');
+        if (cocktailFiltersDiv) cocktailFiltersDiv.classList.remove('hidden');
+        if (barFiltersDiv) barFiltersDiv.classList.add('hidden');
         mapContainer.classList.add('hidden');
         
         applyFilters();
@@ -142,8 +144,8 @@ function setupTabSwitcher() {
         tabExploreBars.className = "py-2 px-4 rounded-lg bg-lounge-dark border border-gold text-gold font-bold text-sm shadow-sm transition-all";
         tabExploreCocktails.className = "py-2 px-4 rounded-lg bg-transparent border border-transparent text-lounge-muted font-bold text-sm hover:text-lounge-text transition-all";
         
-        filterFlavor.classList.add('hidden');
-        filterCity.classList.remove('hidden');
+        if (cocktailFiltersDiv) cocktailFiltersDiv.classList.add('hidden');
+        if (barFiltersDiv) barFiltersDiv.classList.remove('hidden');
         mapContainer.classList.remove('hidden');
         
         // Initialize map if not yet created
@@ -509,29 +511,105 @@ function renderGrid(items, type) {
 }
 
 // 8. FILTERS AND SMART ROUTING
+let semanticSearchTimeout = null;
+
 function setupFilters() {
-    filterFlavor.addEventListener('change', applyFilters);
-    filterCity.addEventListener('change', applyFilters);
-    if(gridSearchInput) gridSearchInput.addEventListener('input', applyFilters);
+    // Toggle filter panel visibility
+    if (btnToggleFilters) {
+        btnToggleFilters.addEventListener('click', () => {
+            if (filterPanel) filterPanel.classList.toggle('hidden');
+        });
+    }
+    
+    // Setup chip click handlers
+    document.querySelectorAll('.filter-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+            chip.classList.toggle('active');
+            applyFilters();
+        });
+    });
+    
+    // Semantic search with debounce
+    if (gridSearchInput) {
+        gridSearchInput.addEventListener('input', () => {
+            const query = gridSearchInput.value.trim();
+            if (semanticSearchTimeout) clearTimeout(semanticSearchTimeout);
+            
+            if (query.length === 0) {
+                applyFilters();
+                return;
+            }
+            
+            semanticSearchTimeout = setTimeout(async () => {
+                if (activeTab === 'cocktails' && query.length >= 2) {
+                    try {
+                        const response = await fetch(`/api/semantic_search?q=${encodeURIComponent(query)}`);
+                        const data = await response.json();
+                        if (data.cocktails && data.cocktails.length > 0) {
+                            renderGrid(data.cocktails, 'cocktails');
+                            return;
+                        }
+                    } catch(e) {
+                        console.error("Semantic search error:", e);
+                    }
+                }
+                applyFilters();
+            }, 500);
+        });
+    }
+}
+
+function getActiveChipValues(group, chipClass) {
+    const active = document.querySelectorAll(`.${chipClass}.active[data-group="${group}"]`);
+    return Array.from(active).map(c => c.dataset.value.toLowerCase());
 }
 
 function applyFilters() {
-    const searchTerm = gridSearchInput ? gridSearchInput.value.toLowerCase() : '';
+    const searchTerm = gridSearchInput ? gridSearchInput.value.toLowerCase().trim() : '';
     
     if (activeTab === 'cocktails') {
-        const flavor = filterFlavor.value.toLowerCase();
+        const spirits = getActiveChipValues('spirit', 'cocktail-chip');
+        const flavors = getActiveChipValues('flavor', 'cocktail-chip');
+        const categories = getActiveChipValues('category', 'cocktail-chip');
+        const abvs = getActiveChipValues('abv', 'cocktail-chip');
+        
         const filtered = cocktailsData.filter(item => {
-            const matchesFlavor = flavor === '' || (item.flavor_profile && item.flavor_profile.toLowerCase().includes(flavor));
-            const matchesSearch = searchTerm === '' || item.name.toLowerCase().includes(searchTerm) || (item.category && item.category.toLowerCase().includes(searchTerm));
-            return matchesFlavor && matchesSearch;
+            const matchesSearch = searchTerm === '' || 
+                item.name.toLowerCase().includes(searchTerm) || 
+                (item.category && item.category.toLowerCase().includes(searchTerm));
+            
+            const ingredientsStr = Array.isArray(item.ingredients) ? item.ingredients.join(' ').toLowerCase() : (item.ingredients || '').toLowerCase();
+            const matchesSpirit = spirits.length === 0 || spirits.some(s => ingredientsStr.includes(s));
+            
+            const flavorStr = (item.flavor_profile || '').toLowerCase();
+            const matchesFlavor = flavors.length === 0 || flavors.some(f => flavorStr.includes(f));
+            
+            const catStr = (item.category || '').toLowerCase();
+            const matchesCategory = categories.length === 0 || categories.some(c => catStr.includes(c));
+            
+            const abvStr = (item.abv_category || '').toLowerCase();
+            const matchesAbv = abvs.length === 0 || abvs.some(a => abvStr.includes(a));
+            
+            return matchesSearch && matchesSpirit && matchesFlavor && matchesCategory && matchesAbv;
         });
         renderGrid(filtered, 'cocktails');
     } else {
-        const city = filterCity.value.toLowerCase();
+        const cities = getActiveChipValues('city', 'bar-chip');
+        const districts = getActiveChipValues('district', 'bar-chip');
+        const styles = getActiveChipValues('style', 'bar-chip');
+        const prices = getActiveChipValues('price', 'bar-chip');
+        
         const filtered = barsData.filter(item => {
-            const matchesCity = city === '' || item.city.toLowerCase() === city;
-            const matchesSearch = searchTerm === '' || item.name.toLowerCase().includes(searchTerm) || item.district.toLowerCase().includes(searchTerm);
-            return matchesCity && matchesSearch;
+            const matchesSearch = searchTerm === '' || 
+                item.name.toLowerCase().includes(searchTerm) || 
+                item.district.toLowerCase().includes(searchTerm);
+            
+            const matchesCity = cities.length === 0 || cities.some(c => item.city.toLowerCase().includes(c));
+            const matchesDistrict = districts.length === 0 || districts.some(d => item.district.toLowerCase().includes(d));
+            const matchesStyle = styles.length === 0 || styles.some(s => item.style.toLowerCase().includes(s));
+            const matchesPrice = prices.length === 0 || prices.some(p => item.price_range === p || item.price_range.toLowerCase() === p);
+            
+            return matchesSearch && matchesCity && matchesDistrict && matchesStyle && matchesPrice;
         });
         renderGrid(filtered, 'bars');
     }
@@ -540,41 +618,23 @@ function applyFilters() {
 function smartFilterGrid(aiResponse) {
     const text = aiResponse.toLowerCase();
     
-    // Check bars first
-    const matchedBar = barsData.find(b => text.includes(b.name.toLowerCase()));
-    if (matchedBar) {
+    // Check bars — multiple matches
+    const matchedBars = barsData.filter(b => text.includes(b.name.toLowerCase()));
+    if (matchedBars.length > 0) {
         if (activeTab !== 'bars') document.getElementById('tab-explore-bars').click();
-        if(gridSearchInput) gridSearchInput.value = matchedBar.name;
-        applyFilters();
-        
-        // Auto open the detail modal to highlight the recommendation
-        setTimeout(() => {
-            openDetailModal(matchedBar, 'bars');
-        }, 300);
-        
-        // Auto open panel on mobile
-        if (window.innerWidth < 1024) {
-            discoveryPanel.classList.remove('translate-x-full');
-        }
+        if (gridSearchInput) gridSearchInput.value = matchedBars[0].name;
+        renderGrid(matchedBars, 'bars');
+        if (window.innerWidth < 1024) discoveryPanel.classList.remove('translate-x-full');
         return;
     }
     
-    // Check drinks
-    const matchedDrink = cocktailsData.find(d => text.includes(d.name.toLowerCase()));
-    if (matchedDrink) {
+    // Check drinks — multiple matches
+    const matchedDrinks = cocktailsData.filter(d => text.includes(d.name.toLowerCase()));
+    if (matchedDrinks.length > 0) {
         if (activeTab !== 'cocktails') document.getElementById('tab-explore-cocktails').click();
-        if(gridSearchInput) gridSearchInput.value = matchedDrink.name;
-        applyFilters();
-        
-        // Auto open the detail modal to highlight the recommendation
-        setTimeout(() => {
-            openDetailModal(matchedDrink, 'cocktails');
-        }, 300);
-        
-        // Auto open panel on mobile
-        if (window.innerWidth < 1024) {
-            discoveryPanel.classList.remove('translate-x-full');
-        }
+        if (gridSearchInput) gridSearchInput.value = matchedDrinks[0].name;
+        renderGrid(matchedDrinks, 'cocktails');
+        if (window.innerWidth < 1024) discoveryPanel.classList.remove('translate-x-full');
     }
 }
 
@@ -592,24 +652,64 @@ function openDetailModal(item, type) {
     document.getElementById('detail-modal-title').innerText = item.name;
     
     if (type === 'cocktails') {
-        document.getElementById('detail-modal-subtitle').innerHTML = `<i class="fa-solid fa-glass-water"></i> ${item.category}`;
+        const subtitleParts = [];
+        if (item.category) subtitleParts.push(item.category);
+        if (item.abv_category) subtitleParts.push(item.abv_category);
+        if (item.flavor_profile) subtitleParts.push(item.flavor_profile);
+        document.getElementById('detail-modal-subtitle').innerHTML = `<i class="fa-solid fa-glass-water"></i> ${subtitleParts.join(' · ')}`;
+        
         document.getElementById('detail-modal-description').innerHTML = parseMarkdown(item.meaning_and_history || '');
-        document.getElementById('detail-modal-content-area').innerHTML = `
-            <h4 class="font-cinzel text-gold text-lg border-b border-lounge-border pb-1 mb-2">Instructions</h4>
-            <div class="text-sm bg-lounge-darkest p-4 rounded-xl border border-lounge-border">${parseMarkdown(item.instructions || '')}</div>
-        `;
+        
+        let ingredientsHtml = '';
+        if (item.ingredients && Array.isArray(item.ingredients) && item.ingredients.length > 0) {
+            const measures = item.ingredientMeasures || [];
+            ingredientsHtml = `
+                <h4 class="font-cinzel text-gold text-lg border-b border-lounge-border pb-1 mb-3"><i class="fa-solid fa-flask mr-2"></i>Ingredients</h4>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-6">
+                    ${item.ingredients.map((ing, i) => {
+                        const measure = measures[i] || '';
+                        return `<div class="flex items-center gap-2 bg-lounge-darkest p-2 rounded-lg border border-lounge-border text-sm">
+                            <span class="text-gold font-bold text-xs whitespace-nowrap">${measure}</span>
+                            <span class="text-lounge-text">${ing}</span>
+                        </div>`;
+                    }).join('')}
+                </div>`;
+        }
+        
+        let instructionsHtml = '';
+        if (item.instructions) {
+            instructionsHtml = `
+                <h4 class="font-cinzel text-gold text-lg border-b border-lounge-border pb-1 mb-2"><i class="fa-solid fa-list-ol mr-2"></i>Instructions</h4>
+                <div class="text-sm bg-lounge-darkest p-4 rounded-xl border border-lounge-border leading-relaxed">${parseMarkdown(item.instructions)}</div>`;
+        }
+        
+        let glasswareHtml = '';
+        if (item.glassware_recommendation) {
+            glasswareHtml = `
+                <div class="mt-4 bg-gold bg-opacity-10 p-3 rounded-xl border border-gold border-opacity-30 text-sm">
+                    <span class="text-gold font-bold"><i class="fa-solid fa-wine-glass mr-1"></i> Glassware:</span> 
+                    <span class="text-lounge-text">${item.glassware_recommendation}</span>
+                </div>`;
+        }
+        
+        document.getElementById('detail-modal-content-area').innerHTML = ingredientsHtml + instructionsHtml + glasswareHtml;
     } else {
         document.getElementById('detail-modal-subtitle').innerHTML = `<i class="fa-solid fa-location-dot"></i> ${item.address}`;
         document.getElementById('detail-modal-description').innerHTML = item.vibe_description || '';
+        
+        let tagsHtml = '';
+        if (item.style) tagsHtml += `<span class="text-[10px] bg-lounge-darkest px-2 py-1 rounded text-gold border border-gold border-opacity-30">${item.style}</span>`;
+        if (item.price_range) tagsHtml += `<span class="text-[10px] bg-lounge-darkest px-2 py-1 rounded text-lounge-muted border border-lounge-border">${item.price_range}</span>`;
+        
         document.getElementById('detail-modal-content-area').innerHTML = `
+            <div class="flex gap-2 mb-4">${tagsHtml}</div>
             <div class="bg-gold bg-opacity-10 p-4 rounded-xl border border-gold border-opacity-30">
                 <h4 class="font-cinzel text-gold text-sm uppercase tracking-wider mb-2">Signature Drink</h4>
                 <p class="text-sm text-gold font-bold">${item.signature_cocktail}</p>
             </div>
             <a href="https://grab.com" target="_blank" class="block w-full text-center bg-green-600 hover:bg-green-500 text-white font-bold py-3 rounded-xl mt-4 transition-colors">
                 <i class="fa-solid fa-car mr-2"></i> Book a Ride to Venue
-            </a>
-        `;
+            </a>`;
     }
     
     detailModal.classList.remove('hidden');

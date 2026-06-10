@@ -142,21 +142,96 @@
                     </button>
                 </div>
 
-                <div class="flex flex-wrap gap-2 w-full sm:w-auto justify-end pr-8 lg:pr-0">
-                    <input type="text" id="grid-search-input" data-i18n="grid-search" placeholder="Search..." class="bg-lounge-darkest border border-lounge-border text-xs rounded-lg p-2 focus:border-gold outline-none w-32 sm:w-40 transition-all">
-                    <select id="filter-flavor" class="cocktail-filter bg-lounge-darkest border border-lounge-border text-xs rounded-lg p-2 focus:border-gold outline-none">
-                        <option value="">All Flavors</option>
-                        <option value="Chua">Sour</option>
-                        <option value="Ngọt">Sweet</option>
-                        <option value="Đắng">Bitter</option>
-                        <option value="Thảo mộc">Herbal</option>
-                        <option value="Cân bằng">Balanced</option>
-                    </select>
-                    <select id="filter-city" class="bar-filter hidden bg-lounge-darkest border border-lounge-border text-xs rounded-lg p-2 focus:border-gold outline-none">
-                        <option value="">All Cities</option>
-                        <option value="Hanoi">Hanoi</option>
-                        <option value="Ho Chi Minh City">HCMC</option>
-                    </select>
+                <div class="flex flex-wrap gap-2 w-full sm:w-auto items-center justify-end pr-8 lg:pr-0">
+                    <input type="text" id="grid-search-input" data-i18n="grid-search" placeholder="Semantic search..." class="bg-lounge-darkest border border-lounge-border text-xs rounded-lg p-2 focus:border-gold outline-none w-32 sm:w-48 transition-all">
+                    <button id="btn-toggle-filters" class="px-3 py-2 rounded-lg bg-lounge-darkest border border-lounge-border text-xs text-lounge-muted hover:text-gold hover:border-gold transition-all">
+                        <i class="fa-solid fa-sliders mr-1"></i> Filters
+                    </button>
+                </div>
+            </div>
+
+            <!-- Collapsible Multi-Select Filter Panel -->
+            <div id="filter-panel" class="bg-lounge-card border-b border-lounge-border px-4 py-3 hidden shrink-0">
+
+                <!-- Cocktail Filters -->
+                <div id="cocktail-filters" class="space-y-2">
+                    <div class="flex flex-wrap items-center gap-1">
+                        <span class="text-[10px] text-lounge-muted uppercase tracking-wider w-16 shrink-0">Spirit</span>
+                        <button class="filter-chip cocktail-chip" data-group="spirit" data-value="Gin">Gin</button>
+                        <button class="filter-chip cocktail-chip" data-group="spirit" data-value="Vodka">Vodka</button>
+                        <button class="filter-chip cocktail-chip" data-group="spirit" data-value="Rum">Rum</button>
+                        <button class="filter-chip cocktail-chip" data-group="spirit" data-value="Whiskey">Whiskey</button>
+                        <button class="filter-chip cocktail-chip" data-group="spirit" data-value="Tequila">Tequila</button>
+                        <button class="filter-chip cocktail-chip" data-group="spirit" data-value="Brandy">Brandy</button>
+                        <button class="filter-chip cocktail-chip" data-group="spirit" data-value="Scotch">Scotch</button>
+                        <button class="filter-chip cocktail-chip" data-group="spirit" data-value="Amaretto">Amaretto</button>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-1">
+                        <span class="text-[10px] text-lounge-muted uppercase tracking-wider w-16 shrink-0">Flavor</span>
+                        <button class="filter-chip cocktail-chip" data-group="flavor" data-value="Chua">Sour</button>
+                        <button class="filter-chip cocktail-chip" data-group="flavor" data-value="Ngọt">Sweet</button>
+                        <button class="filter-chip cocktail-chip" data-group="flavor" data-value="Đắng">Bitter</button>
+                        <button class="filter-chip cocktail-chip" data-group="flavor" data-value="Thảo mộc">Herbal</button>
+                        <button class="filter-chip cocktail-chip" data-group="flavor" data-value="Cân bằng">Balanced</button>
+                        <button class="filter-chip cocktail-chip" data-group="flavor" data-value="Cay nồng">Spicy</button>
+                        <button class="filter-chip cocktail-chip" data-group="flavor" data-value="Béo">Creamy</button>
+                        <button class="filter-chip cocktail-chip" data-group="flavor" data-value="Sảng khoái">Refreshing</button>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-1">
+                        <span class="text-[10px] text-lounge-muted uppercase tracking-wider w-16 shrink-0">Type</span>
+                        <button class="filter-chip cocktail-chip" data-group="category" data-value="Cocktail">Cocktail</button>
+                        <button class="filter-chip cocktail-chip" data-group="category" data-value="Shot">Shot</button>
+                        <button class="filter-chip cocktail-chip" data-group="category" data-value="Ordinary Drink">Classic</button>
+                        <button class="filter-chip cocktail-chip" data-group="category" data-value="Punch / Party Drink">Party</button>
+                        <button class="filter-chip cocktail-chip" data-group="category" data-value="Coffee / Tea">Coffee</button>
+                        <button class="filter-chip cocktail-chip" data-group="category" data-value="Shake">Shake</button>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-1">
+                        <span class="text-[10px] text-lounge-muted uppercase tracking-wider w-16 shrink-0">ABV</span>
+                        <button class="filter-chip cocktail-chip" data-group="abv" data-value="Mocktail">No Alcohol</button>
+                        <button class="filter-chip cocktail-chip" data-group="abv" data-value="Nhẹ">Light</button>
+                        <button class="filter-chip cocktail-chip" data-group="abv" data-value="Vừa">Medium</button>
+                        <button class="filter-chip cocktail-chip" data-group="abv" data-value="Mạnh">Strong</button>
+                    </div>
+                </div>
+
+                <!-- Bar Filters (hidden by default) -->
+                <div id="bar-filters" class="space-y-2 hidden">
+                    <div class="flex flex-wrap items-center gap-1">
+                        <span class="text-[10px] text-lounge-muted uppercase tracking-wider w-16 shrink-0">City</span>
+                        <button class="filter-chip bar-chip" data-group="city" data-value="Hà Nội">Hà Nội</button>
+                        <button class="filter-chip bar-chip" data-group="city" data-value="Hồ Chí Minh">HCM</button>
+                        <button class="filter-chip bar-chip" data-group="city" data-value="Đà Nẵng">Đà Nẵng</button>
+                        <button class="filter-chip bar-chip" data-group="city" data-value="Nha Trang">Nha Trang</button>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-1">
+                        <span class="text-[10px] text-lounge-muted uppercase tracking-wider w-16 shrink-0">District</span>
+                        <button class="filter-chip bar-chip" data-group="district" data-value="Hoàn Kiếm">Hoàn Kiếm</button>
+                        <button class="filter-chip bar-chip" data-group="district" data-value="Ba Đình">Ba Đình</button>
+                        <button class="filter-chip bar-chip" data-group="district" data-value="Tây Hồ">Tây Hồ</button>
+                        <button class="filter-chip bar-chip" data-group="district" data-value="Đống Đa">Đống Đa</button>
+                        <button class="filter-chip bar-chip" data-group="district" data-value="Hai Bà Trưng">Hai Bà Trưng</button>
+                        <button class="filter-chip bar-chip" data-group="district" data-value="Quận 1">Quận 1</button>
+                        <button class="filter-chip bar-chip" data-group="district" data-value="Quận 2">Quận 2</button>
+                        <button class="filter-chip bar-chip" data-group="district" data-value="Quận 3">Quận 3</button>
+                        <button class="filter-chip bar-chip" data-group="district" data-value="Bình Thạnh">Bình Thạnh</button>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-1">
+                        <span class="text-[10px] text-lounge-muted uppercase tracking-wider w-16 shrink-0">Style</span>
+                        <button class="filter-chip bar-chip" data-group="style" data-value="Speakeasy">Speakeasy</button>
+                        <button class="filter-chip bar-chip" data-group="style" data-value="Rooftop Bar">Rooftop</button>
+                        <button class="filter-chip bar-chip" data-group="style" data-value="Jazz Club">Jazz</button>
+                        <button class="filter-chip bar-chip" data-group="style" data-value="Modern Lounge">Modern</button>
+                        <button class="filter-chip bar-chip" data-group="style" data-value="Dive Bar">Dive Bar</button>
+                        <button class="filter-chip bar-chip" data-group="style" data-value="Classic Pub">Classic Pub</button>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-1">
+                        <span class="text-[10px] text-lounge-muted uppercase tracking-wider w-16 shrink-0">Price</span>
+                        <button class="filter-chip bar-chip" data-group="price" data-value="$">$</button>
+                        <button class="filter-chip bar-chip" data-group="price" data-value="$$">$$</button>
+                        <button class="filter-chip bar-chip" data-group="price" data-value="$$$">$$$</button>
+                        <button class="filter-chip bar-chip" data-group="price" data-value="$$$$">$$$$</button>
+                    </div>
                 </div>
             </div>
 

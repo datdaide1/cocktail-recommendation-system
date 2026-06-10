@@ -350,15 +350,77 @@ def get_cocktails():
         except:
             ingredients_list = [ingredients_raw] if ingredients_raw else []
             
+        # Parse measures
+        measures_raw = row.get("ingredientMeasures", "")
+        try:
+            measures_list = eval(measures_raw)
+            if not isinstance(measures_list, list):
+                measures_list = [measures_raw]
+        except:
+            measures_list = [measures_raw] if measures_raw else []
+            
         output.append({
             "name": row.get("name"),
             "category": row.get("category"),
             "glassware_recommendation": row.get("glassware_recommendation", row.get("glassType")),
             "abv_category": row.get("abv_category"),
+            "flavor_profile": row.get("flavor_profile"),
             "ingredients": ingredients_list,
+            "ingredientMeasures": measures_list,
             "instructions": row.get("instructions"),
             "meaning_and_history": row.get("meaning_and_history"),
             "image_url": row.get("image_url", row.get("drinkThumbnail"))
+        })
+        
+    return jsonify({"cocktails": output})
+
+@app.route('/api/semantic_search', methods=['GET'])
+def semantic_search_endpoint():
+    """Performs semantic/embedding search over the cocktail database"""
+    query = request.args.get("q", "")
+    if not query.strip():
+        return jsonify({"cocktails": []})
+    
+    from src.tools.semantic_search import semantic_search_cocktails
+    
+    hits = semantic_search_cocktails(query, top_n=20)
+    df = get_cocktails_df()
+    
+    output = []
+    for hit in hits:
+        idx = hit["index"]
+        if idx >= len(df):
+            continue
+        row = df.iloc[idx]
+        
+        ingredients_raw = row.get("ingredients", "")
+        try:
+            ingredients_list = eval(ingredients_raw)
+            if not isinstance(ingredients_list, list):
+                ingredients_list = [ingredients_raw]
+        except:
+            ingredients_list = [ingredients_raw] if ingredients_raw else []
+            
+        measures_raw = row.get("ingredientMeasures", "")
+        try:
+            measures_list = eval(measures_raw)
+            if not isinstance(measures_list, list):
+                measures_list = [measures_raw]
+        except:
+            measures_list = [measures_raw] if measures_raw else []
+        
+        output.append({
+            "name": row.get("name"),
+            "category": row.get("category"),
+            "glassware_recommendation": row.get("glassware_recommendation", row.get("glassType")),
+            "abv_category": row.get("abv_category"),
+            "flavor_profile": row.get("flavor_profile"),
+            "ingredients": ingredients_list,
+            "ingredientMeasures": measures_list,
+            "instructions": row.get("instructions"),
+            "meaning_and_history": row.get("meaning_and_history"),
+            "image_url": row.get("image_url", row.get("drinkThumbnail")),
+            "similarity_score": hit["score"]
         })
         
     return jsonify({"cocktails": output})
