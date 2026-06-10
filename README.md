@@ -7,7 +7,7 @@ An advanced, smart Cocktail Recommendation & Bar Discovery system built with a *
 ## 🌟 Core Features
 
 1. **Multi-Agent Orchestration**:
-   - **Guest Concierge Agent**: Acts as a host that understands user preferences and moods. Recommends cocktails based on conversations and suggests real-world cocktail bars in Hanoi/HCMC.
+   - **Guest Concierge Agent**: Acts as a host that understands user preferences and moods. Recommends cocktails based on conversations and suggests real-world cocktail bars in Hanoi.
    - **Master Bartender Agent**: Provides precise recipes, mixology techniques, ingredient substitution suggestions, and ABV analysis.
 2. **Autonomous Tool Use (Gemini Function Calling)**:
    - The agents autonomously decide when and how to call the local database tools to fetch cocktails, search bars, calculate ABV, and find substitutes.
@@ -15,6 +15,9 @@ An advanced, smart Cocktail Recommendation & Bar Discovery system built with a *
    - Uses Gemini API to expand a standard cocktail dataset with rich metadata (flavor profiles, history/meanings, proper glassware, and ABV categories).
 4. **Premium Dark-Theme UI**:
    - A high-end Single Page Application (SPA) web interface built with a Flask backend and modern, responsive vanilla HTML/JS/CSS frontend, styled like a luxury cocktail lounge.
+   - **Split-Pane Venues Explorer**: Responsive side-by-side flex layout combining a dark-mode Leaflet map with customized pulsing gold markers and local venues cards.
+   - **Typewriter Text Streaming**: Conversational answers stream word-by-word with a flashing gold typing cursor, progressively formatting headings, bold text, list items, and images.
+   - **Robust Image Fallbacks**: Automatic `onerror` fallback triggers to load spirit-themed images from `loremflickr` when AI-generated images fail or hit rate-limits.
    - Dual modes: Guest Concierge (for discovery/bar recommendations) and Master Bartender (for mixology, ABV calculations, and custom recipes).
    - **Menu Builder**: Compile a list of drinks and export a formatted cocktail menu.
 
@@ -91,7 +94,7 @@ To run the application locally in development mode:
 ```bash
 python src/ui/app.py
 ```
-The app will start at `http://localhost:5000`.
+The app will start at `http://localhost:8501`.
 
 ### 5. Production Deployment
 
@@ -99,10 +102,10 @@ To run the application in a production-grade WSGI server:
 
 **For Linux / Docker Containers (Render, Railway, VPS):**
 ```bash
-gunicorn --bind 0.0.0.0:5000 src.ui.app:app
+gunicorn --bind 0.0.0.0:8501 src.ui.app:app
 ```
 
 **For Windows Servers:**
 ```bash
-waitress-serve --listen=0.0.0.0:5000 src.ui.app:app
+waitress-serve --listen=0.0.0.0:8501 src.ui.app:app
 ```
