@@ -1,76 +1,36 @@
 name,address,district,city,style,price_range,vibe_description,signature_cocktail
-The Alchemist,28 Hai Bà Trưng,Trung Tâm,Nha Trang,Modern Lounge,$$$,A hidden gem with a mysterious and intimate atmosphere.,Gin Martini
-Midnight Bloom,140 Lý Tự Trọng,Quận 3,Hồ Chí Minh,Modern Lounge,$$$$,A vibrant mix of modern art and exceptional mixology.,Mezcal Sour
-Neon Dreams,103 Trần Hưng Đạo,Quận 2,Hồ Chí Minh,Rooftop Bar,$$$,"Exclusive and luxurious, offering breathtaking city views.",Whiskey Sour
-Velvet Room,11 Pasteur,Trung Tâm,Đà Nẵng,Jazz Club,$$$$,A vibrant mix of modern art and exceptional mixology.,Vodka Martini
-Copper & Oak,68 Nguyễn Huệ,Trung Tâm,Nha Trang,Modern Lounge,$$$,"Sophisticated and elegant, ideal for romantic dates.",Matcha Old Fashioned
-The Blind Tiger,49 Lê Lợi,Trung Tâm,Nha Trang,Dive Bar,$,"Exclusive and luxurious, offering breathtaking city views.",Coffee Martini
-Silent Siren,30 Trần Hưng Đạo,Quận 2,Hồ Chí Minh,Speakeasy,$$$,"Lively and energetic, perfect for a night out with friends.",Coffee Old Fashioned
+Nê Cocktail Bar,3B Tống Duy Tân,Hoàn Kiếm,Hà Nội,Speakeasy,$$$,"Cozy and hidden speakeasy famous for its legendary Phở Cocktail.",Pho Cocktail
+The Mad Botanist,45 Lý Quốc Sư,Hoàn Kiếm,Hà Nội,Speakeasy,$$$$,"Beautiful 1920s gin bar overlooking St. Joseph's Cathedral.",Gin Tonic
+Polite & Co,5B Ngõ Bảo Khánh,Hoàn Kiếm,Hà Nội,Classic Pub,$$$,"Cozy gentleman's club style pub with a retro travel vibe.",Old Fashioned
+Gallery Bespoke Bar,95 Phùng Hưng,Hoàn Kiếm,Hà Nội,Modern Lounge,$$$$,"Artistic and upscale gallery lounge with premium craft cocktails.",Gallery Negroni
+Kumquat Lounge,14 Ngõ Từ Hoa,Tây Hồ,Hà Nội,Modern Lounge,$$$,"Lakeside villa lounge with glowing lights and chill West Lake views.",Kumquat Sour
+Summit Bar,1 Thanh Niên,Tây Hồ,Hà Nội,Rooftop Bar,$$$$,"Breathtaking high-altitude rooftop bar overlooking West Lake.",West Lake Sunset
+Jigger Speakeasy,28 Tống Duy Tân,Hoàn Kiếm,Hà Nội,Speakeasy,$$$,"Hidden cocktail sanctuary serving highly innovative creations.",Jigger Martini
+Bee'Z Knees,5 Lý Thái Tổ,Hoàn Kiếm,Hà Nội,Jazz Club,$$$$,"Live jazz club with elegant leather couches and premium single malts.",Honey Old Fashioned
+Tadioto,24 Tông Đản,Hoàn Kiếm,Hà Nội,Modern Lounge,$$$,"Artsy and intellectual hub with poetry readings and cozy vibes.",Ginger Whiskey
+The Haflington,94 Hàng Mã,Hoàn Kiếm,Hà Nội,Speakeasy,$$$$,"Museum-like private bar with vintage collectibles and taxidermy.",Amber Negroni
 Crimson Lounge,111 Pasteur,Hai Bà Trưng,Hà Nội,Modern Lounge,$$$,"Lively and energetic, perfect for a night out with friends.",Vodka Martini
 Sapphire Sky,183 Hai Bà Trưng,Hoàn Kiếm,Hà Nội,Dive Bar,$,"Sophisticated and elegant, ideal for romantic dates.",Whiskey Fizz
-Golden Hour,22 Trần Hưng Đạo,Bình Thạnh,Hồ Chí Minh,Jazz Club,$$$,"Cozy and rustic, featuring live acoustic performances.",Coffee Martini
-Iron Fist Pub,191 Lê Lợi,Trung Tâm,Đà Nẵng,Speakeasy,$,A vibrant mix of modern art and exceptional mixology.,Lotus Martini
-The Local,115 Lê Lợi,Trung Tâm,Nha Trang,Speakeasy,$$,"Quiet and relaxing, the best place to unwind after work.",Tequila Sour
-Urban Myth,133 Lý Tự Trọng,Hoàn Kiếm,Hà Nội,Classic Pub,$$,A casual spot with great music and affordable drinks.,Gin Smash
-Echo Chamber,181 Lý Tự Trọng,Trung Tâm,Nha Trang,Rooftop Bar,$$$,A vibrant mix of modern art and exceptional mixology.,Rum Mule
+Urban Myth,115 Lý Tự Trọng,Hoàn Kiếm,Hà Nội,Classic Pub,$$,"A casual spot with great music and affordable drinks.",Gin Smash
 Nomad's Rest,70 Lê Lợi,Đống Đa,Hà Nội,Speakeasy,$$$,"Quiet and relaxing, the best place to unwind after work.",Lotus Old Fashioned
-Whispering Winds,69 Trần Hưng Đạo,Trung Tâm,Nha Trang,Modern Lounge,$$$$,A hidden gem with a mysterious and intimate atmosphere.,Chili Sour
-Shadow Play,101 Nguyễn Huệ,Quận 1,Hồ Chí Minh,Dive Bar,$,A hidden gem with a mysterious and intimate atmosphere.,Matcha Martini
 Lunar Eclipse,119 Trần Hưng Đạo,Hoàn Kiếm,Hà Nội,Speakeasy,$$$$,"Sophisticated and elegant, ideal for romantic dates.",Tequila Martini
 Solar Flare,2 Lê Lợi,Hai Bà Trưng,Hà Nội,Classic Pub,$,"Cozy and rustic, featuring live acoustic performances.",Vodka Mule
-Starlight,176 Lý Tự Trọng,Bình Thạnh,Hồ Chí Minh,Rooftop Bar,$$,"Exclusive and luxurious, offering breathtaking city views.",Tequila Fizz
 The Boathouse,185 Nguyễn Huệ,Hoàn Kiếm,Hà Nội,Speakeasy,$$$,"Lively and energetic, perfect for a night out with friends.",Matcha Old Fashioned
-Harbor View,140 Lê Lợi,Trung Tâm,Nha Trang,Modern Lounge,$$$$,"Exclusive and luxurious, offering breathtaking city views.",Tequila Old Fashioned
-Sky High,47 Nguyễn Huệ,Trung Tâm,Đà Nẵng,Jazz Club,$$$,"Lively and energetic, perfect for a night out with friends.",Mezcal Fizz
-Cloud 9,48 Lý Tự Trọng,Quận 3,Hồ Chí Minh,Speakeasy,$,A vibrant mix of modern art and exceptional mixology.,Coffee Old Fashioned
-The Vault,166 Pasteur,Trung Tâm,Nha Trang,Speakeasy,$$$$,A casual spot with great music and affordable drinks.,Tequila Old Fashioned
 Secret Garden,23 Nguyễn Huệ,Tây Hồ,Hà Nội,Speakeasy,$$,"Lively and energetic, perfect for a night out with friends.",Mezcal Old Fashioned
-Hidden Door,32 Trần Hưng Đạo,Trung Tâm,Đà Nẵng,Modern Lounge,$$$,"Quiet and relaxing, the best place to unwind after work.",Whiskey Fizz
-Lost & Found,150 Lý Tự Trọng,Trung Tâm,Nha Trang,Jazz Club,$$$$,"Exclusive and luxurious, offering breathtaking city views.",Coffee Fizz
-The Observatory,108 Pasteur,Quận 1,Hồ Chí Minh,Speakeasy,$,"Sophisticated and elegant, ideal for romantic dates.",Gin Mule
-Paradox,75 Trần Hưng Đạo,Quận 3,Hồ Chí Minh,Modern Lounge,$$$$,"Exclusive and luxurious, offering breathtaking city views.",Matcha Fizz
-Enigma,159 Nguyễn Huệ,Trung Tâm,Nha Trang,Rooftop Bar,$$$,"Sophisticated and elegant, ideal for romantic dates.",Rum Martini
-Mirage,152 Pasteur,Trung Tâm,Nha Trang,Classic Pub,$$$,"Quiet and relaxing, the best place to unwind after work.",Rum Sour
-Oasis,113 Lý Tự Trọng,Trung Tâm,Nha Trang,Classic Pub,$$,A casual spot with great music and affordable drinks.,Rum Martini
-The Catalyst,164 Lê Lợi,Trung Tâm,Đà Nẵng,Modern Lounge,$$,A vibrant mix of modern art and exceptional mixology.,Mezcal Sour
-Axiom,120 Trần Hưng Đạo,Trung Tâm,Nha Trang,Rooftop Bar,$,"Quiet and relaxing, the best place to unwind after work.",Whiskey Martini
 The Nexus,23 Lý Tự Trọng,Đống Đa,Hà Nội,Dive Bar,$$,"Quiet and relaxing, the best place to unwind after work.",Rum Smash
 Quantum,193 Lê Lợi,Ba Đình,Hà Nội,Jazz Club,$,"Exclusive and luxurious, offering breathtaking city views.",Rum Sour
-Pulse,152 Trần Hưng Đạo,Quận 2,Hồ Chí Minh,Classic Pub,$$,"Sophisticated and elegant, ideal for romantic dates.",Gin Mule
-Rhythm & Blues,90 Lê Lợi,Trung Tâm,Nha Trang,Jazz Club,$,A hidden gem with a mysterious and intimate atmosphere.,Lotus Mule
-Jazz Corner,185 Lê Lợi,Bình Thạnh,Hồ Chí Minh,Classic Pub,$,"Exclusive and luxurious, offering breathtaking city views.",Vodka Mule
-The Brass Note,94 Nguyễn Huệ,Trung Tâm,Đà Nẵng,Classic Pub,$$$,A hidden gem with a mysterious and intimate atmosphere.,Tequila Martini
-Melody Lounge,89 Hai Bà Trưng,Trung Tâm,Nha Trang,Modern Lounge,$$$$,A casual spot with great music and affordable drinks.,Coffee Smash
-Harmonic,137 Lê Lợi,Trung Tâm,Nha Trang,Jazz Club,$$$,A hidden gem with a mysterious and intimate atmosphere.,Chili Smash
-Tempo,44 Nguyễn Huệ,Bình Thạnh,Hồ Chí Minh,Jazz Club,$$$$,A casual spot with great music and affordable drinks.,Coffee Old Fashioned
-Cadence,56 Hai Bà Trưng,Trung Tâm,Đà Nẵng,Jazz Club,$$$$,"Quiet and relaxing, the best place to unwind after work.",Lotus Sour
-The Rusty Nail,77 Lý Tự Trọng,Trung Tâm,Đà Nẵng,Speakeasy,$$$$,A casual spot with great music and affordable drinks.,Lotus Old Fashioned
 Broken Barrel,117 Lý Tự Trọng,Hai Bà Trưng,Hà Nội,Jazz Club,$,"Exclusive and luxurious, offering breathtaking city views.",Whiskey Fizz
-Tipsy Fox,64 Lê Lợi,Trung Tâm,Đà Nẵng,Jazz Club,$$,"Quiet and relaxing, the best place to unwind after work.",Matcha Mule
-Sober Monkey,104 Hai Bà Trưng,Trung Tâm,Nha Trang,Dive Bar,$,"Lively and energetic, perfect for a night out with friends.",Matcha Fizz
 Laughing Buddha,4 Lê Lợi,Đống Đa,Hà Nội,Modern Lounge,$$$$,"Lively and energetic, perfect for a night out with friends.",Tequila Smash
-The Drunken Sailor,198 Lê Lợi,Quận 3,Hồ Chí Minh,Dive Bar,$$$$,"Quiet and relaxing, the best place to unwind after work.",Mezcal Mule
-Mermaid's Tale,138 Pasteur,Quận 2,Hồ Chí Minh,Rooftop Bar,$$$$,A vibrant mix of modern art and exceptional mixology.,Gin Smash
-Kraken's Lair,19 Lê Lợi,Trung Tâm,Nha Trang,Classic Pub,$$$,A hidden gem with a mysterious and intimate atmosphere.,Coffee Smash
-The Pearl,187 Pasteur,Trung Tâm,Đà Nẵng,Rooftop Bar,$$,A casual spot with great music and affordable drinks.,Vodka Old Fashioned
-Ocean's Edge,85 Nguyễn Huệ,Hai Bà Trưng,Hà Nội,Rooftop Bar,$,A hidden gem with a mysterious and intimate atmosphere.,Rum Smash
-Sunset Boulevard,111 Pasteur,Bình Thạnh,Hồ Chí Minh,Speakeasy,$$$,"Lively and energetic, perfect for a night out with friends.",Lotus Fizz
-Midnight Express,61 Nguyễn Huệ,Quận 2,Hồ Chí Minh,Rooftop Bar,$$$$,"Sophisticated and elegant, ideal for romantic dates.",Vodka Old Fashioned
+Ocean's Edge,85 Nguyễn Huệ,Hai Bà Trưng,Hà Nội,Rooftop Bar,$,"A hidden gem with a mysterious and intimate atmosphere.",Rum Smash
 Night Owl,64 Nguyễn Huệ,Tây Hồ,Hà Nội,Dive Bar,$$$,"Exclusive and luxurious, offering breathtaking city views.",Mezcal Sour
-Early Bird,19 Lê Lợi,Trung Tâm,Đà Nẵng,Dive Bar,$$$,"Cozy and rustic, featuring live acoustic performances.",Whiskey Smash
 The Roost,58 Lý Tự Trọng,Hai Bà Trưng,Hà Nội,Jazz Club,$$$$,"Sophisticated and elegant, ideal for romantic dates.",Matcha Martini
-The Nest,186 Pasteur,Trung Tâm,Đà Nẵng,Modern Lounge,$$$$,"Exclusive and luxurious, offering breathtaking city views.",Lotus Mule
-Eagle's Eye,10 Trần Hưng Đạo,Hoàn Kiếm,Hà Nội,Modern Lounge,$$$,"Exclusive and luxurious, offering breathtaking city views.",Coffee Old Fashioned
-Hawk's View,48 Pasteur,Trung Tâm,Đà Nẵng,Jazz Club,$$$$,A vibrant mix of modern art and exceptional mixology.,Chili Fizz
-Falcon's Dive,120 Lê Lợi,Trung Tâm,Nha Trang,Dive Bar,$$,"Exclusive and luxurious, offering breathtaking city views.",Coffee Sour
-Raven's Call,35 Nguyễn Huệ,Ba Đình,Hà Nội,Dive Bar,$$$$,A vibrant mix of modern art and exceptional mixology.,Tequila Sour
-The Crow's Nest,143 Nguyễn Huệ,Hai Bà Trưng,Hà Nội,Modern Lounge,$$$$,"Cozy and rustic, featuring live acoustic performances.",Chili Sour
-Black Cat,126 Hai Bà Trưng,Trung Tâm,Đà Nẵng,Rooftop Bar,$$$$,"Quiet and relaxing, the best place to unwind after work.",Whiskey Sour
-White Rabbit,126 Trần Hưng Đạo,Đống Đa,Hà Nội,Modern Lounge,$$,"Lively and energetic, perfect for a night out with friends.",Whiskey Smash
-Red Fox,96 Pasteur,Trung Tâm,Nha Trang,Dive Bar,$,"Lively and energetic, perfect for a night out with friends.",Whiskey Martini
-Blue Bear,127 Trần Hưng Đạo,Hai Bà Trưng,Hà Nội,Rooftop Bar,$$,"Sophisticated and elegant, ideal for romantic dates.",Rum Old Fashioned
-The Green Dragon,85 Lý Tự Trọng,Bình Thạnh,Hồ Chí Minh,Modern Lounge,$,"Quiet and relaxing, the best place to unwind after work.",Gin Sour
-Golden Lion,24 Lý Tự Trọng,Ba Đình,Hà Nội,Jazz Club,$$$,A casual spot with great music and affordable drinks.,Chili Smash
-Silver Wolf,141 Trần Hưng Đạo,Hoàn Kiếm,Hà Nội,Modern Lounge,$,"Sophisticated and elegant, ideal for romantic dates.",Vodka Martini
-Bronze Bull,16 Lê Lợi,Hoàn Kiếm,Hà Nội,Dive Bar,$$$,"Sophisticated and elegant, ideal for romantic dates.",Whiskey Fizz
-Iron Horse,130 Trần Hưng Đạo,Trung Tâm,Đà Nẵng,Dive Bar,$$,A hidden gem with a mysterious and intimate atmosphere.,Gin Old Fashioned
+Eagle's Eye,10 Tràng Tiền,Hoàn Kiếm,Hà Nội,Modern Lounge,$$$,"Exclusive and luxurious, offering breathtaking city views.",Coffee Old Fashioned
+Raven's Call,35 Nguyễn Hữu Huân,Ba Đình,Hà Nội,Dive Bar,$$$$,"A vibrant mix of modern art and exceptional mixology.",Tequila Sour
+The Crow's Nest,143 Phố Huế,Hai Bà Trưng,Hà Nội,Modern Lounge,$$$$,"Cozy and rustic, featuring live acoustic performances.",Chili Sour
+White Rabbit,126 Cát Linh,Đống Đa,Hà Nội,Modern Lounge,$$,"Lively and energetic, perfect for a night out with friends.",Whiskey Smash
+Blue Bear,127 Lò Đúc,Hai Bà Trưng,Hà Nội,Rooftop Bar,$$,"Sophisticated and elegant, ideal for romantic dates.",Rum Old Fashioned
+Golden Lion,24 Kim Mã,Ba Đình,Hà Nội,Jazz Club,$$$,"A casual spot with great music and affordable drinks.",Chili Smash
+Silver Wolf,141 Tràng Thi,Hoàn Kiếm,Hà Nội,Modern Lounge,$,"Sophisticated and elegant, ideal for romantic dates.",Vodka Martini
+Bronze Bull,16 Lý Thường Kiệt,Hoàn Kiếm,Hà Nội,Dive Bar,$$$,"Sophisticated and elegant, ideal for romantic dates.",Whiskey Fizz
+Cầu Giấy Club,45 Duy Tân,Cầu Giấy,Hà Nội,Classic Pub,$$,"Modern tech-hub lounge with a lively local crowd.",Gin Tonic
+Long Biên Breeze,12 Ngọc Lâm,Long Biên,Hà Nội,Rooftop Bar,$$$,"Open-air terrace bar with beautiful views of the Red River.",Rum Punch
