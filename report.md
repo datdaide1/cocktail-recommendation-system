@@ -96,3 +96,22 @@ This file tracks the completed features and development tasks for the **AI Cockt
   - Expanded `data/bars_vietnam.csv` with **15 new premium real-world bars in Hanoi** covering multiple districts (Hoan Kiem, Ba Dinh, Tay Ho, Dong Da, Hai Ba Trung, Cau Giay, Long Bien).
   - Optimized the app for production by binding the host to `0.0.0.0` in `src/ui/app.py` and implementing an in-memory session write fallback to handle read-only filesystems.
   - Pushed all production-ready hybrid search code and database additions to the GitHub remote repository.
+
+### 11. V2 UI/UX Refinement & Session History Dropdown
+- **Date**: June 9, 2026
+- **Status**: Completed
+- **Details**:
+  - Replaced the static Chat History header with a dynamic drop-down select element to smoothly switch between historical chat sessions retrieved from the database.
+  - Replaced abrupt page jumps in the chat panel with smooth scrolling behavior.
+  - Integrated smart filtering grid connection to auto-highlight matching drinks or venues when recommended by the AI.
+
+### 12. Advanced Search, Multi-select Filters & Creative AI Recipes
+- **Date**: June 10, 2026
+- **Status**: Completed
+- **Details**:
+  - **Creative AI Mixology**: Configured both Guest Concierge and Master Bartender agents to automatically invent custom cocktail recipes (including recipe names, ingredients, exact measurements, instructions, glassware, garnish, meaning/story, and a generative AI illustration) if no exact match is found in the database.
+  - **Multi-select Tag/Chip Filter UI**: Upgraded the Discovery Panel's filters from single-value selects to horizontal scrollable multi-select chip tags (for spirits, flavor profiles, beverage category, and ABV for cocktails; and city, district, bar style, and price tags for venues).
+  - **Local UI Semantic Search**: Connected the search bar to a dedicated backend semantic search endpoint (`/api/semantic_search_cocktails`), allowing users to perform vector embedding similarity matches from the front-end.
+  - **Full Recipe Details Modal**: Reworked the Detail Modal layout to render the complete recipe (exact measurements, instructions, glass recommendation, garnish, and historical story).
+  - **Auto-popup Fix & Multi-Match Support**: Disabled the intrusive auto-pop-up behavior when chat completes, allowing users to read the response first. Enhanced matching algorithms to simultaneously display all cocktails mentioned in the AI response on the grid.
+
