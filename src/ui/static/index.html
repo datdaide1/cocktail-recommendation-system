@@ -198,23 +198,14 @@
                 <!-- Bar Filters (hidden by default) -->
                 <div id="bar-filters" class="space-y-2 hidden">
                     <div class="flex flex-wrap items-center gap-1">
-                        <span class="text-[10px] text-lounge-muted uppercase tracking-wider w-16 shrink-0">City</span>
-                        <button class="filter-chip bar-chip" data-group="city" data-value="Hà Nội">Hà Nội</button>
-                        <button class="filter-chip bar-chip" data-group="city" data-value="Hồ Chí Minh">HCM</button>
-                        <button class="filter-chip bar-chip" data-group="city" data-value="Đà Nẵng">Đà Nẵng</button>
-                        <button class="filter-chip bar-chip" data-group="city" data-value="Nha Trang">Nha Trang</button>
-                    </div>
-                    <div class="flex flex-wrap items-center gap-1">
                         <span class="text-[10px] text-lounge-muted uppercase tracking-wider w-16 shrink-0">District</span>
                         <button class="filter-chip bar-chip" data-group="district" data-value="Hoàn Kiếm">Hoàn Kiếm</button>
                         <button class="filter-chip bar-chip" data-group="district" data-value="Ba Đình">Ba Đình</button>
                         <button class="filter-chip bar-chip" data-group="district" data-value="Tây Hồ">Tây Hồ</button>
                         <button class="filter-chip bar-chip" data-group="district" data-value="Đống Đa">Đống Đa</button>
                         <button class="filter-chip bar-chip" data-group="district" data-value="Hai Bà Trưng">Hai Bà Trưng</button>
-                        <button class="filter-chip bar-chip" data-group="district" data-value="Quận 1">Quận 1</button>
-                        <button class="filter-chip bar-chip" data-group="district" data-value="Quận 2">Quận 2</button>
-                        <button class="filter-chip bar-chip" data-group="district" data-value="Quận 3">Quận 3</button>
-                        <button class="filter-chip bar-chip" data-group="district" data-value="Bình Thạnh">Bình Thạnh</button>
+                        <button class="filter-chip bar-chip" data-group="district" data-value="Cầu Giấy">Cầu Giấy</button>
+                        <button class="filter-chip bar-chip" data-group="district" data-value="Long Biên">Long Biên</button>
                     </div>
                     <div class="flex flex-wrap items-center gap-1">
                         <span class="text-[10px] text-lounge-muted uppercase tracking-wider w-16 shrink-0">Style</span>
@@ -235,15 +226,18 @@
                 </div>
             </div>
 
-            <!-- Map Container (Hidden initially) -->
-            <div id="map-container" class="w-full h-64 border-b border-lounge-border hidden shrink-0 relative z-10"></div>
+            <!-- Content Wrapper (split screen for map/list when map is shown) -->
+            <div id="discovery-content-area" class="flex-grow flex flex-col md:flex-row overflow-hidden relative">
+                <!-- Map Container (Hidden initially) -->
+                <div id="map-container" class="w-full md:w-[45%] h-64 md:h-full border-b md:border-b-0 md:border-r border-lounge-border hidden shrink-0 relative z-10"></div>
 
-            <!-- Grid Content -->
-            <div class="flex-grow p-6 overflow-y-auto custom-scrollbar">
-                <div id="main-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <div class="col-span-full text-center py-20 text-lounge-muted">
-                        <i class="fa-solid fa-compass text-4xl mb-4 opacity-30"></i>
-                        <p>Awaiting AI Recommendations...</p>
+                <!-- Grid Content -->
+                <div id="grid-container" class="flex-grow p-6 overflow-y-auto custom-scrollbar h-full">
+                    <div id="main-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div class="col-span-full text-center py-20 text-lounge-muted">
+                            <i class="fa-solid fa-compass text-4xl mb-4 opacity-30"></i>
+                            <p>Awaiting AI Recommendations...</p>
+                        </div>
                     </div>
                 </div>
             </div>

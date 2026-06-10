@@ -130,3 +130,95 @@ h1, h2, h3, h4, .font-cinzel {
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: #c5a059;
 }
+
+/* Custom Styled Map Pin (Gold with Pulse) */
+.gold-map-pin {
+    width: 16px;
+    height: 16px;
+    background-color: #c5a059;
+    border: 3px solid #0c0f17;
+    border-radius: 50%;
+    position: relative;
+    box-shadow: 0 0 10px rgba(197, 160, 89, 0.8);
+    transform: translate(-4px, -4px);
+}
+.gold-map-pin::after {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: -8px;
+    width: 26px;
+    height: 26px;
+    border: 2px solid #c5a059;
+    border-radius: 50%;
+    animation: mapPulse 1.8s infinite ease-out;
+    opacity: 0;
+    pointer-events: none;
+}
+@keyframes mapPulse {
+    0% { transform: scale(0.5); opacity: 0; }
+    50% { opacity: 0.5; }
+    100% { transform: scale(1.6); opacity: 0; }
+}
+
+/* Leaflet Dark Theme Overrides */
+.leaflet-popup-content-wrapper {
+    background: #121622 !important;
+    color: #f1f3f8 !important;
+    border: 1px solid #1c2335 !important;
+    border-radius: 12px !important;
+    font-family: 'Montserrat', sans-serif !important;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important;
+    padding: 2px !important;
+}
+.leaflet-popup-tip {
+    background: #121622 !important;
+    border-left: 1px solid #1c2335 !important;
+    border-bottom: 1px solid #1c2335 !important;
+    box-shadow: none !important;
+}
+.leaflet-container a.leaflet-popup-close-button {
+    color: #8b9bb4 !important;
+    font-size: 16px !important;
+    padding: 8px 8px 0 0 !important;
+    transition: color 0.2s ease;
+}
+.leaflet-container a.leaflet-popup-close-button:hover {
+    color: #c5a059 !important;
+    background: transparent !important;
+}
+.leaflet-bar {
+    border: 1px solid #1c2335 !important;
+    box-shadow: none !important;
+    border-radius: 8px !important;
+    overflow: hidden;
+}
+.leaflet-bar a {
+    background-color: #121622 !important;
+    color: #c5a059 !important;
+    border-bottom: 1px solid #1c2335 !important;
+    transition: all 0.2s ease;
+}
+.leaflet-bar a:hover {
+    background-color: #1c2335 !important;
+    color: #e5c158 !important;
+}
+.leaflet-bar a.leaflet-disabled {
+    background-color: #080b11 !important;
+    color: #1c2335 !important;
+}
+
+/* Typewriter Streaming Cursor */
+.typing-cursor {
+    display: inline-block;
+    width: 6px;
+    height: 15px;
+    background-color: #c5a059;
+    margin-left: 2px;
+    animation: blink 0.8s infinite steps(2);
+    vertical-align: middle;
+}
+@keyframes blink {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
