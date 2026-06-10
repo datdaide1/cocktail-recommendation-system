@@ -159,8 +159,8 @@ function setupTabSwitcher() {
 
 // 3. MAP LOGIC
 function initMap() {
-    // Default center to Vietnam
-    mapInstance = L.map('map-container').setView([16.047079, 108.206230], 5);
+    // Default center to Hanoi
+    mapInstance = L.map('map-container').setView([21.0285, 105.8542], 13);
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
         attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
     }).addTo(mapInstance);
@@ -177,20 +177,58 @@ function updateMapMarkers(bars) {
     
     const bounds = L.latLngBounds();
     
-    bars.forEach(bar => {
-        // Very basic coordinate mocking based on city if actual coords don't exist
-        // In a real app, `bar` should have lat/lng from the database.
-        // We will fake some coordinates for demonstration.
-        let lat = bar.city.includes('Ho Chi Minh') ? 10.7769 + (Math.random()-0.5)*0.05 : 21.0285 + (Math.random()-0.5)*0.05;
-        let lng = bar.city.includes('Ho Chi Minh') ? 106.7009 + (Math.random()-0.5)*0.05 : 105.8542 + (Math.random()-0.5)*0.05;
+    // Coordinates for Hanoi districts to generate realistic pin locations
+    const districtCoords = {
+        "hoàn kiếm": [21.0285, 105.8542],
+        "tây hồ": [21.0625, 105.8152],
+        "ba đình": [21.0355, 105.8282],
+        "đống đa": [21.0125, 105.8252],
+        "hai bà trưng": [21.0065, 105.8522],
+        "cầu giấy": [21.0285, 105.7822],
+        "long biên": [21.0455, 105.8752]
+    };
+    
+    // Custom Gold Pulsing DivIcon
+    const goldIcon = L.divIcon({
+        className: 'custom-gold-marker',
+        html: "<div class='gold-map-pin'></div>",
+        iconSize: [16, 16],
+        iconAnchor: [8, 8],
+        popupAnchor: [0, -8]
+    });
+    
+    bars.forEach((bar, idx) => {
+        const dist = bar.district ? bar.district.toLowerCase().trim() : '';
+        const baseCoords = districtCoords[dist] || [21.0285, 105.8542];
         
-        const marker = L.marker([lat, lng]).addTo(mapInstance);
-        marker.bindPopup(`<b>${bar.name}</b><br>${bar.district}, ${bar.city}`);
+        // Add a deterministic offset so pins for the same district don't overlap completely
+        const offsetLat = (Math.sin(idx) * 0.003);
+        const offsetLng = (Math.cos(idx) * 0.003);
+        
+        const lat = baseCoords[0] + offsetLat;
+        const lng = baseCoords[1] + offsetLng;
+        
+        const marker = L.marker([lat, lng], { icon: goldIcon }).addTo(mapInstance);
+        
+        // Custom popup content styled with premium card style
+        const popupContent = `
+            <div class="p-2 min-w-[180px]">
+                <h4 class="font-cinzel text-gold font-bold text-sm mb-1">${bar.name}</h4>
+                <p class="text-[10px] text-lounge-muted uppercase tracking-wider mb-2"><i class="fa-solid fa-martini-glass-citrus"></i> ${bar.style}</p>
+                <p class="text-[11px] leading-relaxed text-lounge-text mb-2">${bar.address}, ${bar.district}</p>
+                <div class="flex justify-between items-center text-[10px]">
+                    <span class="text-gold font-bold">${bar.price_range}</span>
+                    <span class="text-green-500"><i class="fa-solid fa-circle-check"></i> Active</span>
+                </div>
+            </div>
+        `;
+        
+        marker.bindPopup(popupContent);
         mapMarkers.push(marker);
         bounds.extend([lat, lng]);
     });
     
-    mapInstance.fitBounds(bounds, { padding: [30, 30] });
+    mapInstance.fitBounds(bounds, { padding: [30, 30], maxZoom: 14 });
 }
 
 // 4. CHAT WIDGET
@@ -344,8 +382,17 @@ async function loadSessionHistory(sessionId) {
     }
 }
 
-function appendMessageToUI(role, text, scrollToBottom = true) {
+function appendMessageToUI(role, text, scrollToBottom = true, stream = false) {
     const bubble = document.createElement('div');
+    
+    let spiritTag = 'drink';
+    const lowerText = text.toLowerCase();
+    if (lowerText.includes('whiskey') || lowerText.includes('bourbon') || lowerText.includes('scotch')) spiritTag = 'whiskey';
+    else if (lowerText.includes('gin')) spiritTag = 'gin';
+    else if (lowerText.includes('rum')) spiritTag = 'rum';
+    else if (lowerText.includes('tequila')) spiritTag = 'tequila';
+    else if (lowerText.includes('vodka')) spiritTag = 'vodka';
+
     if (role === 'user') {
         bubble.className = "flex gap-4 max-w-[90%] ml-auto justify-end fade-in mt-4";
         bubble.innerHTML = `
@@ -353,19 +400,51 @@ function appendMessageToUI(role, text, scrollToBottom = true) {
                 ${text}
             </div>
         `;
+        chatBox.appendChild(bubble);
+        if (scrollToBottom) chatBox.scrollTo({ top: chatBox.scrollHeight, behavior: 'smooth' });
     } else {
         bubble.className = "flex gap-4 max-w-[90%] fade-in mt-4";
         bubble.innerHTML = `
             <div class="w-10 h-10 rounded-full bg-gold bg-opacity-20 flex items-center justify-center text-gold flex-shrink-0 border border-gold border-opacity-30">
                 <i class="fa-solid fa-bell"></i>
             </div>
-            <div class="bg-lounge-card p-4 rounded-2xl rounded-tl-none border border-lounge-border text-sm leading-relaxed shadow-lg">
-                ${parseMarkdown(text)}
+            <div class="bg-lounge-card p-4 rounded-2xl rounded-tl-none border border-lounge-border text-sm leading-relaxed shadow-lg message-content">
             </div>
         `;
+        chatBox.appendChild(bubble);
+        const contentDiv = bubble.querySelector('.message-content');
+        
+        if (stream) {
+            let i = 0;
+            const words = text.split(/(\s+)/);
+            const cursor = document.createElement('span');
+            cursor.className = 'typing-cursor';
+            contentDiv.appendChild(cursor);
+            
+            let accumulatedText = '';
+            
+            function typeNextWord() {
+                if (i < words.length) {
+                    accumulatedText += words[i];
+                    i++;
+                    
+                    contentDiv.innerHTML = parseMarkdown(accumulatedText, spiritTag);
+                    contentDiv.appendChild(cursor);
+                    
+                    if (scrollToBottom) chatBox.scrollTop = chatBox.scrollHeight;
+                    setTimeout(typeNextWord, 10 + Math.random() * 20);
+                } else {
+                    cursor.remove();
+                    contentDiv.innerHTML = parseMarkdown(text, spiritTag);
+                    if (scrollToBottom) chatBox.scrollTop = chatBox.scrollHeight;
+                }
+            }
+            typeNextWord();
+        } else {
+            contentDiv.innerHTML = parseMarkdown(text, spiritTag);
+            if (scrollToBottom) chatBox.scrollTo({ top: chatBox.scrollHeight, behavior: 'smooth' });
+        }
     }
-    chatBox.appendChild(bubble);
-    if (scrollToBottom) chatBox.scrollTo({ top: chatBox.scrollHeight, behavior: 'smooth' });
 }
 
 // 6. CHAT SENDING
@@ -399,7 +478,7 @@ async function sendChatMessage() {
             body: JSON.stringify({
                 message: message,
                 chat_history: chatHistory.slice(0, -1),
-                role: 'guest', // ignored by backend anyway
+                role: 'guest',
                 session_id: currentSessionId,
                 user_id: CLIENT_USER_ID
             })
@@ -409,7 +488,7 @@ async function sendChatMessage() {
         
         if (response.ok && !data.error) {
             const responseText = data.message || "No response generated.";
-            appendMessageToUI('model', responseText);
+            appendMessageToUI('model', responseText, true, true);
             chatHistory.push({ role: "model", parts: [responseText] });
             smartFilterGrid(responseText);
             
@@ -465,10 +544,21 @@ function renderGrid(items, type) {
         card.className = "bg-lounge-card rounded-2xl overflow-hidden border border-lounge-border shadow-lg group hover:border-gold transition-all duration-300 flex flex-col h-full fade-in cursor-pointer";
         card.style.animationDelay = `${(index % 10) * 50}ms`;
 
+        // Determine base spirit for fallback images
+        let gridSpirit = 'drink';
+        if (item.ingredients) {
+            const ingStr = Array.isArray(item.ingredients) ? item.ingredients.join(' ').toLowerCase() : String(item.ingredients).toLowerCase();
+            if (ingStr.includes('whiskey') || ingStr.includes('bourbon') || ingStr.includes('scotch')) gridSpirit = 'whiskey';
+            else if (ingStr.includes('gin')) gridSpirit = 'gin';
+            else if (ingStr.includes('rum')) gridSpirit = 'rum';
+            else if (ingStr.includes('tequila')) gridSpirit = 'tequila';
+            else if (ingStr.includes('vodka')) gridSpirit = 'vodka';
+        }
+
         if (type === 'cocktails') {
             let imageHtml = '';
             if (item.image_url && item.image_url.trim() !== '') {
-                imageHtml = `<img src="${item.image_url}" alt="${item.name}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">`;
+                imageHtml = `<img src="${item.image_url}" onerror="this.onerror=null; this.src='https://loremflickr.com/600/600/cocktail,${gridSpirit}';" alt="${item.name}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">`;
             } else {
                 imageHtml = `<div class="w-full h-full bg-gradient-to-br from-zinc-900 to-zinc-800 flex items-center justify-center transition-transform duration-700 group-hover:scale-110"><i class="fa-solid fa-martini-glass-citrus text-gold opacity-50 text-4xl"></i></div>`;
             }
@@ -488,7 +578,8 @@ function renderGrid(items, type) {
             card.addEventListener('click', () => openDetailModal(item, 'cocktails'));
             
         } else {
-            const imageHtml = `<div class="w-full h-full bg-gradient-to-br from-zinc-900 to-zinc-800 flex items-center justify-center transition-transform duration-700 group-hover:scale-110"><i class="fa-solid fa-compass text-gold opacity-50 text-4xl"></i></div>`;
+            // Display beautiful location-themed images for bars too using loremflickr
+            const imageHtml = `<img src="https://loremflickr.com/600/400/lounge,bar,vintage?random=${index}" onerror="this.onerror=null; this.src='https://loremflickr.com/600/400/lounge,bar';" alt="${item.name}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">`;
 
             card.innerHTML = `
                 <div class="h-32 relative overflow-hidden pointer-events-none border-b border-lounge-border">
@@ -645,8 +736,19 @@ btnCloseDetailModal.addEventListener('click', () => {
 });
 
 function openDetailModal(item, type) {
+    // Determine base spirit for fallback images
+    let detailSpirit = 'drink';
+    if (item.ingredients) {
+        const ingStr = Array.isArray(item.ingredients) ? item.ingredients.join(' ').toLowerCase() : String(item.ingredients).toLowerCase();
+        if (ingStr.includes('whiskey') || ingStr.includes('bourbon') || ingStr.includes('scotch')) detailSpirit = 'whiskey';
+        else if (ingStr.includes('gin')) detailSpirit = 'gin';
+        else if (ingStr.includes('rum')) detailSpirit = 'rum';
+        else if (ingStr.includes('tequila')) detailSpirit = 'tequila';
+        else if (ingStr.includes('vodka')) detailSpirit = 'vodka';
+    }
+
     document.getElementById('detail-modal-image-container').innerHTML = type === 'cocktails' 
-        ? (item.image_url ? `<img src="${item.image_url}" class="w-full h-full object-cover">` : `<div class="w-full h-full bg-gradient-to-br from-zinc-900 to-zinc-800 flex items-center justify-center"><i class="fa-solid fa-martini-glass-citrus text-gold text-6xl opacity-50"></i></div>`)
+        ? (item.image_url ? `<img src="${item.image_url}" onerror="this.onerror=null; this.src='https://loremflickr.com/600/600/cocktail,${detailSpirit}';" class="w-full h-full object-cover">` : `<div class="w-full h-full bg-gradient-to-br from-zinc-900 to-zinc-800 flex items-center justify-center"><i class="fa-solid fa-martini-glass-citrus text-gold text-6xl opacity-50"></i></div>`)
         : `<div class="w-full h-full bg-gradient-to-br from-zinc-900 to-zinc-800 flex items-center justify-center"><i class="fa-solid fa-compass text-gold text-6xl opacity-50"></i></div>`;
         
     document.getElementById('detail-modal-title').innerText = item.name;
@@ -658,7 +760,7 @@ function openDetailModal(item, type) {
         if (item.flavor_profile) subtitleParts.push(item.flavor_profile);
         document.getElementById('detail-modal-subtitle').innerHTML = `<i class="fa-solid fa-glass-water"></i> ${subtitleParts.join(' · ')}`;
         
-        document.getElementById('detail-modal-description').innerHTML = parseMarkdown(item.meaning_and_history || '');
+        document.getElementById('detail-modal-description').innerHTML = parseMarkdown(item.meaning_and_history || '', detailSpirit);
         
         let ingredientsHtml = '';
         if (item.ingredients && Array.isArray(item.ingredients) && item.ingredients.length > 0) {
@@ -680,7 +782,7 @@ function openDetailModal(item, type) {
         if (item.instructions) {
             instructionsHtml = `
                 <h4 class="font-cinzel text-gold text-lg border-b border-lounge-border pb-1 mb-2"><i class="fa-solid fa-list-ol mr-2"></i>Instructions</h4>
-                <div class="text-sm bg-lounge-darkest p-4 rounded-xl border border-lounge-border leading-relaxed">${parseMarkdown(item.instructions)}</div>`;
+                <div class="text-sm bg-lounge-darkest p-4 rounded-xl border border-lounge-border leading-relaxed">${parseMarkdown(item.instructions, detailSpirit)}</div>`;
         }
         
         let glasswareHtml = '';
@@ -716,10 +818,10 @@ function openDetailModal(item, type) {
     detailModal.classList.add('flex');
 }
 
-function parseMarkdown(text) {
+function parseMarkdown(text, spiritTag = 'drink') {
     let parsed = text;
     // Handle inline images generated by Generative Hack
-    parsed = parsed.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" class="w-full rounded-xl my-4 border border-lounge-border shadow-lg">');
+    parsed = parsed.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, `<img src="$2" alt="$1" onerror="this.onerror=null; this.src='https://loremflickr.com/600/600/cocktail,${spiritTag}';" class="w-full rounded-xl my-4 border border-lounge-border shadow-lg">`);
     parsed = parsed.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
     parsed = parsed.split('\n').map(line => {
         const trimmed = line.trim();
