@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+langchain
+langchain-openai
+langgraph
+qdrant-client
+pydantic
+redis
+python-dotenv
