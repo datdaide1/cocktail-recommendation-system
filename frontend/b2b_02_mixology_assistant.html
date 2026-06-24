@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Master Bartender - Mixology Assistant</title>
+    <link rel="stylesheet" href="shared.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .panel { background: var(--surface-dark); border: 1px solid var(--border-color); border-radius: 16px; padding: 24px; margin-bottom: 24px; }
+        .form-group label { display: block; font-size: 0.875rem; margin-bottom: 8px; color: var(--text-secondary); }
+        .form-group input { width: 100%; padding: 12px; background: var(--bg-dark); border: 1px solid var(--border-color); border-radius: 8px; color: white; outline: none; }
+        .form-group input:focus { border-color: var(--accent); }
+    </style>
+</head>
+<body class="b2b-mode">
+    <nav class="navbar">
+        <a href="b2b_01_dashboard.html" class="logo"><i class="fa-solid fa-martini-glass-citrus"></i> Master Bartender Pro</a>
+        <a href="b2b_01_dashboard.html" class="btn btn-outline"><i class="fa-solid fa-arrow-left"></i> Back to Dashboard</a>
+    </nav>
+
+    <div class="split-layout">
+        <div class="main-area" style="flex: 1.5;">
+            <h1 style="margin-bottom: 24px;"><i class="fa-solid fa-flask" style="color: var(--accent);"></i> Single Recipe Workspace</h1>
+            
+            <div class="panel">
+                <h3 style="margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border-color);">Recipe Details</h3>
+                <h2 style="font-family: 'Playfair Display', serif; color: var(--accent); margin-bottom: 16px;">Margarita Classic</h2>
+                <ul style="list-style: none; line-height: 2; margin-bottom: 24px; font-size: 1.1rem;">
+                    <li><i class="fa-solid fa-droplet" style="color: var(--text-secondary); width: 24px;"></i> 50ml Tequila Blanco</li>
+                    <li><i class="fa-solid fa-droplet" style="color: var(--text-secondary); width: 24px;"></i> 20ml Cointreau</li>
+                    <li><i class="fa-solid fa-lemon" style="color: var(--text-secondary); width: 24px;"></i> 15ml Fresh Lime Juice</li>
+                </ul>
+                <div style="display: flex; gap: 16px;">
+                    <button class="btn btn-primary"><i class="fa-solid fa-bookmark"></i> Save Recipe</button>
+                    <button class="btn btn-outline"><i class="fa-solid fa-plus"></i> Add to Menu</button>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h3 style="margin-bottom: 16px;"><i class="fa-solid fa-calculator"></i> T2: Act (ABV & Cost Auto-Calc)</h3>
+                <div style="display:flex; gap: 16px; margin-bottom: 16px;">
+                    <div class="form-group" style="flex:1"><label>Spirit</label><input type="text" value="Tequila" readonly></div>
+                    <div class="form-group" style="flex:1"><label>Volume (ml)</label><input type="number" value="50" readonly></div>
+                    <div class="form-group" style="flex:1"><label>ABV (%)</label><input type="number" value="40" readonly></div>
+                </div>
+                <div style="background: var(--accent-glow); padding: 16px; border-radius: 8px; border: 1px dashed var(--accent);">
+                    <strong>Estimated ABV:</strong> 22.5% <br>
+                    <strong>Estimated Cost:</strong> 18,500 VND
+                </div>
+            </div>
+        </div>
+
+        <aside class="chatbot-panel" style="width: 450px;">
+            <div class="chat-header">
+                <div class="avatar"><i class="fa-solid fa-robot"></i></div>
+                <div><h3 style="font-size: 1.1rem;">AI Mixologist</h3><p style="font-size: 0.8rem; color: var(--text-secondary);">Ask & Explainability</p></div>
+            </div>
+            
+            <div class="chat-history" id="chatHistory">
+                <div class="message msg-bot">
+                    I have loaded the Margarita recipe. Do you need any substitutions or flavor adjustments?
+                </div>
+            </div>
+            
+            <div class="typing-indicator" id="typingIndicator">
+                <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+            </div>
+
+            <div class="quick-prompts" id="promptsArea">
+                <button class="prompt-pill" onclick="simulateT2Ask()">Tôi hết Cointreau rồi</button>
+                <button class="prompt-pill" onclick="simulateT3Harsh()">Ly này hơi khé cổ</button>
+            </div>
+
+            <div class="chat-input-area">
+                <input type="text" class="chat-input" placeholder="Type your issue (e.g., khé cổ)...">
+                <button class="send-btn"><i class="fa-solid fa-paper-plane"></i></button>
+            </div>
+        </aside>
+    </div>
+
+    
+    <script src="i18n.js"></script>
+    <script src="shared.js"></script>
+    <script>
+        const chatHistory = document.getElementById('chatHistory');
+        const typingIndicator = document.getElementById('typingIndicator');
+        const promptsArea = document.getElementById('promptsArea');
+
+        function simulateT2Ask() {
+            appendMessage(chatHistory, "Tôi hết Cointreau rồi.", true);
+            promptsArea.innerHTML = '';
+            showTyping(chatHistory, typingIndicator, 1000, () => {
+                const msg = `<strong>T2: Ask (Substitute)</strong><br>
+                Bạn có thể dùng Triple Sec hoặc nước đường + vỏ cam vắt.<br>
+                <div class="explain-tag">⚠️ Lưu ý: Dùng nước đường sẽ làm giảm độ cồn. Bạn có muốn tôi tính lại lượng Tequila không?</div>
+                <div style="margin-top: 12px; display:flex; gap:8px;">
+                    <button class="btn btn-primary" style="font-size:0.8rem; padding:8px 12px;" onclick="alert('Tính lại')">Đồng ý</button>
+                    <button class="btn btn-outline" style="font-size:0.8rem; padding:8px 12px;">Không cần</button>
+                </div>`;
+                appendMessage(chatHistory, msg, false, true);
+            });
+        }
+
+        function simulateT3Harsh() {
+            appendMessage(chatHistory, "Ly này hơi khé cổ.", true);
+            promptsArea.innerHTML = '';
+            showTyping(chatHistory, typingIndicator, 1000, () => {
+                const msg = `<strong>T3: Recovery Loop</strong><br>
+                Khé cổ thường do cồn chưa tan đủ.<br>
+                <div class="explain-tag">✨ Rationale: Hãy thử khuấy (stir) với đá thêm 15 giây, hoặc thêm 10ml Heavy Cream để tráng vòm họng.</div>`;
+                appendMessage(chatHistory, msg, false, true);
+            });
+        }
+    </script>
+</body>
+</html>
