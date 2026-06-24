@@ -10,7 +10,11 @@ engine = create_async_engine(
     echo=False,
     pool_size=5,
     max_overflow=10,
-    connect_args={"ssl": "require"}
+    connect_args={
+        "ssl": "require",
+        "prepared_statement_cache_size": 0,
+        "prepared_statement_name_func": lambda: ""
+    }
 )
 
 # Create an async session factory
