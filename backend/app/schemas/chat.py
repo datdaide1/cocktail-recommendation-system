@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+<<<<<<< HEAD
 from typing import List, Optional, Dict, Any
 
 class MessageRequest(BaseModel):
@@ -23,3 +24,20 @@ class ToolCalculateCostRequest(BaseModel):
 class SessionInitRequest(BaseModel):
     user_id: str
     mode: str
+=======
+from typing import List, Optional, Any
+
+class Message(BaseModel):
+    role: str
+    content: str
+
+class ChatRequest(BaseModel):
+    session_id: str
+    messages: List[Message]
+    mode: str = "b2c"  # "b2c" or "b2b"
+
+class ChatResponse(BaseModel):
+    response: str
+    rationale: Optional[str] = None
+    data: Optional[Any] = None
+>>>>>>> test

@@ -1,35 +1,9 @@
-# Environment variables
-.env
-
-# Python cache
+venv/
 __pycache__/
+.env
 *.pyc
 *.pyo
 *.pyd
-
-# Virtual environments
-venv/
-.venv/
+.Python
 env/
-ENV/
-
-# Streamlit config/cache
-.streamlit/
-
-# OS specific files
-.DS_Store
-Thumbs.db
-
-# Chat session log files
-data/chat_sessions.json
-
-# model
-model/
-
-# Backup and temporary files
-*.backup
-*.bak
-*.bak2
-patch_*.py
-fix_*.py
-scratch/
+.pytest_cache/

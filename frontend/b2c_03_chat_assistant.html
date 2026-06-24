@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nightlife Concierge - Chat</title>
+    <link rel="stylesheet" href="shared.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <button class="lang-toggle" onclick="toggleLanguage()">EN / VI</button>
+
+    <nav class="navbar">
+        <a href="b2c_02_home.html" class="logo"><i class="fa-solid fa-martini-glass-citrus"></i> Nightlife Concierge</a>
+        <div class="mode-toggle">
+            <span class="mode-label b2c-label active">B2C Guest</span>
+            <label class="switch">
+                <input type="checkbox" onchange="toggleMode(this)">
+                <span class="slider round"></span>
+            </label>
+            <span class="mode-label b2b-label">B2B Pro</span>
+        </div>
+    </nav>
+
+    <div class="split-layout">
+        <!-- Left: Map/Results Area -->
+        <div class="main-area" style="background: var(--bg-dark); padding: 0;">
+            <div style="height: 100%; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); background: url('https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=1200&q=80') center/cover;">
+                <div style="background: rgba(0,0,0,0.7); padding: 24px; border-radius: 16px; backdrop-filter: blur(10px);">
+                    <h3><i class="fa-solid fa-map-location-dot"></i> Interactive Map / Results</h3>
+                    <p>Recommendations will appear here based on your chat.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Chat Assistant -->
+        <aside class="chatbot-panel" style="width: 450px;">
+            <div class="chat-header">
+                <div class="avatar"><i class="fa-solid fa-robot"></i></div>
+                <div>
+                    <h3 style="font-size: 1.1rem;">AI Concierge</h3>
+                    <p style="font-size: 0.8rem; color: var(--text-secondary);">Powered by HCAI</p>
+                </div>
+            </div>
+            
+            <div class="chat-history" id="chatHistory">
+                <div class="message msg-bot">
+                    Hello! I'm your Nightlife Concierge. Are you looking for a specific vibe, or a particular cocktail today?
+                </div>
+            </div>
+            
+            <div class="typing-indicator" id="typingIndicator">
+                <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+            </div>
+
+            <div class="quick-prompts" id="promptsArea">
+                <button class="prompt-pill" onclick="simulateT1()">Tìm đồ uống theo tâm trạng</button>
+            </div>
+
+            <div class="chat-input-area">
+                <input type="text" class="chat-input" placeholder="Type your mood or request...">
+                <button class="send-btn"><i class="fa-solid fa-paper-plane"></i></button>
+            </div>
+        </aside>
+    </div>
+
+    
+    <script src="i18n.js"></script>
+    <script src="shared.js"></script>
+    <script>
+        const chatHistory = document.getElementById('chatHistory');
+        const typingIndicator = document.getElementById('typingIndicator');
+        const promptsArea = document.getElementById('promptsArea');
+        const chatInput = document.querySelector('.chat-input');
+        const sendBtn = document.querySelector('.send-btn');
+
+        function simulateT1() {
+            appendMessage(chatHistory, "Tôi muốn tìm đồ uống theo tâm trạng.", true);
+            promptsArea.innerHTML = '';
+            callBackendApi("Tôi muốn tìm đồ uống theo tâm trạng.", "b2c", chatHistory, typingIndicator);
+        }
+
+        function simulateT4() {
+            appendMessage(chatHistory, "Ngọt ngào, nhẹ nhàng.", true);
+            callBackendApi("Ngọt ngào, nhẹ nhàng.", "b2c", chatHistory, typingIndicator);
+        }
+
+        function handleSend() {
+            const text = chatInput.value.trim();
+            if (!text) return;
+            appendMessage(chatHistory, text, true);
+            chatInput.value = '';
+            callBackendApi(text, "b2c", chatHistory, typingIndicator);
+        }
+
+        sendBtn.addEventListener('click', handleSend);
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleSend();
+        });
+    </script>
+</body>
+</html>
