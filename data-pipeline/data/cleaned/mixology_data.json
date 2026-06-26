@@ -1,0 +1,281 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "description": "Core Substitution Matrix for HCAI RAG Engine",
+    "usage": "Use this as Ground Truth for ingredient replacements to maintain Cost and structural integrity."
+  },
+  "substitutions": [
+    {
+      "ingredient": "Cointreau",
+      "substitutes": [
+        "Triple Sec",
+        "Grand Marnier",
+        "Orange Curaçao"
+      ],
+      "notes": "Grand Marnier adds cognac notes; Triple Sec is a direct cheaper swap."
+    },
+    {
+      "ingredient": "Campari",
+      "substitutes": [
+        "Aperol",
+        "Select Aperitivo",
+        "Cynar",
+        "Gran Classico"
+      ],
+      "notes": "Aperol is sweeter and less bitter. Cynar adds vegetal notes."
+    },
+    {
+      "ingredient": "Simple Syrup",
+      "substitutes": [
+        "Agave Nectar",
+        "Maple Syrup",
+        "Honey Syrup",
+        "Demerara Syrup"
+      ],
+      "notes": "Demerara adds caramel depth; Agave is best for Tequila drinks."
+    },
+    {
+      "ingredient": "Lemon Juice",
+      "substitutes": [
+        "Lime Juice",
+        "White Wine Vinegar (in a pinch for acidity)",
+        "Citric Acid Solution"
+      ],
+      "notes": "Lime changes flavor profile but maintains acidity."
+    },
+    {
+      "ingredient": "Cognac",
+      "substitutes": [
+        "Armagnac",
+        "Brandy",
+        "Bourbon",
+        "Añejo Tequila"
+      ],
+      "notes": "Armagnac is drier and more robust. Bourbon adds sweeter corn/vanilla notes."
+    },
+    {
+      "ingredient": "Dry Vermouth",
+      "substitutes": [
+        "Lillet Blanc",
+        "Cocchi Americano",
+        "Fino Sherry",
+        "Dry White Wine"
+      ],
+      "notes": "Lillet Blanc is sweeter and fruitier."
+    },
+    {
+      "ingredient": "Sweet Vermouth",
+      "substitutes": [
+        "Punt e Mes",
+        "Dubonnet Rouge",
+        "Lillet Rouge",
+        "Carpano Antica"
+      ],
+      "notes": "Carpano Antica has strong vanilla notes. Punt e Mes is more bitter."
+    },
+    {
+      "ingredient": "Amaretto",
+      "substitutes": [
+        "Frangelico",
+        "Disaronno",
+        "Orgeat (with added vodka)"
+      ],
+      "notes": "Frangelico brings hazelnut instead of almond."
+    },
+    {
+      "ingredient": "Green Chartreuse",
+      "substitutes": [
+        "Dolin Génépy",
+        "Strega",
+        "Izarra",
+        "Yellow Chartreuse (adjust sweetness)"
+      ],
+      "notes": "Génépy is the closest herbal profile but milder."
+    },
+    {
+      "ingredient": "Yellow Chartreuse",
+      "substitutes": [
+        "Strega",
+        "Galliano",
+        "Green Chartreuse (adjust sweetness/ABV)"
+      ],
+      "notes": "Strega shares the saffron/herbal sweetness."
+    },
+    {
+      "ingredient": "Kahlúa",
+      "substitutes": [
+        "Tia Maria",
+        "Mr. Black",
+        "Borghetti",
+        "Homemade Coffee Liqueur"
+      ],
+      "notes": "Mr. Black is less sweet and more coffee-forward."
+    },
+    {
+      "ingredient": "Baileys Irish Cream",
+      "substitutes": [
+        "Amarula",
+        "Carolans",
+        "RumChata"
+      ],
+      "notes": "Amarula uses Marula fruit instead of standard Irish whiskey base."
+    },
+    {
+      "ingredient": "Grenadine",
+      "substitutes": [
+        "Pomegranate Molasses (diluted)",
+        "Raspberry Syrup",
+        "Cranberry Juice Reduction"
+      ],
+      "notes": "True grenadine is pomegranate-based. Avoid artificial cherry syrups."
+    },
+    {
+      "ingredient": "Angostura Bitters",
+      "substitutes": [
+        "Peychaud's Bitters",
+        "Boker's Bitters",
+        "Jerry Thomas Own Decanter Bitters"
+      ],
+      "notes": "Peychaud's is more floral and anise-forward (essential for Sazerac)."
+    },
+    {
+      "ingredient": "Orange Bitters",
+      "substitutes": [
+        "Regans' Orange Bitters No. 6",
+        "Fee Brothers Orange Bitters",
+        "Angostura Orange"
+      ],
+      "notes": "Regans' is heavy on cardamom, Fee Bros is sweeter."
+    },
+    {
+      "ingredient": "London Dry Gin",
+      "substitutes": [
+        "Plymouth Gin",
+        "Old Tom Gin",
+        "Botanical Gin (e.g. Hendrick's)"
+      ],
+      "notes": "Old Tom is sweeter. Botanical gins may lack the strong juniper backbone."
+    },
+    {
+      "ingredient": "White Rum",
+      "substitutes": [
+        "Rhum Agricole Blanc",
+        "Cachaça",
+        "Light Tequila (Blanco)"
+      ],
+      "notes": "Agricole/Cachaça bring funky, grassy notes (hogo)."
+    },
+    {
+      "ingredient": "Dark Rum",
+      "substitutes": [
+        "Aged Rum",
+        "Black Strap Rum",
+        "Spiced Rum"
+      ],
+      "notes": "Black strap adds heavy molasses. Spiced rum adds vanilla and baking spices."
+    },
+    {
+      "ingredient": "Rye Whiskey",
+      "substitutes": [
+        "High-Rye Bourbon",
+        "Canadian Whisky"
+      ],
+      "notes": "Bourbon makes the drink sweeter. Canadian is smoother/lighter."
+    },
+    {
+      "ingredient": "Bourbon",
+      "substitutes": [
+        "Rye Whiskey",
+        "Tennessee Whiskey (e.g. Jack Daniel's)"
+      ],
+      "notes": "Rye adds spicy, peppery notes. Tennessee whiskey is very similar to Bourbon."
+    },
+    {
+      "ingredient": "Mezcal",
+      "substitutes": [
+        "Tequila Blanco with a dash of peated scotch",
+        "Bacanora",
+        "Sotol"
+      ],
+      "notes": "Scotch trick mimics the smoke if Mezcal is unavailable."
+    },
+    {
+      "ingredient": "Absinthe",
+      "substitutes": [
+        "Herbsaint",
+        "Pernod",
+        "Ricard",
+        "Pastis"
+      ],
+      "notes": "Herbsaint is the classic New Orleans substitute used in Sazeracs."
+    },
+    {
+      "ingredient": "Orgeat",
+      "substitutes": [
+        "Almond Syrup",
+        "Amaretto (reduce other sugars)",
+        "Pistachio Syrup"
+      ],
+      "notes": "True Orgeat has a floral note (orange flower water) that simple almond syrup lacks."
+    },
+    {
+      "ingredient": "Ginger Beer",
+      "substitutes": [
+        "Ginger Ale (add muddled ginger or bitters)",
+        "Kombucha (Ginger flavor)"
+      ],
+      "notes": "Ginger ale is much sweeter and less spicy."
+    },
+    {
+      "ingredient": "Club Soda",
+      "substitutes": [
+        "Seltzer",
+        "Sparkling Mineral Water",
+        "Tonic Water (Warning: Tonic adds bitterness)"
+      ],
+      "notes": "Seltzer is the best direct swap. Mineral water can alter the taste due to salts."
+    },
+    {
+      "ingredient": "Tonic Water",
+      "substitutes": [
+        "Club Soda with a dash of quinine/bitters",
+        "Bitter Lemon"
+      ],
+      "notes": "Tonic contains sugar and quinine, so soda alone will make the drink dry and flat."
+    },
+    {
+      "ingredient": "Maraschino Liqueur",
+      "substitutes": [
+        "Kirschwasser",
+        "Cherry Heering (adds red color)",
+        "Amaretto (different flavor)"
+      ],
+      "notes": "Maraschino is dry and clear, Cherry Heering is sweet and dark red. Kirsch is a dry cherry brandy."
+    },
+    {
+      "ingredient": "Crème de Cacao (White)",
+      "substitutes": [
+        "Crème de Cacao (Dark)",
+        "Godiva White Chocolate Liqueur"
+      ],
+      "notes": "Dark cacao will turn clear drinks brown."
+    },
+    {
+      "ingredient": "Crème de Menthe",
+      "substitutes": [
+        "Peppermint Schnapps",
+        "Mint Syrup"
+      ],
+      "notes": "Schnapps is usually higher ABV and sharper in flavor."
+    },
+    {
+      "ingredient": "Midori",
+      "substitutes": [
+        "DeKuyper Melon",
+        "Bols Melon Liqueur",
+        "Watermelon Pucker (changes flavor)"
+      ],
+      "notes": "Direct melon liqueur swaps work best."
+    }
+  ]
+}

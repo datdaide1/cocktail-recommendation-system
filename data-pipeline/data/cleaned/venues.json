@@ -1,0 +1,1850 @@
+[
+  {
+    "id": "krystalini-hidden-cocktail-bar-cd29e2-ho-chi-minh-city",
+    "name": "Krystalini Hidden Cocktail Bar",
+    "city": "Ho Chi Minh City",
+    "district": "District 1",
+    "address": "42 Boulevard Nguyen Hue, Ho Chi Minh City",
+    "rating": 4.8,
+    "reviews": [
+      "Atmosphere: Hidden Cocktail Bar"
+    ]
+  },
+  {
+    "id": "house-of-merlin-cocktail-bar-eatery-2596ec-ho-chi-minh-city",
+    "name": "House Of Merlin - Cocktail Bar & Eatery",
+    "city": "Ho Chi Minh City",
+    "district": "District 1",
+    "address": "178/1 Pasteur, Ho Chi Minh City",
+    "rating": 5.0,
+    "reviews": [
+      "Atmosphere: Cocktail Bar & Eatery"
+    ]
+  },
+  {
+    "id": "bloom-cocktail-whisky-bar-7b2e84-ho-chi-minh-city",
+    "name": "Bloom - Cocktail & Whisky Bar",
+    "city": "Ho Chi Minh City",
+    "district": "District 1",
+    "address": "14 Nguyễn Thiệp, Ho Chi Minh City",
+    "rating": 4.42,
+    "reviews": [
+      "Atmosphere: Cocktail & Whisky Bar"
+    ]
+  },
+  {
+    "id": "the-iron-bank-cocktail-vault-3fb7bd-ho-chi-minh-city",
+    "name": "The Iron Bank - Cocktail Vault",
+    "city": "Ho Chi Minh City",
+    "district": "District 1",
+    "address": "47 Jalan Ton That Dam, Ho Chi Minh City",
+    "rating": 4.6,
+    "reviews": [
+      "Atmosphere: Speakeasy / Cocktail Vault"
+    ]
+  },
+  {
+    "id": "symposium-cocktail-bar-lounge-ff4036-ho-chi-minh-city",
+    "name": "Symposium Cocktail Bar & Lounge",
+    "city": "Ho Chi Minh City",
+    "district": "Binh Thanh District",
+    "address": "85/5A Phạm Viết Chánh, Ho Chi Minh City",
+    "rating": 4.42,
+    "reviews": [
+      "Atmosphere: Cocktail Bar & Lounge"
+    ]
+  },
+  {
+    "id": "the-alley-cocktail-bar-kitchen-eb75ff-ho-chi-minh-city",
+    "name": "The Alley Cocktail Bar & Kitchen",
+    "city": "Ho Chi Minh City",
+    "district": "District 1",
+    "address": "63/8 Pasteur, Ho Chi Minh City",
+    "rating": 4.8,
+    "reviews": [
+      "Atmosphere: Cocktail Bar & Kitchen"
+    ]
+  },
+  {
+    "id": "diamond-sky-bar-8d8ebd-hanoi",
+    "name": "Diamond Sky Bar",
+    "city": "Hanoi",
+    "district": "Hoan Kiem District",
+    "address": "22 Ta Hien Street, Hang Buom Ward, Hanoi",
+    "rating": 5.0,
+    "reviews": [
+      "Atmosphere: High-end Sky Bar"
+    ]
+  },
+  {
+    "id": "lighthouse-sky-bar-fe72ee-hanoi",
+    "name": "Lighthouse Sky Bar",
+    "city": "Hanoi",
+    "district": "Hoan Kiem District",
+    "address": "27 Hang Be Street, Hang Bac Ward, Hanoi",
+    "rating": 5.0,
+    "reviews": [
+      "Atmosphere: High-end Sky Bar"
+    ]
+  },
+  {
+    "id": "gallery-bespoke-cocktail-bar-1a6a04-hanoi",
+    "name": "Gallery Bespoke Cocktail Bar",
+    "city": "Hanoi",
+    "district": "Hoan Kiem District",
+    "address": "95 Phùng Hưng, Hang Ma Ward, Hanoi",
+    "rating": 5.0,
+    "reviews": [
+      "Atmosphere: Bespoke Cocktail Bar"
+    ]
+  },
+  {
+    "id": "funtasia-cocktail-wine-bar-29f4be-hanoi",
+    "name": "Funtasia Cocktail & Wine Bar",
+    "city": "Hanoi",
+    "district": "Hoan Kiem District",
+    "address": "4 Bat Dan St, Hang Bo Ward, Hanoi",
+    "rating": 5.0,
+    "reviews": [
+      "Atmosphere: Cocktail & Wine Bar"
+    ]
+  },
+  {
+    "id": "ne-cocktail-bar-8cfdf0-hanoi",
+    "name": "Nê Cocktail bar",
+    "city": "Hanoi",
+    "district": "Hoan Kiem District",
+    "address": "3B Tong Duy Tan St, Hang Bong Ward, Hanoi",
+    "rating": 4.9,
+    "reviews": [
+      "Atmosphere: Classic Cocktail Bar"
+    ]
+  },
+  {
+    "id": "botan-bar-dine-rooftop-bar-47aeff-hanoi",
+    "name": "Botan Bar & Dine - Rooftop Bar",
+    "city": "Hanoi",
+    "district": "Hoan Kiem District",
+    "address": "151 Hang Bong St, Hang Bong Ward, Hanoi",
+    "rating": 5.0,
+    "reviews": [
+      "Atmosphere: Rooftop Bar"
+    ]
+  },
+  {
+    "id": "makara-bar-tiki-speakeasy-dbefc6-da-nang",
+    "name": "MAKARA Bar | Tiki Speakeasy",
+    "city": "Da Nang",
+    "district": "Hai Chau District",
+    "address": "162A Đường Nguyễn Chí Thanh, Phuoc Ninh Ward, Da Nang",
+    "rating": 4.9,
+    "reviews": [
+      "Atmosphere: Tiki Speakeasy"
+    ]
+  },
+  {
+    "id": "sky36-dining-bar-da-nang-e0252e-da-nang",
+    "name": "Sky36 Dining & Bar Da Nang",
+    "city": "Da Nang",
+    "district": "Hai Chau District",
+    "address": "36 Bạch Đằng, Da Nang",
+    "rating": 4.1,
+    "reviews": [
+      "Atmosphere: High-end Sky Bar"
+    ]
+  },
+  {
+    "id": "ket-high-cocktail-bar-cec840-da-nang",
+    "name": "Kết High Cocktail Bar",
+    "city": "Da Nang",
+    "district": "Hai Chau District",
+    "address": "Da Nang",
+    "rating": 4.42,
+    "reviews": [
+      "Atmosphere: Indochina style Hidden Bar"
+    ]
+  },
+  {
+    "id": "van-cocktail-bar-cec840-da-nang",
+    "name": "Vấn Cocktail Bar",
+    "city": "Da Nang",
+    "district": "Hai Chau District",
+    "address": "Da Nang",
+    "rating": 4.42,
+    "reviews": [
+      "Atmosphere: Fusion Cocktail Bar"
+    ]
+  },
+  {
+    "id": "the-secret-garden-cec840-da-nang",
+    "name": "The Secret Garden",
+    "city": "Da Nang",
+    "district": "Hai Chau District",
+    "address": "Da Nang",
+    "rating": 4.42,
+    "reviews": [
+      "Atmosphere: Romantic Hidden Bar"
+    ]
+  },
+  {
+    "id": "te-bar-cec840-da-nang",
+    "name": "Tê Bar",
+    "city": "Da Nang",
+    "district": "Hai Chau District",
+    "address": "Da Nang",
+    "rating": 4.42,
+    "reviews": [
+      "Atmosphere: Speakeasy 1920-1933 style"
+    ]
+  },
+  {
+    "id": "sapphire-tiger-cocktails-7c5e48-nha-trang",
+    "name": "Sapphire Tiger Cocktails",
+    "city": "Nha Trang",
+    "district": "Loc Tho Ward",
+    "address": "73 Pasteur St, Nha Trang",
+    "rating": 3.9,
+    "reviews": [
+      "Atmosphere: Fusion Cocktail Bar"
+    ]
+  },
+  {
+    "id": "sapphire-door-cocktails-f64585-hai-phong",
+    "name": "Sapphire Door Cocktails",
+    "city": "Hai Phong",
+    "district": "Hong Bang District",
+    "address": "29 Pasteur St, Hai Phong",
+    "rating": 4.0,
+    "reviews": [
+      "Atmosphere: Classic Cocktail Bar"
+    ]
+  },
+  {
+    "id": "emerald-bird-bar-82598f-hai-phong",
+    "name": "Emerald Bird Bar",
+    "city": "Hai Phong",
+    "district": "Hong Bang District",
+    "address": "129 Le Duan St, Hai Phong",
+    "rating": 4.7,
+    "reviews": [
+      "Atmosphere: Rooftop Bar"
+    ]
+  },
+  {
+    "id": "vintage-cellar-cocktails-dd62ba-da-nang",
+    "name": "Vintage Cellar Cocktails",
+    "city": "Da Nang",
+    "district": "Thanh Khe District",
+    "address": "77 Hai Ba Trung St, Da Nang",
+    "rating": 4.8,
+    "reviews": [
+      "Atmosphere: Tiki Bar"
+    ]
+  },
+  {
+    "id": "iron-garden-lounge-db9c4a-hanoi",
+    "name": "Iron Garden Lounge",
+    "city": "Hanoi",
+    "district": "Hoan Kiem District",
+    "address": "129 Tran Hung Dao St, Hanoi",
+    "rating": 5.0,
+    "reviews": [
+      "Atmosphere: Speakeasy"
+    ]
+  },
+  {
+    "id": "vintage-owl-bar-d84f3f-nha-trang",
+    "name": "Vintage Owl Bar",
+    "city": "Nha Trang",
+    "district": "Loc Tho Ward",
+    "address": "126 Hai Ba Trung St, Nha Trang",
+    "rating": 4.3,
+    "reviews": [
+      "Atmosphere: Hidden Cocktail Bar"
+    ]
+  },
+  {
+    "id": "velvet-door-bar-383f59-ho-chi-minh-city",
+    "name": "Velvet Door Bar",
+    "city": "Ho Chi Minh City",
+    "district": "District 1",
+    "address": "44 Hai Ba Trung St, Ho Chi Minh City",
+    "rating": 4.1,
+    "reviews": [
+      "Atmosphere: Bespoke Cocktail Bar"
+    ]
+  },
+  {
+    "id": "blue-owl-bar-845b15-ho-chi-minh-city",
+    "name": "Blue Owl Bar",
+    "city": "Ho Chi Minh City",
+    "district": "District 1",
+    "address": "172 Le Loi St, Ho Chi Minh City",
+    "rating": 3.9,
+    "reviews": [
+      "Atmosphere: Indochina style"
+    ]
+  },
+  {
+    "id": "black-room-bar-1bfe99-da-nang",
+    "name": "Black Room Bar",
+    "city": "Da Nang",
+    "district": "Hai Chau District",
+    "address": "120 Pasteur St, Da Nang",
+    "rating": 4.1,
+    "reviews": [
+      "Atmosphere: High-end Sky Bar"
+    ]
+  },
+  {
+    "id": "black-lounge-speakeasy-648337-vung-tau",
+    "name": "Black Lounge Speakeasy",
+    "city": "Vung Tau",
+    "district": "Ward 1",
+    "address": "158 Le Duan St, Vung Tau",
+    "rating": 3.9,
+    "reviews": [
+      "Atmosphere: Tiki Bar"
+    ]
+  },
+  {
+    "id": "sapphire-bank-bar-d0d5ed-ho-chi-minh-city",
+    "name": "Sapphire Bank Bar",
+    "city": "Ho Chi Minh City",
+    "district": "District 1",
+    "address": "176 Le Duan St, Ho Chi Minh City",
+    "rating": 4.3,
+    "reviews": [
+      "Atmosphere: Indochina style"
+    ]
+  },
+  {
+    "id": "secret-owl-bar-72d0ce-nha-trang",
+    "name": "Secret Owl Bar",
+    "city": "Nha Trang",
+    "district": "Loc Tho Ward",
+    "address": "182 Le Duan St, Nha Trang",
+    "rating": 4.2,
+    "reviews": [
+      "Atmosphere: High-end Sky Bar"
+    ]
+  },
+  {
+    "id": "sapphire-room-speakeasy-a6d934-ho-chi-minh-city",
+    "name": "Sapphire Room Speakeasy",
+    "city": "Ho Chi Minh City",
+    "district": "District 1",
+    "address": "197 Nguyen Hue St, Ho Chi Minh City",
+    "rating": 4.4,
+    "reviews": [
+      "Atmosphere: Lounge & Bar"
+    ]
+  },
+  {
+    "id": "black-rabbit-bar-e912f4-hanoi",
+    "name": "Black Rabbit Bar",
+    "city": "Hanoi",
+    "district": "Hoan Kiem District",
+    "address": "163 Le Loi St, Hanoi",
+    "rating": 4.8,
+    "reviews": [
+      "Atmosphere: Classic Cocktail Bar"
+    ]
+  },
+  {
+    "id": "black-bank-cocktails-ba8468-vung-tau",
+    "name": "Black Bank Cocktails",
+    "city": "Vung Tau",
+    "district": "Ward 1",
+    "address": "38 Le Loi St, Vung Tau",
+    "rating": 4.6,
+    "reviews": [
+      "Atmosphere: Bespoke Cocktail Bar"
+    ]
+  },
+  {
+    "id": "vintage-alley-speakeasy-897c22-da-nang",
+    "name": "Vintage Alley Speakeasy",
+    "city": "Da Nang",
+    "district": "Thanh Khe District",
+    "address": "137 Hai Ba Trung St, Da Nang",
+    "rating": 4.6,
+    "reviews": [
+      "Atmosphere: Lounge & Bar"
+    ]
+  },
+  {
+    "id": "vintage-tiger-bar-384214-da-nang",
+    "name": "Vintage Tiger Bar",
+    "city": "Da Nang",
+    "district": "Thanh Khe District",
+    "address": "24 Hai Ba Trung St, Da Nang",
+    "rating": 5.0,
+    "reviews": [
+      "Atmosphere: Hidden Cocktail Bar"
+    ]
+  },
+  {
+    "id": "red-garden-bar-c41dff-vung-tau",
+    "name": "Red Garden Bar",
+    "city": "Vung Tau",
+    "district": "Ward 1",
+    "address": "92 Le Loi St, Vung Tau",
+    "rating": 4.4,
+    "reviews": [
+      "Atmosphere: Lounge & Bar"
+    ]
+  },
+  {
+    "id": "golden-alley-cocktails-1a1869-ho-chi-minh-city",
+    "name": "Golden Alley Cocktails",
+    "city": "Ho Chi Minh City",
+    "district": "District 1",
+    "address": "140 Le Duan St, Ho Chi Minh City",
+    "rating": 4.8,
+    "reviews": [
+      "Atmosphere: High-end Sky Bar"
+    ]
+  },
+  {
+    "id": "red-vault-speakeasy-f3c2f7-hanoi",
+    "name": "Red Vault Speakeasy",
+    "city": "Hanoi",
+    "district": "Hai Ba Trung District",
+    "address": "117 Pasteur St, Hanoi",
+    "rating": 3.9,
+    "reviews": [
+      "Atmosphere: Indochina style"
+    ]
+  },
+  {
+    "id": "midnight-garden-lounge-92e4fa-vung-tau",
+    "name": "Midnight Garden Lounge",
+    "city": "Vung Tau",
+    "district": "Ward 1",
+    "address": "134 Hai Ba Trung St, Vung Tau",
+    "rating": 4.5,
+    "reviews": [
+      "Atmosphere: Tiki Bar"
+    ]
+  },
+  {
+    "id": "red-tiger-bar-894d02-vung-tau",
+    "name": "Red Tiger Bar",
+    "city": "Vung Tau",
+    "district": "Ward 1",
+    "address": "111 Tran Hung Dao St, Vung Tau",
+    "rating": 4.6,
+    "reviews": [
+      "Atmosphere: Speakeasy"
+    ]
+  },
+  {
+    "id": "the-bird-cocktails-423083-hanoi",
+    "name": "The Bird Cocktails",
+    "city": "Hanoi",
+    "district": "Ha Dong District",
+    "address": "37 Nguyen Hue St, Hanoi",
+    "rating": 4.1,
+    "reviews": [
+      "Atmosphere: Lounge & Bar"
+    ]
+  },
+  {
+    "id": "midnight-rabbit-speakeasy-3b98b9-hai-phong",
+    "name": "Midnight Rabbit Speakeasy",
+    "city": "Hai Phong",
+    "district": "Hong Bang District",
+    "address": "36 Pasteur St, Hai Phong",
+    "rating": 4.2,
+    "reviews": [
+      "Atmosphere: Bespoke Cocktail Bar"
+    ]
+  },
+  {
+    "id": "red-room-lounge-c3cd1d-nha-trang",
+    "name": "Red Room Lounge",
+    "city": "Nha Trang",
+    "district": "Loc Tho Ward",
+    "address": "58 Pasteur St, Nha Trang",
+    "rating": 5.0,
+    "reviews": [
+      "Atmosphere: Indochina style"
+    ]
+  },
+  {
+    "id": "the-alley-lounge-cf2381-vung-tau",
+    "name": "The Alley Lounge",
+    "city": "Vung Tau",
+    "district": "Ward 1",
+    "address": "44 Le Duan St, Vung Tau",
+    "rating": 4.9,
+    "reviews": [
+      "Atmosphere: Cocktail & Wine Bar"
+    ]
+  },
+  {
+    "id": "midnight-vault-cocktails-b45a31-da-nang",
+    "name": "Midnight Vault Cocktails",
+    "city": "Da Nang",
+    "district": "Hai Chau District",
+    "address": "30 Le Duan St, Da Nang",
+    "rating": 4.7,
+    "reviews": [
+      "Atmosphere: Classic Cocktail Bar"
+    ]
+  },
+  {
+    "id": "the-bird-speakeasy-3a64fb-vung-tau",
+    "name": "The Bird Speakeasy",
+    "city": "Vung Tau",
+    "district": "Ward 1",
+    "address": "166 Bach Dang St, Vung Tau",
+    "rating": 4.5,
+    "reviews": [
+      "Atmosphere: Hidden Cocktail Bar"
+    ]
+  },
+  {
+    "id": "vintage-phoenix-lounge-e51a8b-ho-chi-minh-city",
+    "name": "Vintage Phoenix Lounge",
+    "city": "Ho Chi Minh City",
+    "district": "District 1",
+    "address": "148 Pasteur St, Ho Chi Minh City",
+    "rating": 5.0,
+    "reviews": [
+      "Atmosphere: Cocktail & Wine Bar"
+    ]
+  },
+  {
+    "id": "the-phoenix-lounge-3f82f3-hanoi",
+    "name": "The Phoenix Lounge",
+    "city": "Hanoi",
+    "district": "Hoan Kiem District",
+    "address": "27 Hai Ba Trung St, Hanoi",
+    "rating": 4.3,
+    "reviews": [
+      "Atmosphere: Speakeasy"
+    ]
+  },
+  {
+    "id": "golden-lounge-cocktails-b77374-ho-chi-minh-city",
+    "name": "Golden Lounge Cocktails",
+    "city": "Ho Chi Minh City",
+    "district": "District 1",
+    "address": "194 Bach Dang St, Ho Chi Minh City",
+    "rating": 4.0,
+    "reviews": [
+      "Atmosphere: Rooftop Bar"
+    ]
+  },
+  {
+    "id": "vintage-dragon-cocktails-758214-hanoi",
+    "name": "Vintage Dragon Cocktails",
+    "city": "Hanoi",
+    "district": "Hoan Kiem District",
+    "address": "62 Le Loi St, Hanoi",
+    "rating": 5.0,
+    "reviews": [
+      "Atmosphere: Fusion Cocktail Bar"
+    ]
+  },
+  {
+    "id": "black-garden-bar-88bdde-ho-chi-minh-city",
+    "name": "Black Garden Bar",
+    "city": "Ho Chi Minh City",
+    "district": "District 1",
+    "address": "156 Pasteur St, Ho Chi Minh City",
+    "rating": 4.7,
+    "reviews": [
+      "Atmosphere: Indochina style"
+    ]
+  },
+  {
+    "id": "velvet-monkey-lounge-62ab4a-nha-trang",
+    "name": "Velvet Monkey Lounge",
+    "city": "Nha Trang",
+    "district": "Loc Tho Ward",
+    "address": "67 Le Loi St, Nha Trang",
+    "rating": 4.4,
+    "reviews": [
+      "Atmosphere: High-end Sky Bar"
+    ]
+  },
+  {
+    "id": "blue-tiger-cocktails-44e512-nha-trang",
+    "name": "Blue Tiger Cocktails",
+    "city": "Nha Trang",
+    "district": "Loc Tho Ward",
+    "address": "197 Hai Ba Trung St, Nha Trang",
+    "rating": 4.7,
+    "reviews": [
+      "Atmosphere: High-end Sky Bar"
+    ]
+  },
+  {
+    "id": "vintage-phoenix-cocktails-1979ce-nha-trang",
+    "name": "Vintage Phoenix Cocktails",
+    "city": "Nha Trang",
+    "district": "Loc Tho Ward",
+    "address": "98 Pasteur St, Nha Trang",
+    "rating": 4.6,
+    "reviews": [
+      "Atmosphere: Classic Cocktail Bar"
+    ]
+  },
+  {
+    "id": "the-tiger-cocktails-daba9c-hanoi",
+    "name": "The Tiger Cocktails",
+    "city": "Hanoi",
+    "district": "Ha Dong District",
+    "address": "3 Nguyen Hue St, Hanoi",
+    "rating": 4.9,
+    "reviews": [
+      "Atmosphere: Classic Cocktail Bar"
+    ]
+  },
+  {
+    "id": "midnight-bank-bar-ba2cee-hanoi",
+    "name": "Midnight Bank Bar",
+    "city": "Hanoi",
+    "district": "Hoan Kiem District",
+    "address": "137 Le Loi St, Hanoi",
+    "rating": 3.9,
+    "reviews": [
+      "Atmosphere: Rooftop Bar"
+    ]
+  },
+  {
+    "id": "sapphire-bank-speakeasy-f9ce13-nha-trang",
+    "name": "Sapphire Bank Speakeasy",
+    "city": "Nha Trang",
+    "district": "Loc Tho Ward",
+    "address": "109 Le Loi St, Nha Trang",
+    "rating": 4.8,
+    "reviews": [
+      "Atmosphere: Classic Cocktail Bar"
+    ]
+  },
+  {
+    "id": "vintage-lounge-lounge-626f67-hanoi",
+    "name": "Vintage Lounge Lounge",
+    "city": "Hanoi",
+    "district": "Hai Ba Trung District",
+    "address": "168 Pasteur St, Hanoi",
+    "rating": 4.5,
+    "reviews": [
+      "Atmosphere: Classic Cocktail Bar"
+    ]
+  },
+  {
+    "id": "iron-alley-bar-61201d-hanoi",
+    "name": "Iron Alley Bar",
+    "city": "Hanoi",
+    "district": "Hoan Kiem District",
+    "address": "200 Bach Dang St, Hanoi",
+    "rating": 4.8,
+    "reviews": [
+      "Atmosphere: Tiki Bar"
+    ]
+  },
+  {
+    "id": "the-bird-cocktails-fb9dda-hai-phong",
+    "name": "The Bird Cocktails",
+    "city": "Hai Phong",
+    "district": "Hong Bang District",
+    "address": "144 Nguyen Hue St, Hai Phong",
+    "rating": 3.9,
+    "reviews": [
+      "Atmosphere: Cocktail & Wine Bar"
+    ]
+  },
+  {
+    "id": "the-lounge-cocktails-4f04e4-hai-phong",
+    "name": "The Lounge Cocktails",
+    "city": "Hai Phong",
+    "district": "Hong Bang District",
+    "address": "76 Hai Ba Trung St, Hai Phong",
+    "rating": 4.8,
+    "reviews": [
+      "Atmosphere: Bespoke Cocktail Bar"
+    ]
+  },
+  {
+    "id": "sapphire-bank-cocktails-332d94-da-nang",
+    "name": "Sapphire Bank Cocktails",
+    "city": "Da Nang",
+    "district": "Hai Chau District",
+    "address": "77 Le Duan St, Da Nang",
+    "rating": 4.3,
+    "reviews": [
+      "Atmosphere: Bespoke Cocktail Bar"
+    ]
+  },
+  {
+    "id": "vintage-vault-bar-9b6dc9-hanoi",
+    "name": "Vintage Vault Bar",
+    "city": "Hanoi",
+    "district": "Hai Ba Trung District",
+    "address": "187 Pasteur St, Hanoi",
+    "rating": 4.7,
+    "reviews": [
+      "Atmosphere: Classic Cocktail Bar"
+    ]
+  },
+  {
+    "id": "iron-door-speakeasy-1a5cb5-da-nang",
+    "name": "Iron Door Speakeasy",
+    "city": "Da Nang",
+    "district": "Hai Chau District",
+    "address": "181 Le Duan St, Da Nang",
+    "rating": 3.8,
+    "reviews": [
+      "Atmosphere: Indochina style"
+    ]
+  },
+  {
+    "id": "velvet-tiger-bar-1757f7-da-nang",
+    "name": "Velvet Tiger Bar",
+    "city": "Da Nang",
+    "district": "Hai Chau District",
+    "address": "8 Tran Hung Dao St, Da Nang",
+    "rating": 5.0,
+    "reviews": [
+      "Atmosphere: Hidden Cocktail Bar"
+    ]
+  },
+  {
+    "id": "red-lounge-bar-e1c592-hai-phong",
+    "name": "Red Lounge Bar",
+    "city": "Hai Phong",
+    "district": "Hong Bang District",
+    "address": "196 Bach Dang St, Hai Phong",
+    "rating": 4.4,
+    "reviews": [
+      "Atmosphere: Tiki Bar"
+    ]
+  },
+  {
+    "id": "iron-bird-lounge-5d2947-ho-chi-minh-city",
+    "name": "Iron Bird Lounge",
+    "city": "Ho Chi Minh City",
+    "district": "District 1",
+    "address": "123 Hai Ba Trung St, Ho Chi Minh City",
+    "rating": 3.9,
+    "reviews": [
+      "Atmosphere: Lounge & Bar"
+    ]
+  },
+  {
+    "id": "secret-monkey-lounge-1cef0d-hanoi",
+    "name": "Secret Monkey Lounge",
+    "city": "Hanoi",
+    "district": "Hoan Kiem District",
+    "address": "23 Hai Ba Trung St, Hanoi",
+    "rating": 4.5,
+    "reviews": [
+      "Atmosphere: Tiki Bar"
+    ]
+  },
+  {
+    "id": "black-phoenix-cocktails-91fdf1-ho-chi-minh-city",
+    "name": "Black Phoenix Cocktails",
+    "city": "Ho Chi Minh City",
+    "district": "District 1",
+    "address": "165 Pasteur St, Ho Chi Minh City",
+    "rating": 5.0,
+    "reviews": [
+      "Atmosphere: Cocktail & Wine Bar"
+    ]
+  },
+  {
+    "id": "vintage-phoenix-cocktails-0e6ad4-vung-tau",
+    "name": "Vintage Phoenix Cocktails",
+    "city": "Vung Tau",
+    "district": "Ward 1",
+    "address": "178 Bach Dang St, Vung Tau",
+    "rating": 4.5,
+    "reviews": [
+      "Atmosphere: Rooftop Bar"
+    ]
+  },
+  {
+    "id": "golden-room-cocktails-894d02-vung-tau",
+    "name": "Golden Room Cocktails",
+    "city": "Vung Tau",
+    "district": "Ward 1",
+    "address": "111 Tran Hung Dao St, Vung Tau",
+    "rating": 4.4,
+    "reviews": [
+      "Atmosphere: Fusion Cocktail Bar"
+    ]
+  },
+  {
+    "id": "emerald-vault-cocktails-6fc096-vung-tau",
+    "name": "Emerald Vault Cocktails",
+    "city": "Vung Tau",
+    "district": "Ward 1",
+    "address": "47 Tran Hung Dao St, Vung Tau",
+    "rating": 3.8,
+    "reviews": [
+      "Atmosphere: High-end Sky Bar"
+    ]
+  },
+  {
+    "id": "blue-dragon-bar-188928-vung-tau",
+    "name": "Blue Dragon Bar",
+    "city": "Vung Tau",
+    "district": "Vung Tau City",
+    "address": "10 Nguyen Hue St, Vung Tau",
+    "rating": 4.5,
+    "reviews": [
+      "Atmosphere: Classic Cocktail Bar"
+    ]
+  },
+  {
+    "id": "black-owl-cocktails-735daa-da-nang",
+    "name": "Black Owl Cocktails",
+    "city": "Da Nang",
+    "district": "Hai Chau District",
+    "address": "141 Bach Dang St, Da Nang",
+    "rating": 4.5,
+    "reviews": [
+      "Atmosphere: Fusion Cocktail Bar"
+    ]
+  },
+  {
+    "id": "golden-rabbit-cocktails-0a636f-nha-trang",
+    "name": "Golden Rabbit Cocktails",
+    "city": "Nha Trang",
+    "district": "Nha Trang City",
+    "address": "111 Tran Hung Dao St, Nha Trang",
+    "rating": 3.9,
+    "reviews": [
+      "Atmosphere: High-end Sky Bar"
+    ]
+  },
+  {
+    "id": "vintage-door-cocktails-dd3052-hai-phong",
+    "name": "Vintage Door Cocktails",
+    "city": "Hai Phong",
+    "district": "Hong Bang District",
+    "address": "139 Le Duan St, Hai Phong",
+    "rating": 4.8,
+    "reviews": [
+      "Atmosphere: Bespoke Cocktail Bar"
+    ]
+  },
+  {
+    "id": "iron-cellar-lounge-468ace-vung-tau",
+    "name": "Iron Cellar Lounge",
+    "city": "Vung Tau",
+    "district": "Ward 1",
+    "address": "165 Bach Dang St, Vung Tau",
+    "rating": 4.3,
+    "reviews": [
+      "Atmosphere: Bespoke Cocktail Bar"
+    ]
+  },
+  {
+    "id": "secret-alley-cocktails-96329f-vung-tau",
+    "name": "Secret Alley Cocktails",
+    "city": "Vung Tau",
+    "district": "Ward 1",
+    "address": "56 Tran Hung Dao St, Vung Tau",
+    "rating": 4.0,
+    "reviews": [
+      "Atmosphere: Tiki Bar"
+    ]
+  },
+  {
+    "id": "velvet-tiger-bar-38641d-nha-trang",
+    "name": "Velvet Tiger Bar",
+    "city": "Nha Trang",
+    "district": "Nha Trang City",
+    "address": "28 Tran Hung Dao St, Nha Trang",
+    "rating": 4.3,
+    "reviews": [
+      "Atmosphere: Indochina style"
+    ]
+  },
+  {
+    "id": "vintage-rabbit-lounge-a3b99a-ho-chi-minh-city",
+    "name": "Vintage Rabbit Lounge",
+    "city": "Ho Chi Minh City",
+    "district": "District 1",
+    "address": "141 Tran Hung Dao St, Ho Chi Minh City",
+    "rating": 4.8,
+    "reviews": [
+      "Atmosphere: Speakeasy"
+    ]
+  },
+  {
+    "id": "velvet-bank-lounge-a1cf99-nha-trang",
+    "name": "Velvet Bank Lounge",
+    "city": "Nha Trang",
+    "district": "Loc Tho Ward",
+    "address": "145 Le Duan St, Nha Trang",
+    "rating": 3.9,
+    "reviews": [
+      "Atmosphere: Tiki Bar"
+    ]
+  },
+  {
+    "id": "black-room-lounge-3e2504-ho-chi-minh-city",
+    "name": "Black Room Lounge",
+    "city": "Ho Chi Minh City",
+    "district": "District 1",
+    "address": "35 Nguyen Hue St, Ho Chi Minh City",
+    "rating": 4.5,
+    "reviews": [
+      "Atmosphere: Cocktail & Wine Bar"
+    ]
+  },
+  {
+    "id": "emerald-dragon-bar-b93425-hanoi",
+    "name": "Emerald Dragon Bar",
+    "city": "Hanoi",
+    "district": "Hoan Kiem District",
+    "address": "154 Hai Ba Trung St, Hanoi",
+    "rating": 4.2,
+    "reviews": [
+      "Atmosphere: Fusion Cocktail Bar"
+    ]
+  },
+  {
+    "id": "the-rabbit-cocktails-9d2eae-vung-tau",
+    "name": "The Rabbit Cocktails",
+    "city": "Vung Tau",
+    "district": "Ward 1",
+    "address": "140 Tran Hung Dao St, Vung Tau",
+    "rating": 4.3,
+    "reviews": [
+      "Atmosphere: Rooftop Bar"
+    ]
+  },
+  {
+    "id": "midnight-monkey-speakeasy-40c26a-ho-chi-minh-city",
+    "name": "Midnight Monkey Speakeasy",
+    "city": "Ho Chi Minh City",
+    "district": "District 1",
+    "address": "61 Hai Ba Trung St, Ho Chi Minh City",
+    "rating": 4.6,
+    "reviews": [
+      "Atmosphere: Rooftop Bar"
+    ]
+  },
+  {
+    "id": "iron-door-cocktails-7a69a0-nha-trang",
+    "name": "Iron Door Cocktails",
+    "city": "Nha Trang",
+    "district": "Loc Tho Ward",
+    "address": "95 Le Duan St, Nha Trang",
+    "rating": 5.0,
+    "reviews": [
+      "Atmosphere: Hidden Cocktail Bar"
+    ]
+  },
+  {
+    "id": "golden-vault-lounge-78e555-hai-phong",
+    "name": "Golden Vault Lounge",
+    "city": "Hai Phong",
+    "district": "Hong Bang District",
+    "address": "155 Le Duan St, Hai Phong",
+    "rating": 4.4,
+    "reviews": [
+      "Atmosphere: Fusion Cocktail Bar"
+    ]
+  },
+  {
+    "id": "sapphire-bank-speakeasy-76a4b4-hanoi",
+    "name": "Sapphire Bank Speakeasy",
+    "city": "Hanoi",
+    "district": "Hoan Kiem District",
+    "address": "6 Le Loi St, Hanoi",
+    "rating": 3.8,
+    "reviews": [
+      "Atmosphere: Hidden Cocktail Bar"
+    ]
+  },
+  {
+    "id": "velvet-bird-speakeasy-a2c5d8-nha-trang",
+    "name": "Velvet Bird Speakeasy",
+    "city": "Nha Trang",
+    "district": "Loc Tho Ward",
+    "address": "143 Pasteur St, Nha Trang",
+    "rating": 4.8,
+    "reviews": [
+      "Atmosphere: Cocktail & Wine Bar"
+    ]
+  },
+  {
+    "id": "red-alley-lounge-bea433-hanoi",
+    "name": "Red Alley Lounge",
+    "city": "Hanoi",
+    "district": "Ha Dong District",
+    "address": "20 Nguyen Hue St, Hanoi",
+    "rating": 4.4,
+    "reviews": [
+      "Atmosphere: Fusion Cocktail Bar"
+    ]
+  },
+  {
+    "id": "secret-lounge-cocktails-10a407-hanoi",
+    "name": "Secret Lounge Cocktails",
+    "city": "Hanoi",
+    "district": "Hoan Kiem District",
+    "address": "138 Le Loi St, Hanoi",
+    "rating": 4.8,
+    "reviews": [
+      "Atmosphere: Speakeasy"
+    ]
+  },
+  {
+    "id": "velvet-door-lounge-72b945-hai-phong",
+    "name": "Velvet Door Lounge",
+    "city": "Hai Phong",
+    "district": "Hong Bang District",
+    "address": "114 Pasteur St, Hai Phong",
+    "rating": 3.8,
+    "reviews": [
+      "Atmosphere: Fusion Cocktail Bar"
+    ]
+  },
+  {
+    "id": "blue-rabbit-bar-ed5d89-hanoi",
+    "name": "Blue Rabbit Bar",
+    "city": "Hanoi",
+    "district": "Hoan Kiem District",
+    "address": "127 Bach Dang St, Hanoi",
+    "rating": 4.1,
+    "reviews": [
+      "Atmosphere: Tiki Bar"
+    ]
+  },
+  {
+    "id": "vintage-monkey-lounge-e757b6-hai-phong",
+    "name": "Vintage Monkey Lounge",
+    "city": "Hai Phong",
+    "district": "Hong Bang District",
+    "address": "18 Nguyen Hue St, Hai Phong",
+    "rating": 4.1,
+    "reviews": [
+      "Atmosphere: Hidden Cocktail Bar"
+    ]
+  },
+  {
+    "id": "iron-dragon-speakeasy-941df4-ho-chi-minh-city",
+    "name": "Iron Dragon Speakeasy",
+    "city": "Ho Chi Minh City",
+    "district": "District 1",
+    "address": "194 Hai Ba Trung St, Ho Chi Minh City",
+    "rating": 4.7,
+    "reviews": [
+      "Atmosphere: Speakeasy"
+    ]
+  },
+  {
+    "id": "midnight-bank-lounge-503f8c-hanoi",
+    "name": "Midnight Bank Lounge",
+    "city": "Hanoi",
+    "district": "Hoan Kiem District",
+    "address": "185 Bach Dang St, Hanoi",
+    "rating": 4.4,
+    "reviews": [
+      "Atmosphere: Classic Cocktail Bar"
+    ]
+  },
+  {
+    "id": "blue-garden-bar-752faa-hai-phong",
+    "name": "Blue Garden Bar",
+    "city": "Hai Phong",
+    "district": "Hong Bang District",
+    "address": "141 Pasteur St, Hai Phong",
+    "rating": 4.4,
+    "reviews": [
+      "Atmosphere: Tiki Bar"
+    ]
+  },
+  {
+    "id": "vintage-dragon-cocktails-182b68-vung-tau",
+    "name": "Vintage Dragon Cocktails",
+    "city": "Vung Tau",
+    "district": "Ward 1",
+    "address": "61 Le Duan St, Vung Tau",
+    "rating": 4.1,
+    "reviews": [
+      "Atmosphere: Tiki Bar"
+    ]
+  },
+  {
+    "id": "emerald-garden-cocktails-4c9540-hanoi",
+    "name": "Emerald Garden Cocktails",
+    "city": "Hanoi",
+    "district": "Ha Dong District",
+    "address": "134 Nguyen Hue St, Hanoi",
+    "rating": 4.1,
+    "reviews": [
+      "Atmosphere: Tiki Bar"
+    ]
+  },
+  {
+    "id": "emerald-rabbit-lounge-3d8572-hai-phong",
+    "name": "Emerald Rabbit Lounge",
+    "city": "Hai Phong",
+    "district": "Hong Bang District",
+    "address": "200 Hai Ba Trung St, Hai Phong",
+    "rating": 4.0,
+    "reviews": [
+      "Atmosphere: Classic Cocktail Bar"
+    ]
+  },
+  {
+    "id": "iron-rabbit-speakeasy-06cea6-nha-trang",
+    "name": "Iron Rabbit Speakeasy",
+    "city": "Nha Trang",
+    "district": "Loc Tho Ward",
+    "address": "64 Hai Ba Trung St, Nha Trang",
+    "rating": 4.7,
+    "reviews": [
+      "Atmosphere: Indochina style"
+    ]
+  },
+  {
+    "id": "vintage-room-bar-a33b0a-hai-phong",
+    "name": "Vintage Room Bar",
+    "city": "Hai Phong",
+    "district": "Hong Bang District",
+    "address": "40 Pasteur St, Hai Phong",
+    "rating": 3.8,
+    "reviews": [
+      "Atmosphere: Bespoke Cocktail Bar"
+    ]
+  },
+  {
+    "id": "blue-owl-bar-2b5442-ho-chi-minh-city",
+    "name": "Blue Owl Bar",
+    "city": "Ho Chi Minh City",
+    "district": "District 1",
+    "address": "134 Le Loi St, Ho Chi Minh City",
+    "rating": 4.9,
+    "reviews": [
+      "Atmosphere: Hidden Cocktail Bar"
+    ]
+  },
+  {
+    "id": "vintage-vault-bar-e0bdd1-ho-chi-minh-city",
+    "name": "Vintage Vault Bar",
+    "city": "Ho Chi Minh City",
+    "district": "District 1",
+    "address": "8 Bach Dang St, Ho Chi Minh City",
+    "rating": 4.0,
+    "reviews": [
+      "Atmosphere: Classic Cocktail Bar"
+    ]
+  },
+  {
+    "id": "black-cellar-speakeasy-1ecdff-nha-trang",
+    "name": "Black Cellar Speakeasy",
+    "city": "Nha Trang",
+    "district": "Loc Tho Ward",
+    "address": "147 Pasteur St, Nha Trang",
+    "rating": 4.4,
+    "reviews": [
+      "Atmosphere: Fusion Cocktail Bar"
+    ]
+  },
+  {
+    "id": "blue-lounge-cocktails-c77036-ho-chi-minh-city",
+    "name": "Blue Lounge Cocktails",
+    "city": "Ho Chi Minh City",
+    "district": "District 1",
+    "address": "43 Bach Dang St, Ho Chi Minh City",
+    "rating": 4.1,
+    "reviews": [
+      "Atmosphere: Classic Cocktail Bar"
+    ]
+  },
+  {
+    "id": "blue-tiger-cocktails-6470b6-nha-trang",
+    "name": "Blue Tiger Cocktails",
+    "city": "Nha Trang",
+    "district": "Nha Trang City",
+    "address": "142 Nguyen Hue St, Nha Trang",
+    "rating": 4.2,
+    "reviews": [
+      "Atmosphere: High-end Sky Bar"
+    ]
+  },
+  {
+    "id": "the-monkey-speakeasy-3675f6-nha-trang",
+    "name": "The Monkey Speakeasy",
+    "city": "Nha Trang",
+    "district": "Loc Tho Ward",
+    "address": "127 Le Loi St, Nha Trang",
+    "rating": 4.6,
+    "reviews": [
+      "Atmosphere: Indochina style"
+    ]
+  },
+  {
+    "id": "velvet-alley-lounge-95286b-nha-trang",
+    "name": "Velvet Alley Lounge",
+    "city": "Nha Trang",
+    "district": "Loc Tho Ward",
+    "address": "98 Le Loi St, Nha Trang",
+    "rating": 4.2,
+    "reviews": [
+      "Atmosphere: Bespoke Cocktail Bar"
+    ]
+  },
+  {
+    "id": "golden-bird-speakeasy-5bac7c-ho-chi-minh-city",
+    "name": "Golden Bird Speakeasy",
+    "city": "Ho Chi Minh City",
+    "district": "District 1",
+    "address": "67 Bach Dang St, Ho Chi Minh City",
+    "rating": 3.9,
+    "reviews": [
+      "Atmosphere: Bespoke Cocktail Bar"
+    ]
+  },
+  {
+    "id": "velvet-cellar-speakeasy-49f4e0-hanoi",
+    "name": "Velvet Cellar Speakeasy",
+    "city": "Hanoi",
+    "district": "Ha Dong District",
+    "address": "153 Nguyen Hue St, Hanoi",
+    "rating": 4.1,
+    "reviews": [
+      "Atmosphere: Fusion Cocktail Bar"
+    ]
+  },
+  {
+    "id": "secret-alley-speakeasy-1054d7-vung-tau",
+    "name": "Secret Alley Speakeasy",
+    "city": "Vung Tau",
+    "district": "Ward 1",
+    "address": "39 Tran Hung Dao St, Vung Tau",
+    "rating": 4.8,
+    "reviews": [
+      "Atmosphere: Tiki Bar"
+    ]
+  },
+  {
+    "id": "sapphire-rabbit-bar-5674a6-hanoi",
+    "name": "Sapphire Rabbit Bar",
+    "city": "Hanoi",
+    "district": "Hai Ba Trung District",
+    "address": "96 Pasteur St, Hanoi",
+    "rating": 3.9,
+    "reviews": [
+      "Atmosphere: Cocktail & Wine Bar"
+    ]
+  },
+  {
+    "id": "midnight-owl-lounge-9ce46c-hanoi",
+    "name": "Midnight Owl Lounge",
+    "city": "Hanoi",
+    "district": "Hoan Kiem District",
+    "address": "30 Tran Hung Dao St, Hanoi",
+    "rating": 4.6,
+    "reviews": [
+      "Atmosphere: Fusion Cocktail Bar"
+    ]
+  },
+  {
+    "id": "iron-cellar-lounge-4e12c8-hai-phong",
+    "name": "Iron Cellar Lounge",
+    "city": "Hai Phong",
+    "district": "Hong Bang District",
+    "address": "187 Hai Ba Trung St, Hai Phong",
+    "rating": 4.4,
+    "reviews": [
+      "Atmosphere: High-end Sky Bar"
+    ]
+  },
+  {
+    "id": "vintage-bank-speakeasy-30bd09-vung-tau",
+    "name": "Vintage Bank Speakeasy",
+    "city": "Vung Tau",
+    "district": "Ward 1",
+    "address": "110 Tran Hung Dao St, Vung Tau",
+    "rating": 4.5,
+    "reviews": [
+      "Atmosphere: Classic Cocktail Bar"
+    ]
+  },
+  {
+    "id": "velvet-room-lounge-4a04eb-hanoi",
+    "name": "Velvet Room Lounge",
+    "city": "Hanoi",
+    "district": "Hai Ba Trung District",
+    "address": "55 Pasteur St, Hanoi",
+    "rating": 4.2,
+    "reviews": [
+      "Atmosphere: Bespoke Cocktail Bar"
+    ]
+  },
+  {
+    "id": "velvet-bank-cocktails-e6b1a2-da-nang",
+    "name": "Velvet Bank Cocktails",
+    "city": "Da Nang",
+    "district": "Thanh Khe District",
+    "address": "40 Hai Ba Trung St, Da Nang",
+    "rating": 4.2,
+    "reviews": [
+      "Atmosphere: Cocktail & Wine Bar"
+    ]
+  },
+  {
+    "id": "emerald-bird-lounge-12f651-da-nang",
+    "name": "Emerald Bird Lounge",
+    "city": "Da Nang",
+    "district": "Hai Chau District",
+    "address": "80 Tran Hung Dao St, Da Nang",
+    "rating": 4.7,
+    "reviews": [
+      "Atmosphere: Fusion Cocktail Bar"
+    ]
+  },
+  {
+    "id": "the-cellar-lounge-0883c8-hanoi",
+    "name": "The Cellar Lounge",
+    "city": "Hanoi",
+    "district": "Hoan Kiem District",
+    "address": "198 Bach Dang St, Hanoi",
+    "rating": 4.1,
+    "reviews": [
+      "Atmosphere: Rooftop Bar"
+    ]
+  },
+  {
+    "id": "midnight-owl-lounge-5bb94e-hanoi",
+    "name": "Midnight Owl Lounge",
+    "city": "Hanoi",
+    "district": "Hoan Kiem District",
+    "address": "95 Tran Hung Dao St, Hanoi",
+    "rating": 4.9,
+    "reviews": [
+      "Atmosphere: High-end Sky Bar"
+    ]
+  },
+  {
+    "id": "emerald-monkey-lounge-1a369f-da-nang",
+    "name": "Emerald Monkey Lounge",
+    "city": "Da Nang",
+    "district": "Hai Chau District",
+    "address": "44 Pasteur St, Da Nang",
+    "rating": 3.8,
+    "reviews": [
+      "Atmosphere: Bespoke Cocktail Bar"
+    ]
+  },
+  {
+    "id": "golden-monkey-bar-67b700-da-nang",
+    "name": "Golden Monkey Bar",
+    "city": "Da Nang",
+    "district": "Hai Chau District",
+    "address": "169 Nguyen Hue St, Da Nang",
+    "rating": 3.9,
+    "reviews": [
+      "Atmosphere: Bespoke Cocktail Bar"
+    ]
+  },
+  {
+    "id": "black-monkey-bar-3d06bd-nha-trang",
+    "name": "Black Monkey Bar",
+    "city": "Nha Trang",
+    "district": "Loc Tho Ward",
+    "address": "91 Le Duan St, Nha Trang",
+    "rating": 4.0,
+    "reviews": [
+      "Atmosphere: Bespoke Cocktail Bar"
+    ]
+  },
+  {
+    "id": "golden-dragon-cocktails-ab916e-hai-phong",
+    "name": "Golden Dragon Cocktails",
+    "city": "Hai Phong",
+    "district": "Hong Bang District",
+    "address": "97 Le Loi St, Hai Phong",
+    "rating": 4.3,
+    "reviews": [
+      "Atmosphere: Bespoke Cocktail Bar"
+    ]
+  },
+  {
+    "id": "blue-door-bar-5c5fc5-hai-phong",
+    "name": "Blue Door Bar",
+    "city": "Hai Phong",
+    "district": "Hong Bang District",
+    "address": "19 Le Loi St, Hai Phong",
+    "rating": 4.4,
+    "reviews": [
+      "Atmosphere: Indochina style"
+    ]
+  },
+  {
+    "id": "vintage-garden-lounge-fe8896-hai-phong",
+    "name": "Vintage Garden Lounge",
+    "city": "Hai Phong",
+    "district": "Hong Bang District",
+    "address": "193 Bach Dang St, Hai Phong",
+    "rating": 4.4,
+    "reviews": [
+      "Atmosphere: Speakeasy"
+    ]
+  },
+  {
+    "id": "secret-tiger-speakeasy-6f0867-hanoi",
+    "name": "Secret Tiger Speakeasy",
+    "city": "Hanoi",
+    "district": "Hai Ba Trung District",
+    "address": "159 Pasteur St, Hanoi",
+    "rating": 5.0,
+    "reviews": [
+      "Atmosphere: Classic Cocktail Bar"
+    ]
+  },
+  {
+    "id": "emerald-garden-cocktails-51d696-hanoi",
+    "name": "Emerald Garden Cocktails",
+    "city": "Hanoi",
+    "district": "Hoan Kiem District",
+    "address": "37 Tran Hung Dao St, Hanoi",
+    "rating": 4.6,
+    "reviews": [
+      "Atmosphere: Speakeasy"
+    ]
+  },
+  {
+    "id": "red-room-cocktails-a3b796-ho-chi-minh-city",
+    "name": "Red Room Cocktails",
+    "city": "Ho Chi Minh City",
+    "district": "District 1",
+    "address": "81 Le Duan St, Ho Chi Minh City",
+    "rating": 4.0,
+    "reviews": [
+      "Atmosphere: Tiki Bar"
+    ]
+  },
+  {
+    "id": "velvet-cellar-bar-741f52-vung-tau",
+    "name": "Velvet Cellar Bar",
+    "city": "Vung Tau",
+    "district": "Ward 1",
+    "address": "175 Le Loi St, Vung Tau",
+    "rating": 4.8,
+    "reviews": [
+      "Atmosphere: Indochina style"
+    ]
+  },
+  {
+    "id": "golden-garden-lounge-376da1-hai-phong",
+    "name": "Golden Garden Lounge",
+    "city": "Hai Phong",
+    "district": "Hong Bang District",
+    "address": "164 Le Loi St, Hai Phong",
+    "rating": 3.9,
+    "reviews": [
+      "Atmosphere: Rooftop Bar"
+    ]
+  },
+  {
+    "id": "golden-bird-lounge-2bbb7e-vung-tau",
+    "name": "Golden Bird Lounge",
+    "city": "Vung Tau",
+    "district": "Vung Tau City",
+    "address": "192 Nguyen Hue St, Vung Tau",
+    "rating": 4.1,
+    "reviews": [
+      "Atmosphere: Fusion Cocktail Bar"
+    ]
+  },
+  {
+    "id": "the-monkey-bar-8dbf4a-da-nang",
+    "name": "The Monkey Bar",
+    "city": "Da Nang",
+    "district": "Hai Chau District",
+    "address": "48 Le Loi St, Da Nang",
+    "rating": 4.2,
+    "reviews": [
+      "Atmosphere: Hidden Cocktail Bar"
+    ]
+  },
+  {
+    "id": "the-lounge-lounge-40bcf4-da-nang",
+    "name": "The Lounge Lounge",
+    "city": "Da Nang",
+    "district": "Hai Chau District",
+    "address": "43 Tran Hung Dao St, Da Nang",
+    "rating": 4.1,
+    "reviews": [
+      "Atmosphere: Rooftop Bar"
+    ]
+  },
+  {
+    "id": "velvet-tiger-lounge-8a62e6-da-nang",
+    "name": "Velvet Tiger Lounge",
+    "city": "Da Nang",
+    "district": "Hai Chau District",
+    "address": "56 Le Loi St, Da Nang",
+    "rating": 3.8,
+    "reviews": [
+      "Atmosphere: Bespoke Cocktail Bar"
+    ]
+  },
+  {
+    "id": "golden-owl-cocktails-194bd6-hai-phong",
+    "name": "Golden Owl Cocktails",
+    "city": "Hai Phong",
+    "district": "Hong Bang District",
+    "address": "31 Pasteur St, Hai Phong",
+    "rating": 5.0,
+    "reviews": [
+      "Atmosphere: High-end Sky Bar"
+    ]
+  },
+  {
+    "id": "velvet-garden-lounge-37ee2c-hanoi",
+    "name": "Velvet Garden Lounge",
+    "city": "Hanoi",
+    "district": "Ha Dong District",
+    "address": "174 Nguyen Hue St, Hanoi",
+    "rating": 4.3,
+    "reviews": [
+      "Atmosphere: Bespoke Cocktail Bar"
+    ]
+  },
+  {
+    "id": "sapphire-cellar-lounge-7cd354-hanoi",
+    "name": "Sapphire Cellar Lounge",
+    "city": "Hanoi",
+    "district": "Hoan Kiem District",
+    "address": "82 Le Duan St, Hanoi",
+    "rating": 4.2,
+    "reviews": [
+      "Atmosphere: Lounge & Bar"
+    ]
+  },
+  {
+    "id": "golden-room-cocktails-cfe978-da-nang",
+    "name": "Golden Room Cocktails",
+    "city": "Da Nang",
+    "district": "Hai Chau District",
+    "address": "50 Le Loi St, Da Nang",
+    "rating": 3.8,
+    "reviews": [
+      "Atmosphere: Classic Cocktail Bar"
+    ]
+  },
+  {
+    "id": "blue-bank-lounge-f1c680-vung-tau",
+    "name": "Blue Bank Lounge",
+    "city": "Vung Tau",
+    "district": "Vung Tau City",
+    "address": "169 Pasteur St, Vung Tau",
+    "rating": 4.8,
+    "reviews": [
+      "Atmosphere: Classic Cocktail Bar"
+    ]
+  },
+  {
+    "id": "red-room-lounge-b9121e-nha-trang",
+    "name": "Red Room Lounge",
+    "city": "Nha Trang",
+    "district": "Loc Tho Ward",
+    "address": "94 Le Duan St, Nha Trang",
+    "rating": 4.6,
+    "reviews": [
+      "Atmosphere: Cocktail & Wine Bar"
+    ]
+  },
+  {
+    "id": "midnight-cellar-speakeasy-2b81eb-vung-tau",
+    "name": "Midnight Cellar Speakeasy",
+    "city": "Vung Tau",
+    "district": "Vung Tau City",
+    "address": "180 Pasteur St, Vung Tau",
+    "rating": 4.2,
+    "reviews": [
+      "Atmosphere: Tiki Bar"
+    ]
+  },
+  {
+    "id": "red-vault-bar-c256af-ho-chi-minh-city",
+    "name": "Red Vault Bar",
+    "city": "Ho Chi Minh City",
+    "district": "District 1",
+    "address": "84 Le Loi St, Ho Chi Minh City",
+    "rating": 4.7,
+    "reviews": [
+      "Atmosphere: Fusion Cocktail Bar"
+    ]
+  },
+  {
+    "id": "the-bank-lounge-f4f2b7-ho-chi-minh-city",
+    "name": "The Bank Lounge",
+    "city": "Ho Chi Minh City",
+    "district": "District 1",
+    "address": "29 Le Duan St, Ho Chi Minh City",
+    "rating": 4.6,
+    "reviews": [
+      "Atmosphere: Hidden Cocktail Bar"
+    ]
+  },
+  {
+    "id": "emerald-bird-cocktails-dcf082-da-nang",
+    "name": "Emerald Bird Cocktails",
+    "city": "Da Nang",
+    "district": "Hai Chau District",
+    "address": "99 Tran Hung Dao St, Da Nang",
+    "rating": 4.2,
+    "reviews": [
+      "Atmosphere: Indochina style"
+    ]
+  },
+  {
+    "id": "emerald-cellar-cocktails-40f38d-hai-phong",
+    "name": "Emerald Cellar Cocktails",
+    "city": "Hai Phong",
+    "district": "Hong Bang District",
+    "address": "28 Pasteur St, Hai Phong",
+    "rating": 5.0,
+    "reviews": [
+      "Atmosphere: Bespoke Cocktail Bar"
+    ]
+  },
+  {
+    "id": "secret-cellar-speakeasy-53fa83-vung-tau",
+    "name": "Secret Cellar Speakeasy",
+    "city": "Vung Tau",
+    "district": "Vung Tau City",
+    "address": "132 Pasteur St, Vung Tau",
+    "rating": 4.0,
+    "reviews": [
+      "Atmosphere: Hidden Cocktail Bar"
+    ]
+  },
+  {
+    "id": "velvet-cellar-bar-b9688f-hai-phong",
+    "name": "Velvet Cellar Bar",
+    "city": "Hai Phong",
+    "district": "Hong Bang District",
+    "address": "24 Hai Ba Trung St, Hai Phong",
+    "rating": 4.4,
+    "reviews": [
+      "Atmosphere: High-end Sky Bar"
+    ]
+  },
+  {
+    "id": "midnight-alley-lounge-9571a1-vung-tau",
+    "name": "Midnight Alley Lounge",
+    "city": "Vung Tau",
+    "district": "Ward 1",
+    "address": "107 Le Loi St, Vung Tau",
+    "rating": 4.6,
+    "reviews": [
+      "Atmosphere: Speakeasy"
+    ]
+  },
+  {
+    "id": "secret-bank-speakeasy-dd959b-vung-tau",
+    "name": "Secret Bank Speakeasy",
+    "city": "Vung Tau",
+    "district": "Ward 1",
+    "address": "102 Hai Ba Trung St, Vung Tau",
+    "rating": 4.0,
+    "reviews": [
+      "Atmosphere: Speakeasy"
+    ]
+  },
+  {
+    "id": "midnight-bank-speakeasy-e26042-hanoi",
+    "name": "Midnight Bank Speakeasy",
+    "city": "Hanoi",
+    "district": "Hoan Kiem District",
+    "address": "171 Hai Ba Trung St, Hanoi",
+    "rating": 4.3,
+    "reviews": [
+      "Atmosphere: Classic Cocktail Bar"
+    ]
+  },
+  {
+    "id": "vintage-cellar-bar-6a6342-hanoi",
+    "name": "Vintage Cellar Bar",
+    "city": "Hanoi",
+    "district": "Hoan Kiem District",
+    "address": "74 Le Loi St, Hanoi",
+    "rating": 4.2,
+    "reviews": [
+      "Atmosphere: Tiki Bar"
+    ]
+  },
+  {
+    "id": "sapphire-vault-cocktails-6c4afd-hanoi",
+    "name": "Sapphire Vault Cocktails",
+    "city": "Hanoi",
+    "district": "Hoan Kiem District",
+    "address": "180 Tran Hung Dao St, Hanoi",
+    "rating": 4.0,
+    "reviews": [
+      "Atmosphere: Fusion Cocktail Bar"
+    ]
+  },
+  {
+    "id": "velvet-tiger-lounge-305eae-da-nang",
+    "name": "Velvet Tiger Lounge",
+    "city": "Da Nang",
+    "district": "Hai Chau District",
+    "address": "74 Nguyen Hue St, Da Nang",
+    "rating": 4.3,
+    "reviews": [
+      "Atmosphere: Rooftop Bar"
+    ]
+  },
+  {
+    "id": "the-bird-bar-b447fd-nha-trang",
+    "name": "The Bird Bar",
+    "city": "Nha Trang",
+    "district": "Loc Tho Ward",
+    "address": "32 Pasteur St, Nha Trang",
+    "rating": 4.0,
+    "reviews": [
+      "Atmosphere: Speakeasy"
+    ]
+  },
+  {
+    "id": "vintage-lounge-bar-1622d1-nha-trang",
+    "name": "Vintage Lounge Bar",
+    "city": "Nha Trang",
+    "district": "Nha Trang City",
+    "address": "127 Bach Dang St, Nha Trang",
+    "rating": 5.0,
+    "reviews": [
+      "Atmosphere: Tiki Bar"
+    ]
+  },
+  {
+    "id": "secret-tiger-speakeasy-20427a-nha-trang",
+    "name": "Secret Tiger Speakeasy",
+    "city": "Nha Trang",
+    "district": "Loc Tho Ward",
+    "address": "95 Pasteur St, Nha Trang",
+    "rating": 4.2,
+    "reviews": [
+      "Atmosphere: Hidden Cocktail Bar"
+    ]
+  },
+  {
+    "id": "velvet-bank-lounge-ad99eb-ho-chi-minh-city",
+    "name": "Velvet Bank Lounge",
+    "city": "Ho Chi Minh City",
+    "district": "District 1",
+    "address": "53 Hai Ba Trung St, Ho Chi Minh City",
+    "rating": 4.6,
+    "reviews": [
+      "Atmosphere: Bespoke Cocktail Bar"
+    ]
+  },
+  {
+    "id": "black-lounge-lounge-b1198d-nha-trang",
+    "name": "Black Lounge Lounge",
+    "city": "Nha Trang",
+    "district": "Loc Tho Ward",
+    "address": "65 Hai Ba Trung St, Nha Trang",
+    "rating": 4.5,
+    "reviews": [
+      "Atmosphere: High-end Sky Bar"
+    ]
+  },
+  {
+    "id": "vintage-tiger-cocktails-93d5e8-ho-chi-minh-city",
+    "name": "Vintage Tiger Cocktails",
+    "city": "Ho Chi Minh City",
+    "district": "District 1",
+    "address": "39 Hai Ba Trung St, Ho Chi Minh City",
+    "rating": 4.1,
+    "reviews": [
+      "Atmosphere: Lounge & Bar"
+    ]
+  },
+  {
+    "id": "blue-bird-lounge-47e6cd-hai-phong",
+    "name": "Blue Bird Lounge",
+    "city": "Hai Phong",
+    "district": "Hong Bang District",
+    "address": "3 Nguyen Hue St, Hai Phong",
+    "rating": 4.4,
+    "reviews": [
+      "Atmosphere: Rooftop Bar"
+    ]
+  },
+  {
+    "id": "black-door-bar-47c3d7-hai-phong",
+    "name": "Black Door Bar",
+    "city": "Hai Phong",
+    "district": "Hong Bang District",
+    "address": "36 Le Duan St, Hai Phong",
+    "rating": 3.9,
+    "reviews": [
+      "Atmosphere: Lounge & Bar"
+    ]
+  },
+  {
+    "id": "the-rabbit-cocktails-ca9213-vung-tau",
+    "name": "The Rabbit Cocktails",
+    "city": "Vung Tau",
+    "district": "Ward 1",
+    "address": "147 Le Loi St, Vung Tau",
+    "rating": 5.0,
+    "reviews": [
+      "Atmosphere: Fusion Cocktail Bar"
+    ]
+  },
+  {
+    "id": "secret-phoenix-cocktails-44d499-vung-tau",
+    "name": "Secret Phoenix Cocktails",
+    "city": "Vung Tau",
+    "district": "Ward 1",
+    "address": "82 Le Loi St, Vung Tau",
+    "rating": 3.8,
+    "reviews": [
+      "Atmosphere: Rooftop Bar"
+    ]
+  },
+  {
+    "id": "the-garden-lounge-b02644-hai-phong",
+    "name": "The Garden Lounge",
+    "city": "Hai Phong",
+    "district": "Hong Bang District",
+    "address": "119 Hai Ba Trung St, Hai Phong",
+    "rating": 4.8,
+    "reviews": [
+      "Atmosphere: Bespoke Cocktail Bar"
+    ]
+  },
+  {
+    "id": "velvet-tiger-lounge-050cf5-ho-chi-minh-city",
+    "name": "Velvet Tiger Lounge",
+    "city": "Ho Chi Minh City",
+    "district": "District 1",
+    "address": "71 Le Loi St, Ho Chi Minh City",
+    "rating": 4.0,
+    "reviews": [
+      "Atmosphere: High-end Sky Bar"
+    ]
+  },
+  {
+    "id": "sapphire-vault-cocktails-c003bf-vung-tau",
+    "name": "Sapphire Vault Cocktails",
+    "city": "Vung Tau",
+    "district": "Ward 1",
+    "address": "188 Hai Ba Trung St, Vung Tau",
+    "rating": 4.9,
+    "reviews": [
+      "Atmosphere: Cocktail & Wine Bar"
+    ]
+  }
+]
