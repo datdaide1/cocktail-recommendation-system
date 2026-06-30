@@ -72,12 +72,13 @@ async def run_evaluation():
     # but ensure we get a diverse set of cases covering different query_types.
     if os.environ.get("CI") == "true":
         data_to_eval = []
-        seen_types = set()
+        type_counts = {}
         for record in dataset:
             query_type = record.get("metadata", {}).get("query_type", "unknown")
-            if query_type not in seen_types:
+            count = type_counts.get(query_type, 0)
+            if count < 3:
                 data_to_eval.append(record)
-                seen_types.add(query_type)
+                type_counts[query_type] = count + 1
     else:
         data_to_eval = dataset
     
