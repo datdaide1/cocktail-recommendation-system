@@ -67,9 +67,17 @@ async def run_evaluation():
     # Evaluate using braintrust
     # Note: autoevals requires expected, output, and sometimes input/context
     
+    dataset = braintrust.init_dataset("Cocktail-Recommendation-System", "Cocktail-Scenarios-Golden")
+    
+    # If running in CI/CD, limit the dataset to 5 cases to save time and API costs.
+    if os.environ.get("CI") == "true":
+        data_to_eval = list(dataset)[:5]
+    else:
+        data_to_eval = dataset
+    
     await braintrust.EvalAsync(
         "Cocktail-Recommendation-System",
-        data=braintrust.init_dataset("Cocktail-Recommendation-System", "Cocktail-Scenarios-Golden"),
+        data=data_to_eval,
         task=task_fn,
         scores=[
             # Factuality (Faithfulness): Is the output grounded in the context?
