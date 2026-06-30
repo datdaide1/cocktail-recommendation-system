@@ -88,13 +88,13 @@ async def run_evaluation():
         task=task_fn,
         scores=[
             # Factuality (Faithfulness): Is the output grounded in the context?
-            lambda input, output, expected, **kwargs: Factuality(model="meta-llama/llama-3.3-70b-instruct:free")(input=input, output=output.get("output"), expected=expected, context=output.get("context", "")),
+            lambda input, output, expected, **kwargs: Factuality(model="qwen/qwen3-next-80b-a3b-instruct:free")(input=input, output=output.get("output"), expected=expected, context=output.get("context", "")),
             
             # Answer Relevancy: Does the output address the input query?
-            lambda input, output, **kwargs: AnswerRelevancy(model="meta-llama/llama-3.3-70b-instruct:free")(input=input, output=output.get("output")),
+            lambda input, output, **kwargs: AnswerRelevancy(model="qwen/qwen3-next-80b-a3b-instruct:free")(input=input, output=output.get("output")),
             
             # Context Relevancy: Is the retrieved context relevant to the input query?
-            lambda input, output, **kwargs: ContextRelevancy(model="meta-llama/llama-3.3-70b-instruct:free")(input=input, output=output.get("context", "")),
+            lambda input, output, **kwargs: ContextRelevancy(model="qwen/qwen3-next-80b-a3b-instruct:free")(input=input, output=output.get("context", "")),
             
             # B2B Tool Calling Validation
             lambda output, **kwargs: tool_calling_scorer(output)
