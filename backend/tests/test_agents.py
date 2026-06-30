@@ -6,8 +6,7 @@ from app.agents.nodes import RouterSchema
 
 @pytest.fixture(autouse=True)
 def mock_llm_responses():
-    with patch("langchain_openai.ChatOpenAI.ainvoke", new_callable=AsyncMock) as mock_ainvoke, \
-         patch("langchain_openai.ChatOpenAI.with_structured_output") as mock_structured, \
+    with patch("app.agents.nodes.llm") as mock_llm, \
          patch("app.agents.nodes.get_relevant_cocktails", new_callable=AsyncMock) as mock_cocktails, \
          patch("app.agents.nodes.get_relevant_venues", new_callable=AsyncMock) as mock_venues:
         
@@ -22,15 +21,21 @@ def mock_llm_responses():
             allergies="",
             safety_status="safe"
         )
-        mock_structured.return_value = mock_structured_instance
+        mock_llm.with_structured_output.return_value = mock_structured_instance
         
-        # Default string response for ainvoke
+        # Setup ainvoke mock
+        mock_ainvoke = AsyncMock()
         mock_ainvoke.return_value = AIMessage(content="Mocked LLM Response")
+        mock_llm.ainvoke = mock_ainvoke
+        
+        # Also setup bind_tools for B2B node
+        mock_llm.bind_tools.return_value = mock_llm
         
         yield {
             "ainvoke": mock_ainvoke,
             "structured": mock_structured_instance,
-            "structured_creator": mock_structured
+            "structured_creator": mock_llm.with_structured_output,
+            "llm": mock_llm
         }
 
 @pytest.mark.asyncio
@@ -64,34 +69,31 @@ async def test_router_b2b_classification(mock_llm_responses):
     )
     
     # Mock B2B LLM with tool binding
-    with patch("langchain_openai.ChatOpenAI.bind_tools") as mock_bind:
-        mock_bound_llm = AsyncMock()
+    mock_bound_llm = AsyncMock()
+    mock_llm_responses["llm"].bind_tools.return_value = mock_bound_llm
         
-        # The AI message should include a tool call
-        mock_ai_message_1 = AIMessage(content="Let me calculate that.")
-        mock_ai_message_1.tool_calls = [{"name": "calculate_cost_tool", "args": {"ingredients": []}, "id": "call_1"}]
-        
-        mock_ai_message_2 = AIMessage(content="The calculation is done.")
-        mock_bound_llm.ainvoke.side_effect = [mock_ai_message_1, mock_ai_message_2]
-        
-        mock_bind.return_value = mock_bound_llm
-        
-        state = {
-            "messages": [HumanMessage(content="What is the pricing and cost for menu planning?")],
-            "intent": None,
-            "customer_age": None,
-            "allergies": [],
-            "safety_status": "safe",
-            "tool_called": False
-        }
-        
-        # We need to mock the actual tool execution in the ToolNode, or we can just test the state until b2b
-        result = await graph.ainvoke(state)
-        
-        assert result["intent"] == "b2b"
-        # Tool was called during the process, and the final state returned False to end the loop
-        assert mock_bound_llm.ainvoke.call_count == 2
-        assert result["messages"][-1].content == "The calculation is done."
+    # The AI message should include a tool call
+    mock_ai_message_1 = AIMessage(content="Let me calculate that.")
+    mock_ai_message_1.tool_calls = [{"name": "calculate_cost_tool", "args": {"ingredients": []}, "id": "call_1"}]
+    
+    mock_ai_message_2 = AIMessage(content="The calculation is done.")
+    mock_bound_llm.ainvoke.side_effect = [mock_ai_message_1, mock_ai_message_2]
+    
+    state = {
+        "messages": [HumanMessage(content="What is the pricing and cost for menu planning?")],
+        "intent": None,
+        "customer_age": None,
+        "allergies": [],
+        "safety_status": "safe",
+        "tool_called": False
+    }
+    
+    # We need to mock the actual tool execution in the ToolNode, or we can just test the state until b2b
+    result = await graph.ainvoke(state)
+    assert result["intent"] == "b2b"
+    # Tool was called during the process, and the final state returned False to end the loop
+    assert mock_bound_llm.ainvoke.call_count == 2
+    assert result["messages"][-1].content == "The calculation is done."
 
 @pytest.mark.asyncio
 async def test_underage_safety_redirect(mock_llm_responses):
