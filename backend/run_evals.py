@@ -68,10 +68,16 @@ async def run_evaluation():
     # Note: autoevals requires expected, output, and sometimes input/context
     
     dataset = braintrust.init_dataset("Cocktail-Recommendation-System", "Cocktail-Scenarios-Golden")
-    
-    # If running in CI/CD, limit the dataset to 5 cases to save time and API costs.
+    # If running in CI/CD, limit the dataset to save time and API costs,
+    # but ensure we get a diverse set of cases covering different query_types.
     if os.environ.get("CI") == "true":
-        data_to_eval = list(dataset)[:5]
+        data_to_eval = []
+        seen_types = set()
+        for record in dataset:
+            query_type = record.get("metadata", {}).get("query_type", "unknown")
+            if query_type not in seen_types:
+                data_to_eval.append(record)
+                seen_types.add(query_type)
     else:
         data_to_eval = dataset
     
