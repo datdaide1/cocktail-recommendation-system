@@ -8,6 +8,7 @@ from app.tools.cost_abv_calculator import calculate_cost_and_abv
 from app.core.config import settings
 from pydantic import BaseModel, Field
 from langchain_core.tools import tool
+from app.tools.qdrant_retriever import get_relevant_cocktails, get_relevant_venues
 
 logger = logging.getLogger(__name__)
 
@@ -108,11 +109,33 @@ async def b2c_mixologist_node(state: AgentState) -> dict:
             f"\nCRITICAL ALLERGY WARNING: The user is allergic to: {allergies_str}. "
             "You MUST ensure the recommended drinks do not contain these ingredients."
         )
+
+    # Perform Qdrant RAG retrieval based on the user's latest query
+    user_query = last_message.content
+    try:
+        cocktails_context = await get_relevant_cocktails(user_query, limit=2)
+        venues_context = await get_relevant_venues(user_query, limit=2)
+        
+        context_str = "\n\n### RETRIEVED CONTEXT (Cocktails) ###\n"
+        for c in cocktails_context:
+            context_str += f"- Name: {c.get('name', 'Unknown')}\n  Type: {c.get('alcoholic_type', '')}\n  Base: {c.get('base_liquor', '')}\n  Ingredients: {c.get('ingredients', '')}\n  Instructions: {c.get('instructions', '')}\n\n"
+            
+        context_str += "### RETRIEVED CONTEXT (Venues) ###\n"
+        for v in venues_context:
+            context_str += f"- Name: {v.get('name', 'Unknown')}\n  Address: {v.get('address', '')}\n  District: {v.get('district', '')}\n  City: {v.get('city', '')}\n  Rating: {v.get('rating', '')}\n\n"
+            
+        system_prompt += (
+            "\nUse the following retrieved context from our database to answer the user's query accurately. "
+            "If the context does not contain the answer, you can rely on your general knowledge, but prioritize the retrieved context.\n"
+            f"{context_str}"
+        )
+    except Exception as e:
+        logger.error(f"RAG Retrieval failed: {e}")
         
     messages = [SystemMessage(content=system_prompt)] + state["messages"]
     
     response = await llm.ainvoke(messages)
-    return {"messages": [response]}
+    return {"messages": [response], "context": context_str if "context_str" in locals() else ""}
 
 @tool
 async def calculate_cost_tool(ingredients: List[Dict[str, Any]]) -> str:

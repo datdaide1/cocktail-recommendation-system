@@ -7,14 +7,19 @@ from app.agents.nodes import RouterSchema
 @pytest.fixture(autouse=True)
 def mock_llm_responses():
     with patch("langchain_openai.ChatOpenAI.ainvoke", new_callable=AsyncMock) as mock_ainvoke, \
-         patch("langchain_openai.ChatOpenAI.with_structured_output") as mock_structured:
+         patch("langchain_openai.ChatOpenAI.with_structured_output") as mock_structured, \
+         patch("app.agents.nodes.get_relevant_cocktails", new_callable=AsyncMock) as mock_cocktails, \
+         patch("app.agents.nodes.get_relevant_venues", new_callable=AsyncMock) as mock_venues:
+        
+        mock_cocktails.return_value = [{"name": "Mocktail", "alcoholic_type": "Non-Alcoholic", "ingredients": "Water, Sugar"}]
+        mock_venues.return_value = [{"name": "Mock Bar", "rating": 5.0}]
         
         # Setup structured output mock
         mock_structured_instance = AsyncMock()
         mock_structured_instance.ainvoke.return_value = RouterSchema(
             intent="b2c",
-            customer_age=None,
-            allergies=[],
+            customer_age=-1,
+            allergies="",
             safety_status="safe"
         )
         mock_structured.return_value = mock_structured_instance
@@ -32,8 +37,8 @@ def mock_llm_responses():
 async def test_router_b2c_classification(mock_llm_responses):
     mock_llm_responses["structured"].ainvoke.return_value = RouterSchema(
         intent="b2c",
-        customer_age=None,
-        allergies=[],
+        customer_age=-1,
+        allergies="",
         safety_status="safe"
     )
     
@@ -53,8 +58,8 @@ async def test_router_b2c_classification(mock_llm_responses):
 async def test_router_b2b_classification(mock_llm_responses):
     mock_llm_responses["structured"].ainvoke.return_value = RouterSchema(
         intent="b2b",
-        customer_age=None,
-        allergies=[],
+        customer_age=-1,
+        allergies="",
         safety_status="safe"
     )
     
@@ -63,9 +68,11 @@ async def test_router_b2b_classification(mock_llm_responses):
         mock_bound_llm = AsyncMock()
         
         # The AI message should include a tool call
-        mock_ai_message = AIMessage(content="Let me calculate that.")
-        mock_ai_message.tool_calls = [{"name": "calculate_cost_tool", "args": {"ingredients": []}, "id": "call_1"}]
-        mock_bound_llm.ainvoke.return_value = mock_ai_message
+        mock_ai_message_1 = AIMessage(content="Let me calculate that.")
+        mock_ai_message_1.tool_calls = [{"name": "calculate_cost_tool", "args": {"ingredients": []}, "id": "call_1"}]
+        
+        mock_ai_message_2 = AIMessage(content="The calculation is done.")
+        mock_bound_llm.ainvoke.side_effect = [mock_ai_message_1, mock_ai_message_2]
         
         mock_bind.return_value = mock_bound_llm
         
@@ -82,15 +89,16 @@ async def test_router_b2b_classification(mock_llm_responses):
         result = await graph.ainvoke(state)
         
         assert result["intent"] == "b2b"
-        # Tool was called
-        assert result["tool_called"] is True
+        # Tool was called during the process, and the final state returned False to end the loop
+        assert mock_bound_llm.ainvoke.call_count == 2
+        assert result["messages"][-1].content == "The calculation is done."
 
 @pytest.mark.asyncio
 async def test_underage_safety_redirect(mock_llm_responses):
     mock_llm_responses["structured"].ainvoke.return_value = RouterSchema(
         intent="b2c",
         customer_age=16,
-        allergies=[],
+        allergies="",
         safety_status="underage_redirect"
     )
     
@@ -110,8 +118,8 @@ async def test_underage_safety_redirect(mock_llm_responses):
 async def test_hazchem_safety_blocked(mock_llm_responses):
     mock_llm_responses["structured"].ainvoke.return_value = RouterSchema(
         intent="b2c",
-        customer_age=None,
-        allergies=[],
+        customer_age=-1,
+        allergies="",
         safety_status="hazchem_blocked"
     )
     
