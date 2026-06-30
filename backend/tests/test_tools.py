@@ -1,16 +1,23 @@
 import pytest
 import logging
+from unittest.mock import patch, AsyncMock
 from app.tools.cost_abv_calculator import calculate_cost_and_abv
 from app.tools.substitution_engine import get_ingredient_substitutes
 
 logger = logging.getLogger(__name__)
 
 @pytest.mark.asyncio
-async def test_calculate_cost_and_abv_known_ingredients():
+@patch("app.tools.cost_abv_calculator.get_ingredient_by_name")
+@patch("app.tools.cost_abv_calculator.get_liquor_price_by_name_case_insensitive")
+async def test_calculate_cost_and_abv_known_ingredients(mock_get_price, mock_get_ingredient):
     """
     Test calculate_cost_and_abv with a known set of ingredients (Absolut Vodka and water/juice).
     Assert that cost and ABV math is calculated perfectly.
     """
+    # Mock return values for DB cache functions
+    mock_get_ingredient.side_effect = lambda name: {"abv": 40.0} if "Vodka" in name else {"abv": 0.0}
+    mock_get_price.side_effect = lambda name: [{"price_per_ml_vnd": 500.0}] if "Vodka" in name else []
+
     ingredients = [
         {"name": "Absolut Vodka", "volume_ml": 50},
         {"name": "Water", "volume_ml": 150}
@@ -43,10 +50,15 @@ async def test_calculate_cost_and_abv_known_ingredients():
 
 
 @pytest.mark.asyncio
-async def test_calculate_cost_and_abv_case_insensitivity_and_spacing():
+@patch("app.tools.cost_abv_calculator.get_ingredient_by_name")
+@patch("app.tools.cost_abv_calculator.get_liquor_price_by_name_case_insensitive")
+async def test_calculate_cost_and_abv_case_insensitivity_and_spacing(mock_get_price, mock_get_ingredient):
     """
     Test case insensitivity and whitespace stripping for ingredient lookup.
     """
+    mock_get_ingredient.return_value = {"abv": 40.0}
+    mock_get_price.return_value = [{"price_per_ml_vnd": 500.0}]
+
     ingredients = [
         {"name": "  absolut vodka  ", "volume_ml": 100}
     ]
@@ -59,10 +71,15 @@ async def test_calculate_cost_and_abv_case_insensitivity_and_spacing():
 
 
 @pytest.mark.asyncio
-async def test_calculate_cost_and_abv_unknown_ingredients():
+@patch("app.tools.cost_abv_calculator.get_ingredient_by_name")
+@patch("app.tools.cost_abv_calculator.get_liquor_price_by_name_case_insensitive")
+async def test_calculate_cost_and_abv_unknown_ingredients(mock_get_price, mock_get_ingredient):
     """
     Test calculate_cost_and_abv with unknown ingredients to verify fallback behavior (ABV 0, Price 0).
     """
+    mock_get_ingredient.return_value = None
+    mock_get_price.return_value = []
+
     ingredients = [
         {"name": "Mysterious Liquid X", "volume_ml": 100}
     ]
@@ -80,11 +97,17 @@ async def test_calculate_cost_and_abv_unknown_ingredients():
 
 
 @pytest.mark.asyncio
-async def test_get_ingredient_substitutes_known():
+@patch("app.tools.substitution_engine.get_mixology_rule_by_ingredient_case_insensitive")
+async def test_get_ingredient_substitutes_known(mock_get_rule):
     """
     Test get_ingredient_substitutes with a known ingredient (e.g., Cointreau)
     to assert that the list of substitutes and notes match.
     """
+    mock_get_rule.return_value = {
+        "substitutes": ["Triple Sec", "Grand Marnier"],
+        "notes": "Triple Sec is a direct cheaper swap."
+    }
+
     result = await get_ingredient_substitutes("Cointreau")
     
     assert isinstance(result["substitutes"], list)
@@ -95,10 +118,16 @@ async def test_get_ingredient_substitutes_known():
 
 
 @pytest.mark.asyncio
-async def test_get_ingredient_substitutes_case_insensitive():
+@patch("app.tools.substitution_engine.get_mixology_rule_by_ingredient_case_insensitive")
+async def test_get_ingredient_substitutes_case_insensitive(mock_get_rule):
     """
     Test get_ingredient_substitutes is case-insensitive and strips spacing.
     """
+    mock_get_rule.return_value = {
+        "substitutes": ["Triple Sec"],
+        "notes": "Yes."
+    }
+
     result = await get_ingredient_substitutes("  cointreau  ")
     
     assert len(result["substitutes"]) > 0
@@ -106,10 +135,13 @@ async def test_get_ingredient_substitutes_case_insensitive():
 
 
 @pytest.mark.asyncio
-async def test_get_ingredient_substitutes_unknown():
+@patch("app.tools.substitution_engine.get_mixology_rule_by_ingredient_case_insensitive")
+async def test_get_ingredient_substitutes_unknown(mock_get_rule):
     """
     Test get_ingredient_substitutes with an unknown ingredient to verify empty list and message.
     """
+    mock_get_rule.return_value = None
+
     result = await get_ingredient_substitutes("Super Rare Exotic Fruit")
     
     assert result["substitutes"] == []

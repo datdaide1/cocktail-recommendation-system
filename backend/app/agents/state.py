@@ -8,4 +8,5 @@ class AgentState(TypedDict):
     customer_age: Optional[int]
     allergies: List[str]
     safety_status: str  # 'safe', 'underage_redirect', 'hazchem_blocked'
+    context: Optional[str]  # RAG context fetched from Qdrant
     tool_called: bool

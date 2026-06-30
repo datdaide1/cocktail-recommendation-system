@@ -1,167 +1,71 @@
-import re
+import json
 import logging
-from typing import Dict, Any, List
-from langchain_core.messages import AIMessage, BaseMessage
+from typing import Dict, Any, List, Optional
+from langchain_core.messages import AIMessage, BaseMessage, ToolMessage, SystemMessage, HumanMessage
+from langchain_openai import ChatOpenAI
 from app.agents.state import AgentState
 from app.tools.cost_abv_calculator import calculate_cost_and_abv
+from app.core.config import settings
+from pydantic import BaseModel, Field
+from langchain_core.tools import tool
 
 logger = logging.getLogger(__name__)
 
-def capitalize_drink(name: str) -> str:
-    """Capitalize every word of a drink name except 'and'."""
-    return " ".join(w.title() if w.lower() != "and" else "and" for w in name.split())
+# Initialize LLM via OpenRouter
+llm = ChatOpenAI(
+    model="openai/gpt-4o-mini",
+    api_key=settings.OPENROUTER_API_KEY,
+    base_url=settings.OPENAI_API_BASE,
+    temperature=0.0
+)
 
-
-def parse_ingredients_from_query(query: str) -> List[Dict[str, Any]]:
-    """Helper to parse ingredients and volumes from user query."""
-    clean_query = query.replace("?", " ").replace("\n", " ")
-    # Split query by common delimiters: comma, semicolon, "and", plus, period
-    clauses = re.split(r"\b(?:and)\b|[\,\;\.\+]+", clean_query, flags=re.IGNORECASE)
-    ingredients = []
-    for clause in clauses:
-        clause = clause.strip()
-        if not clause:
-            continue
-        # Pattern 1: <volume> ml <name>
-        m1 = re.search(r"(\d+(?:\.\d+)?)\s*ml\s*(?:of\s+)?([A-Za-z0-9\s\-']+)", clause, re.IGNORECASE)
-        if m1:
-            vol = float(m1.group(1))
-            name = m1.group(2).strip()
-            name = re.sub(r"^[^\w]+", "", name)
-            name = re.sub(r"[^\w]+$", "", name)
-            name = re.sub(r"^(?:of|with|add|plus|and)\s+", "", name, flags=re.IGNORECASE).strip()
-            if name:
-                ingredients.append({"name": name, "volume_ml": vol})
-            continue
-        # Pattern 2: <name> <volume> ml
-        m2 = re.search(r"([A-Za-z0-9\s\-'\u00C0-\u017F]+?)\s*(\d+(?:\.\d+)?)\s*ml", clause, re.IGNORECASE)
-        if m2:
-            name = m2.group(1).strip()
-            vol = float(m2.group(2))
-            name = re.sub(r"^[^\w]+", "", name)
-            name = re.sub(r"[^\w]+$", "", name)
-            name = re.sub(r"^(?:of|with|add|plus|and)\s+", "", name, flags=re.IGNORECASE).strip()
-            if name:
-                ingredients.append({"name": name, "volume_ml": vol})
-            continue
-    return ingredients
+class RouterSchema(BaseModel):
+    intent: str = Field(description="Must be 'b2b' if user asks for pricing, margins, or cost calculation. Must be 'b2c' if user asks for recipes, vibes, or cocktail recommendations.")
+    customer_age: int = Field(description="The age of the customer if mentioned, else -1.", default=-1)
+    allergies: str = Field(description="A comma-separated string of allergies mentioned by the user, or empty string if none.", default="")
+    safety_status: str = Field(description="Must be 'hazchem_blocked' if they ask for poisons/chemicals. Must be 'underage_redirect' if they are under 18 and ask for alcohol. Otherwise 'safe'.", default="safe")
 
 async def router_node(state: AgentState) -> dict:
-    """Router node to parse input query, detect age/allergies/intent/hazchem."""
-    last_message = state["messages"][-1] if state.get("messages") else None
-    content = last_message.content if last_message else ""
-
-    # Parse metadata if present
-    metadata = {}
-    if last_message and hasattr(last_message, "additional_kwargs"):
-        metadata = last_message.additional_kwargs.get("metadata") or last_message.additional_kwargs or {}
-
-    # 1. Parse Customer Age
-    age = state.get("customer_age")
-    if age is None:
-        if isinstance(metadata, dict):
-            if "age" in metadata:
-                age = int(metadata["age"])
-            elif "customer_age" in metadata:
-                age = int(metadata["customer_age"])
-        if age is None:
-            age_patterns = [
-                r"\b(?:i\s+am|i'm)\s*(\d+)(?:\s*years?\s*old)?\b",
-                r"\bage\s*(?:is|:)?\s*(\d+)\b",
-                r"\b(\d+)\s*years?\s*old\b",
-                r"\b(\d+)\s*years?\s*of\s*age\b"
-            ]
-            for pattern in age_patterns:
-                match = re.search(pattern, content, re.IGNORECASE)
-                if match:
-                    age = int(match.group(1))
-                    break
-
-    # 2. Parse Allergies
-    allergies = list(state.get("allergies") or [])
-    if isinstance(metadata, dict) and "allergies" in metadata:
-        meta_allergies = metadata["allergies"]
-        if isinstance(meta_allergies, str):
-            if meta_allergies not in allergies:
-                allergies.append(meta_allergies)
-        elif isinstance(meta_allergies, list):
-            for a in meta_allergies:
-                if a not in allergies:
-                    allergies.append(a)
-
-    known_allergens = ["nuts", "peanut", "dairy", "gluten", "soy", "egg", "milk", "cream", "almond"]
-    for allergen in known_allergens:
-        if re.search(r"\b" + re.escape(allergen) + r"s?\b", content, re.IGNORECASE):
-            if allergen not in allergies:
-                allergies.append(allergen)
-
-    allergy_patterns = [
-        r"\ballergic\s+to\s+([A-Za-z0-9\s\-]+)",
-        r"\ballergy\s+to\s+([A-Za-z0-9\s\-]+)",
-        r"\b([A-Za-z0-9\s\-]+)\s+allergy\b",
-        r"\bno\s+([A-Za-z0-9\s\-]+)\b"
+    """Router node to parse input query using LLM structured output."""
+    last_message = state["messages"][-1]
+    
+    system_prompt = (
+        "You are a routing agent for a cocktail recommendation system.\n"
+        "Analyze the user's query and extract their intent, age, allergies, and safety status.\n"
+        "Intent must be 'b2b' for business/cost inquiries and 'b2c' for consumers.\n"
+        "If they mention toxic chemicals/poisons, set safety_status to 'hazchem_blocked'.\n"
+        "If they are under 18 and asking for alcohol, set safety_status to 'underage_redirect'."
+    )
+    
+    messages = [
+        SystemMessage(content=system_prompt),
+        last_message
     ]
-    for pattern in allergy_patterns:
-        for match in re.finditer(pattern, content, re.IGNORECASE):
-            allergen = match.group(1).strip().lower()
-            allergen = re.sub(r"^(?:a|an|some)\s+", "", allergen)
-            allergen = re.sub(r"[^\w\s\-]", "", allergen).strip()
-            if allergen and allergen not in allergies:
-                allergies.append(allergen)
-
-    # 3. Detect Hazchem safety status
-    safety_status = state.get("safety_status", "safe")
-    toxic_substances = [
-        "rubbing alcohol", "isopropyl", "bleach", "methanol", "cyanide", "battery acid",
-        "ethylene glycol", "household chemical", "poison", "toxic", "drain cleaner",
-        "ammonia", "acetone", "kerosene", "gasoline", "motor oil", "antifreeze",
-        "arsenic", "strychnine", "mercury", "lead", "pesticide", "herbicide",
-        "rat poison", "detergent", "soap", "window cleaner"
-    ]
-    is_hazchem = False
-    for substance in toxic_substances:
-        if re.search(r"\b" + re.escape(substance) + r"s?\b", content, re.IGNORECASE):
-            is_hazchem = True
-            break
-
-    if is_hazchem:
-        safety_status = "hazchem_blocked"
-    elif age is not None and age < 18:
-        safety_status = "underage_redirect"
-    elif safety_status not in ["hazchem_blocked", "underage_redirect"]:
-        safety_status = "safe"
-
-    # 4. Classify Intent
-    intent = state.get("intent")
-    if not intent:
-        if isinstance(metadata, dict) and "intent" in metadata:
-            intent = metadata["intent"]
-        if not intent:
-            b2b_keywords = [
-                "pricing", "menu planning", "bar profit margin", "profit", "margin", "cost", "breakdown",
-                "calculate cost", "abv calculation", "bulk", "business", "wholesale", "commercial",
-                "price per ml", "liquor prices", "profitability", "cost of"
-            ]
-            b2c_keywords = [
-                "home cocktail", "vibe", "recommendation", "recipe", "how to make", "make at home",
-                "sweet", "sour", "fruity", "glass", "garnish", "party", "drink", "mixologist", "mocktail"
-            ]
-            b2b_score = sum(1 for kw in b2b_keywords if kw in content.lower())
-            b2c_score = sum(1 for kw in b2c_keywords if kw in content.lower())
-
-            parsed = parse_ingredients_from_query(content)
-            if parsed and ("cost" in content.lower() or "abv" in content.lower() or "price" in content.lower() or "calculate" in content.lower()):
-                b2b_score += 3
-
-            if b2b_score > b2c_score:
-                intent = "b2b"
-            else:
-                intent = "b2c"
-
+    
+    # Use with_structured_output to parse the metadata
+    structured_llm = llm.with_structured_output(RouterSchema)
+    
+    try:
+        parsed_data = await structured_llm.ainvoke(messages)
+    except Exception as e:
+        logger.error(f"Router LLM Error: {e}")
+        parsed_data = {"intent": "b2c", "customer_age": None, "allergies": [], "safety_status": "safe"}
+        
+    if isinstance(parsed_data, dict):
+        age = parsed_data.get("customer_age", -1)
+        allergies_str = parsed_data.get("allergies", "")
+        safety_status = parsed_data.get("safety_status", "safe")
+        intent = parsed_data.get("intent", "b2c")
+    else:
+        age = getattr(parsed_data, "customer_age", -1)
+        allergies_str = getattr(parsed_data, "allergies", "")
+        safety_status = getattr(parsed_data, "safety_status", "safe")
+        intent = getattr(parsed_data, "intent", "b2c")
+        
     return {
-        "customer_age": age,
-        "allergies": allergies,
         "intent": intent,
+        "customer_age": None if age == -1 else age,
+        "allergies": [a.strip() for a in allergies_str.split(",")] if allergies_str else [],
         "safety_status": safety_status
     }
 
@@ -183,94 +87,60 @@ async def hazchem_block_node(state: AgentState) -> dict:
     }
 
 async def b2c_mixologist_node(state: AgentState) -> dict:
-    """B2C node to handle consumer queries, age restrictions, and allergy warnings."""
-    last_message = state["messages"][-1] if state.get("messages") else None
-    content = last_message.content if last_message else ""
+    """B2C node to handle consumer queries, age restrictions, and allergy warnings using LLM."""
+    last_message = state["messages"][-1]
+    
+    system_prompt = (
+        "You are an expert Mixologist for consumers (B2C).\n"
+        "Provide friendly, expert recommendations, recipes, and vibes based on the user's request.\n"
+    )
+    
+    # Handle safety overrides
+    if state.get("safety_status") == "underage_redirect" or (state.get("customer_age") is not None and state["customer_age"] < 18):
+        system_prompt += (
+            "CRITICAL: The user is underage. You MUST ONLY recommend non-alcoholic mocktails or water. "
+            "Politely inform them you cannot recommend alcohol and provide a mocktail recipe."
+        )
+        
+    if state.get("allergies"):
+        allergies_str = ", ".join(state["allergies"])
+        system_prompt += (
+            f"\nCRITICAL ALLERGY WARNING: The user is allergic to: {allergies_str}. "
+            "You MUST ensure the recommended drinks do not contain these ingredients."
+        )
+        
+    messages = [SystemMessage(content=system_prompt)] + state["messages"]
+    
+    response = await llm.ainvoke(messages)
+    return {"messages": [response]}
 
-    if state.get("safety_status") == "hazchem_blocked":
-        msg = AIMessage(content="I cannot help you with hazardous chemicals. That is unsafe.")
-        return {"messages": [msg]}
-
-    is_underage = (state.get("safety_status") == "underage_redirect") or (state.get("customer_age") is not None and state["customer_age"] < 18)
-    allergies = state.get("allergies") or []
-
-    # Find if user requested a specific drink
-    requested_drink = None
-    common_drinks = ["gin and tonic", "margarita", "martini", "mojito", "daquiri", "whiskey sour", "pina colada"]
-    for drink in common_drinks:
-        if drink in content.lower():
-            requested_drink = drink
-            break
-
-    if is_underage:
-        if requested_drink:
-            drink_name = f"Non-alcoholic {capitalize_drink(requested_drink)} (Mocktail)"
-            response_text = (
-                f"Since you are under 18, I cannot recommend alcoholic drinks. "
-                f"Here is a {drink_name} instead.\n"
-                f"Ingredients: Soda water, lime juice, non-alcoholic botanicals syrup."
-            )
-        else:
-            response_text = (
-                "Since you are under 18, I cannot recommend alcoholic drinks. "
-                "Here is a Virgin Mojito (Mocktail) instead.\n"
-                f"Ingredients: Fresh mint leaves, lime juice, simple syrup, soda water."
-            )
-    else:
-        if requested_drink:
-            response_text = (
-                f"Here is a recipe for a classic {capitalize_drink(requested_drink)}.\n"
-                f"Ingredients: 50ml Gin, 150ml Tonic water, lime wedge."
-            )
-        else:
-            response_text = (
-                "Here is a recommended cocktail: Gin and Tonic.\n"
-                f"Ingredients: 50ml Gin, 150ml Tonic water, lime wedge."
-            )
-
-    allergy_warnings = []
-    if allergies:
-        for allergy in allergies:
-            allergy_warnings.append(f"Allergy Warning: Please ensure no {allergy} is used in this recipe.")
-
-    if allergy_warnings:
-        response_text += "\n\n" + "\n".join(allergy_warnings)
-
-    return {"messages": [AIMessage(content=response_text)]}
+@tool
+async def calculate_cost_tool(ingredients: List[Dict[str, Any]]) -> str:
+    """Calculate the total cost and ABV of a cocktail given its ingredients.
+    The 'ingredients' parameter must be a list of dictionaries, each with 'name' (string) and 'volume_ml' (float).
+    """
+    res = await calculate_cost_and_abv(ingredients)
+    return json.dumps(res, indent=2)
 
 async def b2b_bartender_node(state: AgentState) -> dict:
-    """B2B node for cost and ABV calculation."""
-    last_message = state["messages"][-1] if state.get("messages") else None
-    content = last_message.content if last_message else ""
-
-    # Parse ingredients
-    ingredients = parse_ingredients_from_query(content)
-    if not ingredients:
-        # Fallback to standard B2B setup if query didn't specify ingredients
-        ingredients = [
-            {"name": "Absolut Vodka", "volume_ml": 50},
-            {"name": "Water", "volume_ml": 150}
-        ]
-
-    # Call cost and ABV calculator tool
-    calc_result = await calculate_cost_and_abv(ingredients)
-
-    total_cost = calc_result.get("total_cost_vnd", 0.0)
-    abv = calc_result.get("abv", 0.0)
-    breakdown = calc_result.get("breakdown", [])
-
-    breakdown_lines = []
-    for item in breakdown:
-        breakdown_lines.append(f"- {item['name']}: {item['volume_ml']}ml, Cost: {item['cost']} VND, ABV: {item['abv']}%")
-
-    response_text = (
-        f"B2B Pricing and ABV Analysis:\n"
-        f"Total Cost: {total_cost} VND\n"
-        f"ABV: {abv}%\n"
-        f"Cost Breakdown:\n" + "\n".join(breakdown_lines)
+    """B2B node for cost and ABV calculation utilizing LLM tool binding."""
+    
+    system_prompt = (
+        "You are a Master Bartender for business inquiries (B2B).\n"
+        "Your main job is to help bar owners calculate costs, ABV, and profit margins.\n"
+        "You MUST use the calculate_cost_tool to calculate the cost and ABV of the drink the user asks for.\n"
+        "If the user doesn't specify exact volumes, assume standard volumes (e.g., 45ml or 50ml for base spirits, 15ml for syrups, 150ml for mixers).\n"
+        "Always present a clear cost breakdown."
     )
-
+    
+    messages = [SystemMessage(content=system_prompt)] + state["messages"]
+    
+    # Bind tools to the LLM
+    b2b_llm = llm.bind_tools([calculate_cost_tool])
+    
+    response = await b2b_llm.ainvoke(messages)
+    
     return {
-        "messages": [AIMessage(content=response_text)],
-        "tool_called": True
+        "messages": [response],
+        "tool_called": bool(response.tool_calls) if hasattr(response, 'tool_calls') else False
     }

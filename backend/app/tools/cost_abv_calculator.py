@@ -37,10 +37,10 @@ async def calculate_cost_and_abv(ingredients_list: List[Dict[str, Any]]) -> Dict
             if ing_data:
                 abv = float(ing_data.get("abv") or 0.0)
             else:
-                logger.warning(f"Ingredient '{name}' not found in ingredients database. Defaulting ABV to 0.0.")
+                logger.debug(f"Ingredient '{name}' not found in ingredients database. Defaulting ABV to 0.0.")
         except Exception as e:
             logger.error(f"Error querying ingredient '{name}' ABV: {e}")
-            logger.warning(f"Defaulting ABV to 0.0 for ingredient '{name}'.")
+            logger.debug(f"Defaulting ABV to 0.0 for ingredient '{name}'.")
 
         # 2. Query price from liquor_prices table (via cache)
         price_per_ml = 0.0
@@ -49,7 +49,7 @@ async def calculate_cost_and_abv(ingredients_list: List[Dict[str, Any]]) -> Dict
             if price_data_list:
                 price_per_ml = float(price_data_list[0].get("price_per_ml_vnd", 0.0))
             else:
-                logger.warning(f"Ingredient '{name}' not found in liquor prices database. Defaulting price to 0.0.")
+                logger.debug(f"Ingredient '{name}' not found in liquor prices database. Defaulting price to 0.0.")
         except Exception as e:
             logger.error(f"Error querying price for ingredient '{name}': {e}")
             logger.warning(f"Defaulting price to 0.0 for ingredient '{name}'.")
