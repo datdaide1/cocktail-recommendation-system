@@ -12,13 +12,30 @@ from app.tools.qdrant_retriever import get_relevant_cocktails, get_relevant_venu
 
 logger = logging.getLogger(__name__)
 
-# Initialize LLM via OpenRouter
-llm = ChatOpenAI(
+from langchain_google_genai import ChatGoogleGenerativeAI
+
+# Initialize fallback OpenRouter LLM
+llm_gpt = ChatOpenAI(
     model="openai/gpt-4o-mini",
     openai_api_key=settings.OPENROUTER_API_KEY or "dummy_key",
     openai_api_base=settings.OPENAI_API_BASE,
-    temperature=0.0
+    temperature=0.7
 )
+
+# Initialize Gemini LLMs
+gemini_keys = settings.gemini_keys_list
+if gemini_keys:
+    # Create a ChatGoogleGenerativeAI for each key
+    gemini_llms = [
+        ChatGoogleGenerativeAI(model="gemini-3.1-flash-lite", google_api_key=key, temperature=0.7)
+        for key in gemini_keys
+    ]
+    # Chain them using with_fallbacks (Key 1 -> Key 2 -> Key 3 -> GPT-4o-mini)
+    # The primary is the first key
+    fallbacks = gemini_llms[1:] + [llm_gpt]
+    llm = gemini_llms[0].with_fallbacks(fallbacks)
+else:
+    llm = llm_gpt
 
 class RouterSchema(BaseModel):
     intent: str = Field(description="Must be 'b2b' if user asks for pricing, margins, or cost calculation. Must be 'b2c' if user asks for recipes, vibes, or cocktail recommendations.")

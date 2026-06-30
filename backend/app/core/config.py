@@ -12,6 +12,13 @@ class Settings(BaseSettings):
     OPENAI_API_BASE: str = "https://openrouter.ai/api/v1"
     OPENAI_API_KEY: str = ""
     OPENROUTER_API_KEY: str = ""
+    GEMINI_API_KEYS: str = ""
+
+    @property
+    def gemini_keys_list(self) -> list[str]:
+        if not self.GEMINI_API_KEYS:
+            return []
+        return [k.strip() for k in self.GEMINI_API_KEYS.split(",") if k.strip()]
 
     # Qdrant (Cloud)
     QDRANT_URL: str = ""

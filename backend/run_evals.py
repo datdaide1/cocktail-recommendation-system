@@ -4,6 +4,12 @@ from typing import Dict, Any
 from dotenv import load_dotenv
 import braintrust
 from autoevals import Factuality, AnswerRelevancy, ContextRelevancy
+from pydantic import BaseModel
+from app.core.config import settings
+
+# Set GEMINI_API_KEY for Braintrust autoevals if we have keys
+if settings.gemini_keys_list:
+    os.environ["GEMINI_API_KEY"] = settings.gemini_keys_list[0]
 from langchain_core.messages import HumanMessage
 
 load_dotenv()
@@ -88,13 +94,13 @@ async def run_evaluation():
         task=task_fn,
         scores=[
             # Factuality (Faithfulness): Is the output grounded in the context?
-            lambda input, output, expected, **kwargs: Factuality(model="openai/gpt-4o-mini")(input=input, output=output.get("output"), expected=expected, context=output.get("context", "")),
+            lambda input, output, expected, **kwargs: Factuality(model="gemini/gemini-3.1-flash-lite")(input=input, output=output.get("output"), expected=expected, context=output.get("context", "")),
             
             # Answer Relevancy: Does the output address the input query?
-            lambda input, output, **kwargs: AnswerRelevancy(model="openai/gpt-4o-mini")(input=input, output=output.get("output")),
+            lambda input, output, **kwargs: AnswerRelevancy(model="gemini/gemini-3.1-flash-lite")(input=input, output=output.get("output")),
             
             # Context Relevancy: Is the retrieved context relevant to the input query?
-            lambda input, output, **kwargs: ContextRelevancy(model="openai/gpt-4o-mini")(input=input, output=output.get("context", "")),
+            lambda input, output, **kwargs: ContextRelevancy(model="gemini/gemini-3.1-flash-lite")(input=input, output=output.get("context", "")),
             
             # B2B Tool Calling Validation
             lambda output, **kwargs: tool_calling_scorer(output)
