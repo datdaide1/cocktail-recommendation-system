@@ -15,8 +15,8 @@ logger = logging.getLogger(__name__)
 # Initialize LLM via OpenRouter
 llm = ChatOpenAI(
     model="openai/gpt-4o-mini",
-    api_key=settings.OPENROUTER_API_KEY,
-    base_url=settings.OPENAI_API_BASE,
+    openai_api_key=settings.OPENROUTER_API_KEY,
+    openai_api_base=settings.OPENAI_API_BASE,
     temperature=0.0
 )
 
