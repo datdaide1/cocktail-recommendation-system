@@ -2,10 +2,10 @@ import asyncio
 import json
 import os
 import logging
-from sqlalchemy import delete
+from sqlalchemy import delete, text
 from sqlalchemy.dialects.postgresql import insert
 from app.db.postgres import engine, AsyncSessionLocal
-from app.db.models import Base, Ingredient, LiquorPrice, MixologyRule
+from app.db.models import Base, Ingredient, LiquorPrice, MixologyRule, User, Conversation
 
 # Configure logging
 logging.basicConfig(
@@ -22,6 +22,87 @@ async def ingest_data():
         logger.info("Creating database tables if they do not exist...")
         await conn.run_sync(Base.metadata.create_all)
         logger.info("Tables created successfully.")
+
+        # Create Postgres trigger if using postgresql dialect
+        if conn.dialect.name == "postgresql":
+            logger.info("Upgrading database schema for conversations table...")
+            
+            # Alter table conversations
+            alter_queries = [
+                "ALTER TABLE conversations ADD COLUMN IF NOT EXISTS user_id UUID NULL",
+                "ALTER TABLE conversations ADD COLUMN IF NOT EXISTS session_id VARCHAR(255) NULL",
+                "ALTER TABLE conversations ADD COLUMN IF NOT EXISTS title VARCHAR(255) DEFAULT 'New Chat'",
+                "ALTER TABLE conversations ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP",
+                "ALTER TABLE conversations ADD COLUMN IF NOT EXISTS ip_hash VARCHAR(255) NULL",
+                "ALTER TABLE conversations ADD COLUMN IF NOT EXISTS is_deleted BOOLEAN DEFAULT FALSE"
+            ]
+            for query in alter_queries:
+                await conn.execute(text(query))
+            
+            # Populate default session_id and set NOT NULL if nullable
+            check_nullable_sql = """
+            SELECT is_nullable 
+            FROM information_schema.columns 
+            WHERE table_name = 'conversations' 
+              AND column_name = 'session_id';
+            """
+            result_nullable = await conn.execute(text(check_nullable_sql))
+            row = result_nullable.fetchone()
+            if row and row[0] == "YES":
+                await conn.execute(text("UPDATE conversations SET session_id = 'default-session' WHERE session_id IS NULL"))
+                await conn.execute(text("ALTER TABLE conversations ALTER COLUMN session_id SET NOT NULL"))
+                
+            # Add foreign key constraint if it doesn't exist
+            check_fk_sql = """
+            SELECT EXISTS (
+                SELECT 1 
+                FROM information_schema.table_constraints 
+                WHERE table_name = 'conversations' 
+                  AND constraint_name = 'fk_conversations_user'
+            );
+            """
+            fk_exists = (await conn.execute(text(check_fk_sql))).scalar()
+            if not fk_exists:
+                await conn.execute(text("ALTER TABLE conversations ADD CONSTRAINT fk_conversations_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL"))
+
+            logger.info("Setting up database triggers...")
+            
+            # Create or replace function
+            create_func_sql = """
+            CREATE OR REPLACE FUNCTION update_conversation_user_id()
+            RETURNS TRIGGER AS $$
+            BEGIN
+                UPDATE conversations
+                SET user_id = NEW.id
+                WHERE session_id = NEW.guest_session_id AND user_id IS NULL;
+                RETURN NEW;
+            END;
+            $$ LANGUAGE plpgsql;
+            """
+            await conn.execute(text(create_func_sql))
+            
+            # Check if trigger exists
+            check_trigger_sql = """
+            SELECT EXISTS (
+                SELECT 1 
+                FROM pg_trigger 
+                WHERE tgname = 'trg_migrate_guest_conversations'
+            );
+            """
+            result = await conn.execute(text(check_trigger_sql))
+            trigger_exists = result.scalar()
+            
+            if not trigger_exists:
+                create_trigger_sql = """
+                CREATE TRIGGER trg_migrate_guest_conversations
+                AFTER INSERT ON users
+                FOR EACH ROW
+                EXECUTE FUNCTION update_conversation_user_id();
+                """
+                await conn.execute(text(create_trigger_sql))
+                logger.info("Trigger 'trg_migrate_guest_conversations' created.")
+            else:
+                logger.info("Trigger 'trg_migrate_guest_conversations' already exists.")
 
     # Locate paths for cleaned data
     db_dir = os.path.dirname(os.path.abspath(__file__))
