@@ -12,7 +12,7 @@ engine = create_async_engine(
     max_overflow=10,
     connect_args={
         "ssl": "require",
-        "prepared_statement_cache_size": 0,
+        "statement_cache_size": 0,
         "prepared_statement_name_func": lambda: ""
     }
 )
