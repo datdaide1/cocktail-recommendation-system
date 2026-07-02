@@ -79,7 +79,7 @@ export const Card: React.FC<CardProps> = ({ data, type, onAction }) => {
 
         {/* Action Button */}
         <button
-          onClick={() => onAction?.('view_recipe', cocktail.id)}
+          onClick={() => onAction?.('view_recipe', cocktail.id || cocktail.name)}
           className="mt-auto w-full py-2 bg-[var(--mode-accent)] text-text-inverse text-body-sm font-semibold rounded-lg hover:scale-[1.02] active:scale-[0.98] transition-transform text-center cursor-pointer"
         >
           Xem Công Thức
@@ -153,13 +153,13 @@ export const Card: React.FC<CardProps> = ({ data, type, onAction }) => {
       {/* Action Row */}
       <div className="mt-auto flex items-center justify-between gap-3 pt-2">
         <button
-          onClick={() => onAction?.('directions', venue.id)}
+          onClick={() => onAction?.('directions', venue.id || venue.name)}
           className="flex-1 py-2 text-center text-body-sm font-medium border border-border-strong hover:bg-bg-hover text-text-primary rounded-lg transition-colors cursor-pointer"
         >
           Chỉ Đường
         </button>
         <button
-          onClick={() => onAction?.('details', venue.id)}
+          onClick={() => onAction?.('details', venue.id || venue.name)}
           className="flex-1 py-2 text-center text-body-sm font-semibold text-[var(--mode-accent)] hover:text-text-primary transition-colors cursor-pointer"
         >
           Xem Thêm →

@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { MessageSquarePlus, Clock, Trash2, LayoutGrid } from 'lucide-react';
-import { v4 as uuidv4 } from 'uuid';
 
 export default function ChatHistoryPage() {
   const router = useRouter();
@@ -21,7 +20,7 @@ export default function ChatHistoryPage() {
 
   const startNewChat = () => {
     // Generate a fresh session ID for Guest
-    const newSessionId = uuidv4();
+    const newSessionId = crypto.randomUUID();
     router.push(`/chat/${newSessionId}`);
   };
 
