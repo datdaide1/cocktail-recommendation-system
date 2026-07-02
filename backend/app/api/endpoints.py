@@ -337,10 +337,8 @@ async def chat_message(payload: ChatMessagePayload):
         if final_text and len(final_text) > 20:
             try:
                 from app.agents.nodes import llm
-                from langchain_core.messages import HumanMessage
                 qr_prompt = f"Based on this AI response, suggest 2 very short quick replies (max 6 words each) in Vietnamese for the user to click to continue the conversation. Return ONLY a valid JSON array of strings, e.g. [\"Tư vấn thêm\", \"Giá bao nhiêu\"]. No other text. \n\nAI Response: {final_text[-500:]}"
                 qr_resp = await llm.ainvoke([HumanMessage(content=qr_prompt)])
-                import json
                 clean_json = qr_resp.content.strip().strip("`").removeprefix("json").strip()
                 quick_replies = json.loads(clean_json)
                 if not isinstance(quick_replies, list):
