@@ -16,14 +16,14 @@ export const Card: React.FC<CardProps> = ({ data, type, onAction }) => {
   if (isCocktail) {
     const cocktail = data as CocktailData;
     const detailsText = [cocktail.alcoholic_type, cocktail.base_liquor]
-      .filter(Boolean)
+      .filter(val => val && val !== 'None' && val !== 'null')
       .join(' · ');
 
     return (
       <div className="group flex flex-col bg-bg-elevated border border-border-subtle rounded-xl p-5 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:border-border-default hover:-translate-y-0.5 hover:shadow-lg">
         {/* Cocktail Image (1:1 Aspect) */}
         <div className="relative w-full aspect-square rounded-lg overflow-hidden mb-4 bg-bg-surface">
-          {cocktail.image_url ? (
+          {cocktail.image_url && cocktail.image_url !== 'None' && cocktail.image_url !== 'null' ? (
             <Image
               src={cocktail.image_url}
               alt={cocktail.name}
@@ -59,18 +59,19 @@ export const Card: React.FC<CardProps> = ({ data, type, onAction }) => {
         )}
 
         {/* Stats Pill Bar (Optional fields mapping) */}
-        {(cocktail.alcoholic_type || cocktail.base_liquor) && (
+        {((cocktail.alcoholic_type && cocktail.alcoholic_type !== 'None') || 
+          (cocktail.base_liquor && cocktail.base_liquor !== 'None')) && (
           <div className="grid grid-cols-2 gap-2 border border-border-subtle bg-bg-surface/50 rounded-lg p-2.5 mb-4 text-center">
             <div className="flex flex-col items-center justify-center">
               <span className="text-micro text-text-tertiary uppercase tracking-wider mb-0.5">Phân Loại</span>
               <span className="text-data-sm text-[var(--mode-accent)] font-medium line-clamp-1">
-                {cocktail.alcoholic_type || 'N/A'}
+                {cocktail.alcoholic_type && cocktail.alcoholic_type !== 'None' ? cocktail.alcoholic_type : 'N/A'}
               </span>
             </div>
             <div className="flex flex-col items-center justify-center border-l border-border-subtle">
               <span className="text-micro text-text-tertiary uppercase tracking-wider mb-0.5">Rượu Nền</span>
               <span className="text-body-sm text-text-secondary font-medium line-clamp-1">
-                {cocktail.base_liquor || 'N/A'}
+                {cocktail.base_liquor && cocktail.base_liquor !== 'None' ? cocktail.base_liquor : 'N/A'}
               </span>
             </div>
           </div>
@@ -94,7 +95,7 @@ export const Card: React.FC<CardProps> = ({ data, type, onAction }) => {
     <div className="group flex flex-col bg-bg-elevated border border-border-subtle rounded-xl p-5 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] hover:border-border-default hover:-translate-y-0.5 hover:shadow-lg">
       {/* Venue Image (16:9 Aspect) */}
       <div className="relative w-full aspect-[16/9] rounded-lg overflow-hidden mb-4 bg-bg-surface">
-        {venue.image_url ? (
+        {venue.image_url && venue.image_url !== 'None' && venue.image_url !== 'null' ? (
           <Image
             src={venue.image_url}
             alt={venue.name}

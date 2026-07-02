@@ -114,6 +114,26 @@ async def session_init(payload: SessionInitPayload):
         welcome_message = "Chào buổi tối, The Mixologist đã sẵn sàng phục vụ bạn..."
         suggested_prompts = ["Gợi ý quán đi Date", "Tôi muốn uống vị chua"]
         
+    async with AsyncSessionLocal() as db_session:
+        try:
+            stmt = select(Conversation).where(
+                Conversation.session_id == payload.guest_session_id,
+                Conversation.is_deleted == False
+            ).options(selectinload(Conversation.messages))
+            result = await db_session.execute(stmt)
+            conv = result.scalar_one_or_none()
+            if conv and len(conv.messages) == 0:
+                welcome_msg_db = Message(
+                    conversation_id=conv.id,
+                    role="assistant",
+                    content=welcome_message,
+                    ui_blocks=[{"type": "quick_replies", "replies": suggested_prompts}]
+                )
+                db_session.add(welcome_msg_db)
+                await db_session.commit()
+        except SQLAlchemyError as e:
+            logger.error(f"Error saving welcome message: {e}")
+
     return {
         "session_id": payload.guest_session_id,
         "welcome_message": welcome_message,
@@ -172,6 +192,11 @@ async def chat_message(payload: ChatMessagePayload):
             async for event in graph.astream_events(state, version="v2"):
                 kind = event.get("event")
                 if kind == "on_chat_model_stream":
+                    # Filter out streaming from router node (which outputs raw JSON)
+                    node_name = event.get("metadata", {}).get("langgraph_node")
+                    if node_name not in ["b2c_mixologist_node", "b2b_bartender_node"]:
+                        continue
+                        
                     chunk = event["data"]["chunk"]
                     if hasattr(chunk, "content") and chunk.content:
                         token = chunk.content
@@ -306,12 +331,28 @@ async def chat_message(payload: ChatMessagePayload):
                 "type": "rationale",
                 "content": "Recommendations tailored to flavor preferences and top-rated venues."
             })
-            quick_replies = ["Tìm không gian náo nhiệt hơn", "Gợi ý đồ uống vị ngọt"]
+            
+        # Dynamically generate quick replies based on final text
+        quick_replies = []
+        if final_text and len(final_text) > 20:
+            try:
+                from app.agents.nodes import llm
+                from langchain_core.messages import HumanMessage
+                qr_prompt = f"Based on this AI response, suggest 2 very short quick replies (max 6 words each) in Vietnamese for the user to click to continue the conversation. Return ONLY a valid JSON array of strings, e.g. [\"Tư vấn thêm\", \"Giá bao nhiêu\"]. No other text. \n\nAI Response: {final_text[-500:]}"
+                qr_resp = await llm.ainvoke([HumanMessage(content=qr_prompt)])
+                import json
+                clean_json = qr_resp.content.strip().strip("`").removeprefix("json").strip()
+                quick_replies = json.loads(clean_json)
+                if not isinstance(quick_replies, list):
+                    quick_replies = []
+            except Exception as e:
+                logger.error(f"Failed to generate quick replies: {e}")
 
-        ui_blocks.append({
-            "type": "quick_replies",
-            "replies": quick_replies
-        })
+        if quick_replies:
+            ui_blocks.append({
+                "type": "quick_replies",
+                "replies": quick_replies
+            })
 
         # Yield the final message containing the constructed SDUI blocks
         yield f"data: {json.dumps({'ui_blocks': ui_blocks, 'quick_replies': quick_replies, 'done': True})}\n\n"
@@ -358,8 +399,8 @@ async def calculate_cost_endpoint(payload: CalculateCostPayload):
         logger.error(f"Error calculating recipe cost: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/chat/history")
-async def get_chat_history(user_id: str):
+@router.get("/chat/conversations")
+async def get_user_conversations(user_id: str):
     parsed_user_id = parse_uuid(user_id)
     if not parsed_user_id:
         return {"conversations": []}
@@ -384,7 +425,35 @@ async def get_chat_history(user_id: str):
                 ]
             }
     except Exception as e:
-        logger.error(f"Error getting chat history: {e}")
+        logger.error(f"Error getting user conversations: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/chat/history")
+async def get_chat_messages(session_id: str):
+    # In frontend, we called /api/v1/chat/history?session_id=...
+    # Return messages for the session
+    try:
+        async with AsyncSessionLocal() as db_session:
+            stmt = select(Message).join(Conversation).where(
+                Conversation.session_id == session_id
+            ).order_by(Message.created_at.asc())
+            result = await db_session.execute(stmt)
+            messages = result.scalars().all()
+            
+            return {
+                "messages": [
+                    {
+                        "id": str(msg.id),
+                        "role": msg.role,
+                        "content": msg.content,
+                        "ui_blocks": msg.ui_blocks,
+                        "created_at": msg.created_at.isoformat()
+                    }
+                    for msg in messages
+                ]
+            }
+    except Exception as e:
+        logger.error(f"Error getting chat messages: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.delete("/chat/{session_id}")
@@ -405,6 +474,21 @@ async def delete_chat_session(session_id: str):
     except Exception as e:
         logger.error(f"Error deleting chat session {session_id}: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/search")
+async def search_items(query: str = "", type: str = "cocktail", limit: int = 10):
+    from app.tools.qdrant_retriever import get_relevant_cocktails, get_relevant_venues
+    try:
+        if type == "cocktail":
+            results = await get_relevant_cocktails(query, limit=limit)
+        elif type == "venue":
+            results = await get_relevant_venues(query, limit=limit)
+        else:
+            raise HTTPException(status_code=400, detail="Invalid type. Must be 'cocktail' or 'venue'")
+        return {"results": results}
+    except Exception as e:
+        logger.error(f"Search API Error: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error during search")
 
 @router.post("/session/migrate")
 async def session_migrate(payload: MigrateSessionPayload):

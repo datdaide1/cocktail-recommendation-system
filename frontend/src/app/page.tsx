@@ -2,221 +2,106 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { BlockRenderer } from "../components/sdui/BlockRegistry";
-import { Block } from "../components/sdui/types";
+import { useRouter } from "next/navigation";
+import { Martini, Loader2, LogIn, UserCircle2 } from "lucide-react";
 
-// Mock data matching the schemas for B2C User Mode
-const b2cBlocks: Block[] = [
-  {
-    type: 'text',
-    content: 'Chào mừng bạn đến với The Mixologist B2C. Khám phá các địa điểm sôi động và cocktail độc đáo được cá nhân hóa cho bạn.',
-  },
-  {
-    type: 'carousel_venues',
-    data: [
-      {
-        id: 'venue-c1',
-        name: 'The Rabbit Hole',
-        vibe: 'Cozy Lounge',
-        vibe_tags: ['Classic', 'Speakeasy', 'Jazz'],
-        rationale: 'Không gian ấm cúng dưới lòng đất thích hợp cho trò chuyện riêng tư.',
-      },
-      {
-        id: 'venue-c2',
-        name: 'Firkin Bar',
-        vibe: 'Premium Whiskey',
-        vibe_tags: ['Luxury', 'Bespoke', 'Quiet'],
-        rationale: 'Nổi tiếng với dịch vụ cocktail thiết kế riêng theo tâm trạng.',
-      },
-    ],
-  },
-  {
-    type: 'carousel_cocktails',
-    data: [
-      {
-        id: 'cocktail-c1',
-        name: 'Classic Manhattan',
-        alcoholic_type: 'Alcoholic',
-        base_liquor: 'Rye Whiskey',
-        rationale: 'Sự kết hợp nồng nàn giữa Rye Whiskey và Vermouth ngọt ngào.',
-      },
-      {
-        id: 'cocktail-c2',
-        name: 'Espresso Martini',
-        alcoholic_type: 'Alcoholic',
-        base_liquor: 'Vodka',
-        rationale: 'Cung cấp năng lượng tinh tế từ hạt cà phê chất lượng cao.',
-      },
-    ],
-  },
-  {
-    type: 'rationale',
-    content: 'Đề xuất dựa trên sở thích uống rượu nền Whiskey và mong muốn không gian yên tĩnh của bạn.',
-  },
-  {
-    type: 'quick_replies',
-    actions: ['Tìm Quán Bar Khác', 'Đổi Sang Vị Chua Ngọt', 'Xem Ưu Đãi Gần Đây'],
-  },
-];
+export default function LandingPage() {
+  const router = useRouter();
+  const [isInitializing, setIsInitializing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-// Mock data matching the schemas for B2B Merchant Mode
-const b2bBlocks: Block[] = [
-  {
-    type: 'text',
-    content: 'Hệ thống quản trị The Mixologist B2B. Xem phân tích xu hướng đồ uống phổ biến và đề xuất điều chỉnh thực đơn tối ưu hóa doanh thu.',
-  },
-  {
-    type: 'carousel_venues',
-    data: [
-      {
-        id: 'venue-b1',
-        name: 'Layla Eatery & Bar',
-        vibe: 'Lively Bar',
-        vibe_tags: ['Cocktails', 'Social', 'Crowded'],
-        rationale: 'Địa điểm thu hút lượng khách hàng trẻ tuổi cao nhất khu vực.',
-      },
-      {
-        id: 'venue-b2',
-        name: 'Summer Experiment',
-        vibe: 'Creative Hub',
-        vibe_tags: ['Modern Craft', 'Experimental'],
-        rationale: 'Đón đầu xu hướng đồ uống sáng tạo của giới trẻ thành thị.',
-      },
-    ],
-  },
-  {
-    type: 'carousel_cocktails',
-    data: [
-      {
-        id: 'cocktail-b1',
-        name: 'Classic Negroni',
-        alcoholic_type: 'Alcoholic',
-        base_liquor: 'Gin',
-        rationale: 'Đồ uống đứng đầu về tỉ lệ quay lại của khách hàng trung niên.',
-      },
-      {
-        id: 'cocktail-b2',
-        name: 'Whiskey Sour',
-        alcoholic_type: 'Alcoholic',
-        base_liquor: 'Bourbon',
-        rationale: 'Món cocktail mang lại biên lợi nhuận cao nhất trong quý này.',
-      },
-    ],
-  },
-  {
-    type: 'rationale',
-    content: 'Gợi ý từ thuật toán dự báo xu hướng thị trường mùa hè 2026.',
-  },
-  {
-    type: 'quick_replies',
-    actions: ['Tải Báo Cáo Doanh Thu', 'Cập Nhật Thực Đơn', 'Xem Phản Hồi Khách Hàng'],
-  },
-];
+  const handleStartSession = async (mode: 'guest' | 'user') => {
+    setIsInitializing(true);
+    setError(null);
 
-export default function Home() {
-  const [actionLog, setActionLog] = useState<string>("Chưa có thao tác nào.");
+    try {
+      // Create a random session ID or user ID
+      const sessionId = crypto.randomUUID();
+      const payload = mode === 'guest' 
+        ? { mode: 'guest', guest_session_id: sessionId }
+        : { mode: 'user', user_id: sessionId, guest_session_id: sessionId };
 
-  const handleAction = (mode: 'B2C' | 'B2B', actionType: string, payload: unknown) => {
-    const time = new Date().toLocaleTimeString();
-    setActionLog(`[${time}] [${mode}] Thao tác: "${actionType}" | Dữ liệu: ${JSON.stringify(payload)}`);
+      const response = await fetch('/api/v1/session/init', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to initialize session');
+      }
+
+      const data = await response.json();
+      
+      // Navigate to chat room with the returned session_id
+      if (data.session_id) {
+        router.push(`/chat/${data.session_id}`);
+      } else {
+        throw new Error('No session ID returned');
+      }
+    } catch (err) {
+      console.error(err);
+      setError('Unable to connect to the server. Please ensure the backend is running.');
+      setIsInitializing(false);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-bg-deepest text-text-primary p-6 md:p-12 flex flex-col gap-8">
-      {/* Page Header */}
-      <header className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-border-default pb-6 gap-4">
-        <div>
-          <h1 className="text-h1 font-bold tracking-tight text-left">
-            SDUI Components Showcase
+    <div className="min-h-screen bg-bg-deepest text-text-primary flex flex-col items-center justify-center p-6 relative overflow-hidden">
+      {/* Background glow effects */}
+      <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary-900/20 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-secondary-900/20 rounded-full blur-[120px] pointer-events-none" />
+
+      <main className="z-10 flex flex-col items-center max-w-xl w-full gap-8 text-center">
+        {/* Logo or Icon */}
+        <div className="w-24 h-24 bg-bg-elevated border border-[var(--mode-accent,rgba(255,255,255,0.1))] rounded-3xl flex items-center justify-center shadow-2xl mb-4">
+          <Martini size={48} className="text-primary-400" />
+        </div>
+
+        {/* Hero Text */}
+        <div className="space-y-4">
+          <h1 className="text-display font-bold tracking-tight bg-gradient-to-br from-primary-300 to-secondary-500 bg-clip-text text-transparent pb-2">
+            The Mixologist
           </h1>
-          <p className="text-body-sm text-text-secondary text-left mt-1">
-            Midnight Lounge Server-Driven UI Demonstration
+          <p className="text-body-lg text-text-secondary max-w-md mx-auto leading-relaxed">
+            Hệ thống gợi ý cocktail thông minh kết hợp không gian giải trí. Khám phá thức uống thiết kế riêng cho tâm trạng của bạn.
           </p>
         </div>
-        <Image
-          className="opacity-80"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={90}
-          height={18}
-          priority
-        />
-      </header>
 
-      {/* Interactive Action Log Panel */}
-      <div className="bg-bg-elevated border border-[var(--mode-accent,rgba(255,255,255,0.1))] rounded-xl p-4 transition-all duration-300">
-        <h3 className="text-h3 font-semibold text-left mb-2 flex items-center gap-2">
-          <span>⚡</span> Nhật ký Hoạt động (State Log)
-        </h3>
-        <p className="text-data-sm text-left font-mono bg-bg-surface p-3 rounded-lg border border-border-subtle break-all">
-          {actionLog}
-        </p>
-      </div>
+        {/* Error message */}
+        {error && (
+          <div className="bg-red-500/10 border border-red-500/30 text-red-400 p-3 rounded-lg text-sm w-full">
+            {error}
+          </div>
+        )}
 
-      {/* Main Grid: B2C vs B2B Modes */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-        
-        {/* B2C User Mode Section */}
-        <section 
-          data-mode="b2c" 
-          className="flex flex-col gap-6 bg-bg-elevated border border-border-subtle rounded-2xl p-6 md:p-8 shadow-xl relative overflow-hidden"
-        >
-          {/* Neon blue background glow */}
-          <div className="absolute top-0 right-0 w-48 h-48 bg-secondary-500/10 rounded-full blur-3xl pointer-events-none" />
+        {/* Action Buttons */}
+        <div className="flex flex-col sm:flex-row gap-4 w-full mt-4">
+          <button
+            onClick={() => handleStartSession('guest')}
+            disabled={isInitializing}
+            className="flex-1 flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-500 text-bg-deepest py-4 px-6 rounded-xl font-semibold transition-all shadow-lg shadow-primary-900/20 disabled:opacity-50"
+          >
+            {isInitializing ? <Loader2 className="animate-spin" size={20} /> : <UserCircle2 size={20} />}
+            Bắt đầu ẩn danh (Guest)
+          </button>
           
-          <div className="flex items-center gap-3 border-b border-border-subtle pb-4">
-            <span className="text-overline tracking-widest text-[var(--mode-accent)] font-semibold font-body">
-              B2C MODE — USER INTERFACE
-            </span>
-            <div className="h-2.5 w-2.5 rounded-full bg-[var(--mode-accent)] animate-pulse" />
-          </div>
-
-          <div className="flex flex-col gap-6">
-            {b2cBlocks.map((block, idx) => (
-              <div key={idx} className="flex flex-col gap-2">
-                <span className="text-micro text-text-tertiary uppercase tracking-wider">
-                  Block type: {block.type}
-                </span>
-                <BlockRenderer 
-                  block={block} 
-                  onAction={(actionType, payload) => handleAction('B2C', actionType, payload)}
-                />
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* B2B Merchant Mode Section */}
-        <section 
-          data-mode="b2b" 
-          className="flex flex-col gap-6 bg-bg-elevated border border-border-subtle rounded-2xl p-6 md:p-8 shadow-xl relative overflow-hidden"
-        >
-          {/* Amber gold background glow */}
-          <div className="absolute top-0 right-0 w-48 h-48 bg-primary-500/10 rounded-full blur-3xl pointer-events-none" />
-
-          <div className="flex items-center gap-3 border-b border-border-subtle pb-4">
-            <span className="text-overline tracking-widest text-[var(--mode-accent)] font-semibold font-body">
-              B2B MODE — MERCHANT DASHBOARD
-            </span>
-            <div className="h-2.5 w-2.5 rounded-full bg-[var(--mode-accent)] animate-pulse" />
-          </div>
-
-          <div className="flex flex-col gap-6">
-            {b2bBlocks.map((block, idx) => (
-              <div key={idx} className="flex flex-col gap-2">
-                <span className="text-micro text-text-tertiary uppercase tracking-wider">
-                  Block type: {block.type}
-                </span>
-                <BlockRenderer 
-                  block={block} 
-                  onAction={(actionType, payload) => handleAction('B2B', actionType, payload)}
-                />
-              </div>
-            ))}
-          </div>
-        </section>
-
-      </div>
+          <button
+            onClick={() => handleStartSession('user')}
+            disabled={isInitializing}
+            className="flex-1 flex items-center justify-center gap-2 bg-bg-elevated hover:bg-bg-surface border border-border-default hover:border-primary-500/50 text-text-primary py-4 px-6 rounded-xl font-semibold transition-all disabled:opacity-50"
+          >
+            <LogIn size={20} />
+            Giả lập Đăng nhập (User)
+          </button>
+        </div>
+        
+        {/* Powered By */}
+        <div className="mt-12 flex items-center gap-2 opacity-50">
+          <span className="text-micro tracking-widest uppercase">Powered by</span>
+          <Image src="/next.svg" alt="Next.js" width={60} height={12} className="opacity-80 invert" />
+        </div>
+      </main>
     </div>
   );
 }
