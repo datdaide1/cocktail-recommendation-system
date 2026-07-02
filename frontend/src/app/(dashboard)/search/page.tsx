@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Search, Cocktail, MapPin, AlertCircle } from 'lucide-react';
+import { Search, Martini, MapPin, AlertCircle } from 'lucide-react';
 
 export default function SearchPage() {
   const [query, setQuery] = useState('');
@@ -71,7 +71,7 @@ export default function SearchPage() {
                   : 'bg-bg-surface text-text-secondary border border-border-default hover:text-text-primary'
               }`}
             >
-              <Cocktail size={18} />
+              <Martini size={18} />
               Cocktails
             </button>
             <button
@@ -102,7 +102,7 @@ export default function SearchPage() {
               <div className="h-48 bg-bg-surface relative flex items-center justify-center">
                 {/* Fallback Image logic */}
                 <div className="text-text-tertiary flex flex-col items-center gap-2">
-                  {type === 'cocktail' ? <Cocktail size={32} /> : <MapPin size={32} />}
+                  {type === 'cocktail' ? <Martini size={32} /> : <MapPin size={32} />}
                   <span className="text-sm font-medium">{item.name || 'Unknown'}</span>
                 </div>
               </div>
