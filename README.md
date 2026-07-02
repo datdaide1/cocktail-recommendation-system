@@ -5,9 +5,10 @@ The system offers an intelligent "Mixologist" for casual users and a "Master Bar
 
 ## Project Architecture
 
-- **Frontend (Server-Driven UI):** Next.js (App Router), Tailwind CSS, Shadcn UI
-- **Backend Orchestrator:** FastAPI, LangGraph, Python 3.10+
+- **Frontend (Server-Driven UI):** Next.js 16 (App Router), Tailwind CSS v4, Server-Sent Events (SSE) Client
+- **Backend Orchestrator:** FastAPI, LangGraph, Python 3.11+
 - **Data & Memory:** Qdrant (Vector DB), Redis (Session Store), PostgreSQL (Relational Data)
+- **Deployment:** Vercel (CI/CD via GitHub Actions)
 
 ## Repository Structure
 
@@ -15,39 +16,28 @@ The system offers an intelligent "Mixologist" for casual users and a "Master Bar
 cocktail-recommendation-system/
 ├── .env                          # Biến môi trường thực tế
 ├── .env.example                  # Template cho developer mới
-├── .gitignore                    # Python, Node, Next.js, OS files
 ├── README.md                     # Hướng dẫn setup đầy đủ
+├── .github/
+│   └── workflows/                # CI/CD pipelines (test, evals, Vercel deploy)
 ├── backend/
-│   ├── requirements.txt          # 12 Python packages
-│   ├── verify_connections.py     # Script kiểm tra kết nối DB
+│   ├── requirements.txt          # Python packages
+│   ├── tests/                    # PyTest suite (endpoints, agents, mocking)
 │   └── app/
-│       ├── main.py               # FastAPI entrypoint + CORS + health check
-│       ├── core/
-│       │   └── config.py         # Pydantic Settings (LLM, Qdrant, Postgres, Redis)
-│       ├── db/
-│       │   ├── postgres.py       # Async SQLAlchemy engine + SSL + PgBouncer fixes
-│       │   ├── redis.py          # Async Redis client (Upstash)
-│       │   └── qdrant.py         # Async Qdrant client (Cloud)
-│       ├── api/
-│       │   └── __init__.py       # APIRouter stub
-│       ├── agents/               # (Empty - sẵn sàng cho LangGraph agents)
-│       └── tools/                # (Empty - sẵn sàng cho Cost Calculator, Substitution Engine)
+│       ├── main.py               # FastAPI entrypoint + CORS + SSE
+│       ├── core/                 # Pydantic Settings
+│       ├── db/                   # Clients: Postgres (Supabase), Redis, Qdrant
+│       ├── api/                  # REST API Endpoints (session, chat, tools)
+│       ├── agents/               # LangGraph state & nodes (Router, B2C Mixologist, B2B Bartender)
+│       └── tools/                # Cost & ABV Calculator, Qdrant Retrievers
 ├── frontend/
-│   ├── package.json              # Next.js 16.2.9, React 19, Tailwind v4, Lucide
-│   ├── pnpm-lock.yaml            # Lock file đầy đủ
-│   ├── tsconfig.json             # TypeScript config
-│   ├── next.config.ts            # Next.js config
-│   ├── postcss.config.mjs        # PostCSS + Tailwind
-│   ├── eslint.config.mjs         # ESLint
-│   ├── node_modules/             # Dependencies đã cài đặt
-│   ├── .next/                    # Build cache (Next.js đã build thành công)
-│   └── src/app/
-│       ├── globals.css           # CSS tokens
-│       ├── layout.tsx            # Root layout
-│       ├── page.tsx              # Landing page
-│       └── favicon.ico
+│   ├── package.json              # Next.js 16, React 19, Tailwind v4, Playwright
+│   ├── tests/                    # Playwright E2E tests
+│   └── src/
+│       ├── app/                  # Next.js App Router (page.tsx, globals.css, layout.tsx)
+│       ├── components/sdui/      # Server-Driven UI Components (Card, Carousel, RationaleBlock)
+│       └── lib/                  # SSE Logic & Client Helpers
 └── data-pipeline/
-    ├── requirements.txt          # pandas, qdrant-client, sentence-transformers, openai, tqdm
+    ├── requirements.txt          # pandas, qdrant-client, openai
     └── README.md                 # Pipeline documentation
 ```
 
@@ -56,7 +46,7 @@ cocktail-recommendation-system/
 ### Prerequisites
 
 - Python 3.11 or Conda (Miniconda/Anaconda)
-- Node.js & pnpm (or use `cocktail-ai` conda environment)
+- Node.js 22 & pnpm (or use `cocktail-ai` conda environment)
 
 ### 1. Infrastructure (Cloud Setup)
 
@@ -65,6 +55,7 @@ The project is configured to run fully in the cloud to avoid local environment i
 - **Qdrant**: Sign up for a free tier cluster on [Qdrant Cloud](https://cloud.qdrant.io/). Update `QDRANT_URL` and `QDRANT_API_KEY`.
 - **Redis**: Use [Upstash Redis](https://upstash.com/) for a serverless, free-tier Redis database. Update `REDIS_HOST`, `REDIS_PORT`, and `REDIS_PASSWORD`.
 - **PostgreSQL**: Use [Supabase](https://supabase.com/) or [Neon](https://neon.tech/) for a free-tier Postgres DB. Update the `POSTGRES_*` variables.
+- **LLM APIs**: Add your API keys for OpenRouter or Gemini (`OPENROUTER_API_KEY`, `GEMINI_API_KEY`).
 
 ### 2. Backend
 
@@ -88,20 +79,39 @@ Run the FastAPI server:
 uvicorn app.main:app --reload
 ```
 
+Run Backend Tests:
+
+```bash
+export PYTHONPATH="."
+pytest tests/
+```
+
 ### 3. Frontend
 
 Install dependencies and run the Next.js dev server:
 
 ```bash
-conda activate cocktail-ai
 cd frontend
 pnpm install
 pnpm run dev
 ```
 
-## Environment Variables
+Run Frontend E2E Tests:
 
-Copy `.env.example` to `.env` and fill in your API keys.
+```bash
+pnpm exec playwright test
+```
+
+## Deployment
+
+The project is configured for continuous deployment on **Vercel** via GitHub Actions.
+Pushes to `dev` and `test` branches will trigger a Preview deployment.
+Pushes to `main` will trigger a Production deployment.
+
+Ensure the following GitHub Secrets are configured for the Vercel deployment:
+- `VERCEL_TOKEN`
+- `VERCEL_ORG_ID`
+- `VERCEL_PROJECT_ID`
 
 ---
 
