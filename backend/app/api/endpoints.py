@@ -194,7 +194,7 @@ async def chat_message(payload: ChatMessagePayload):
                 if kind == "on_chat_model_stream":
                     # Filter out streaming from router node (which outputs raw JSON)
                     node_name = event.get("metadata", {}).get("langgraph_node")
-                    if node_name not in ["b2c_mixologist_node", "b2b_bartender_node"]:
+                    if node_name not in ["b2c_mixologist", "b2b_bartender"]:
                         continue
                         
                     chunk = event["data"]["chunk"]

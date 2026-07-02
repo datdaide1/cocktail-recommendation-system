@@ -129,6 +129,12 @@ export default function ChatRoom() {
     // Handling quick replies or button clicks from SDUI blocks
     if (actionType === 'QUICK_REPLY') {
       handleSendMessage(payload as string);
+    } else if (actionType === 'view_recipe') {
+      handleSendMessage(`Cho tôi xem công thức pha chế chi tiết của món có ID: ${payload}`);
+    } else if (actionType === 'details') {
+      handleSendMessage(`Cho tôi xem chi tiết đánh giá về địa điểm có ID: ${payload}`);
+    } else if (actionType === 'directions') {
+      handleSendMessage(`Làm sao để tôi di chuyển tới địa điểm có ID: ${payload}?`);
     } else {
       console.log(`Unhandled action: ${actionType}`, payload);
     }
