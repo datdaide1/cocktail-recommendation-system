@@ -175,8 +175,11 @@ async def chat_message(payload: ChatMessagePayload):
                     chunk = event["data"]["chunk"]
                     if hasattr(chunk, "content") and chunk.content:
                         token = chunk.content
-                        final_text_accum.append(token)
-                        yield f"data: {json.dumps({'token': token})}\n\n"
+                        if isinstance(token, list):
+                            token = "".join(item.get("text", "") for item in token if isinstance(item, dict) and "text" in item)
+                        if isinstance(token, str) and token:
+                            final_text_accum.append(token)
+                            yield f"data: {json.dumps({'token': token})}\n\n"
                 elif kind == "on_chain_end":
                     if not event.get("parent_ids"):
                         final_state = event["data"].get("output")
@@ -191,7 +194,10 @@ async def chat_message(payload: ChatMessagePayload):
         if final_state and "messages" in final_state and len(final_state["messages"]) > 0:
             last_msg = final_state["messages"][-1]
             if not final_text and hasattr(last_msg, "content"):
-                final_text = last_msg.content
+                if isinstance(last_msg.content, list):
+                    final_text = "".join(item.get("text", "") for item in last_msg.content if isinstance(item, dict) and "text" in item)
+                else:
+                    final_text = last_msg.content
 
         if not final_text:
             final_text = "I'm sorry, I could not generate a response."
