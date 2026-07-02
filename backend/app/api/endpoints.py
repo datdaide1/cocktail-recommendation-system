@@ -251,10 +251,6 @@ async def chat_message(payload: ChatMessagePayload):
                 logger.error(f"Error fetching RAG context: {e}")
 
         ui_blocks = []
-        ui_blocks.append({
-            "type": "text",
-            "content": final_text
-        })
 
         if intent == "b2b":
             if tool_result:
